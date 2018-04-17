@@ -5,7 +5,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-void main() {
+void consola(){
   char * linea;
   while(1) {
     linea = readline(">");
@@ -20,3 +20,4 @@ void main() {
     free(linea);
   }
 }
+
