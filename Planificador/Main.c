@@ -2,6 +2,7 @@
 
 
 int main(int argc, char ** argv){
-	consola();
+//	consola();
+	crearServidor2();
 	return EXIT_SUCCESS;
 }
