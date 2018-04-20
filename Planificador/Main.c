@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "Planificador.h"
 
 int main(int argc, char ** argv){
-	printf("Hola Mundo, Soy un Planificador");
+	consola();
 	return EXIT_SUCCESS;
 }
