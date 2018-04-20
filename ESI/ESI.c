@@ -12,12 +12,22 @@ int crearCliente(void) {
 		return 1;
 	}
 
-//	while(1){
+	while(1){
 		char mensaje [1000];
 		scanf("%s", mensaje);
-
 		send(cliente, mensaje, strlen(mensaje), 0);
-//	}
+
+
+     	char* buffer = malloc(30);
+     	int bytesRecibidos = recv(cliente,buffer, 25, 0);
+     	if (bytesRecibidos <= 0) {
+     		perror("El chabon se desconecto o bla bla bla");
+     		return 1;
+     	}
+     	buffer[bytesRecibidos] = "\0";
+     	printf("me llegaron %d bytes con %s\n", bytesRecibidos, buffer);
+     	free(buffer);
+	}
 
 	return 0;
 }

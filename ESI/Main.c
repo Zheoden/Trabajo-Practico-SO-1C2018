@@ -1,6 +1,6 @@
 #include "ESI.h"
 
-int main(void) {
+int main() {
 	int aux = crearCliente();
 	return aux;
 }
