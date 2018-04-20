@@ -107,6 +107,7 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+<<<<<<< HEAD
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/Planificador"/>
@@ -115,5 +116,8 @@
 			<resource resourceType="PROJECT" workspacePath="/Planificador"/>
 		</configuration>
 	</storageModule>
+=======
+	<storageModule moduleId="refreshScope"/>
+>>>>>>> e0d494249ec450cba60dd045d694bf09cee2e835
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>
