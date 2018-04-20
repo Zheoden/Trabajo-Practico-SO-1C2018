@@ -1,6 +1,5 @@
 #include "Planificador.h"
 
-
 void consola(){
   char * linea;
   while(1) {

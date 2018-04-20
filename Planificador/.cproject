@@ -31,8 +31,8 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.2060975810" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
 								<option id="gnu.c.link.option.libs.588354809" name="Libraries (-l)" superClass="gnu.c.link.option.libs" useByScannerDiscovery="false" valueType="libs">
-									<listOptionValue builtIn="false" value="commons"/>
 									<listOptionValue builtIn="false" value="readline"/>
+									<listOptionValue builtIn="false" value="commons"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.326012123" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -97,27 +97,8 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="Planificador.cdt.managedbuild.target.gnu.exe.164320305" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.991410469;cdt.managedbuild.config.gnu.exe.debug.991410469.;cdt.managedbuild.tool.gnu.c.compiler.exe.debug.2091042761;cdt.managedbuild.tool.gnu.c.compiler.input.1319384222">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1142810445;cdt.managedbuild.config.gnu.exe.release.1142810445.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.941008244;cdt.managedbuild.tool.gnu.c.compiler.input.721321408">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-<<<<<<< HEAD
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/Planificador"/>
-		</configuration>
-		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/Planificador"/>
-		</configuration>
-	</storageModule>
-=======
 	<storageModule moduleId="refreshScope"/>
->>>>>>> e0d494249ec450cba60dd045d694bf09cee2e835
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="scannerConfiguration"/>
 </cproject>
