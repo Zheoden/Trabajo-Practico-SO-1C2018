@@ -20,9 +20,13 @@
 #define IP "127.0.0.1"
 #define PUERTO 8080
 
+#define IP1 "127.0.0.2"
+#define PUERTO1 8081
+
 void consola();
 
 int crearServidor(void);
 void sigchld_handler(int s);
+int crearCliente(void);
 
 #endif /* CLIENTE_H_ */
