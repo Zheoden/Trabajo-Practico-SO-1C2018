@@ -1,57 +1,12 @@
 #include "Coordinador.h"
 
-int crearServidor(void) {
-	struct sockaddr_in direccionServidor;
-	direccionServidor.sin_family = AF_INET;
-	direccionServidor.sin_addr.s_addr = inet_addr(IP);
-	direccionServidor.sin_port = htons(PUERTO);
-
-	int servidor = socket(AF_INET, SOCK_STREAM, 0);
-
-	int activado = 1;
-	setsockopt(servidor, SOL_SOCKET, SO_REUSEADDR, &activado, sizeof(activado));
-
-	if (bind(servidor, (void*) &direccionServidor, sizeof(direccionServidor)) !=0){
-		perror("falló el bind");
-		return 1;
-	}
-	printf("Estoy Escuchando\n");
-	listen(servidor,SOMAXCONN);
-
-
-	struct sockaddr_in direccionCliente;
-	unsigned int tamanoDireccion;
-	int cliente = accept(servidor, (void*)&direccionCliente, &tamanoDireccion);
-
-	printf("Recibi una conexion en %d!! \n", cliente);
-	send(cliente, "Hola NetCat!\n",18,0);
-	send(cliente, ":)\n",4,0);
-/*
-	char* buffer = malloc(5);
-
-	int bytesRecibidos = recv(cliente,buffer, 4, MSG_WAITALL);
-	if (bytesRecibidos <= 0) {
-		perror("El chabon se desconecto o bla bla bla");
-		return 1;
-	}
-
-	buffer[bytesRecibidos] = "\0";
-	printf("me llegaron %d bytes con %s", bytesRecibidos, buffer);
-
-	free(buffer);
-*/
-
-	for(;;);
-	return 0;
-}
-
 
 void sigchld_handler(int s)
  {
      while(wait(NULL) > 0);
  }
 
- int crearServidor2(void)
+ int crearServidor(void)
  {
      int sockfd, cliente;  // Escuchar sobre sock_fd, nuevas conexiones sobre new_fd
      struct sockaddr_in my_addr;    // información sobre mi dirección
@@ -81,7 +36,7 @@ void sigchld_handler(int s)
          exit(1);
      }
 
-     printf("Estoy Escuchando\n");
+ 	printf("Estoy Escuchando en %s\n", inet_ntoa(my_addr.sin_addr));
 
      if (listen(sockfd, SOMAXCONN) == -1) {
          perror("listen");

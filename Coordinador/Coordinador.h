@@ -21,7 +21,6 @@
 
 
 int crearServidor(void);
-int crearServidor2(void);
 void sigchld_handler(int s);
 
 #endif /* CLIENTE_H_ */
