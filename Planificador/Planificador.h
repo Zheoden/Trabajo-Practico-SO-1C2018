@@ -22,7 +22,7 @@
 
 void consola();
 
-int crearServidor2(void);
+int crearServidor(void);
 void sigchld_handler(int s);
 
 #endif /* CLIENTE_H_ */

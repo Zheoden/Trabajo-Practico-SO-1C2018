@@ -3,7 +3,7 @@
 int crearServidor(void) {
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family = AF_INET;
-	direccionServidor.sin_addr.s_addr = INADDR_ANY;
+	direccionServidor.sin_addr.s_addr = inet_addr(IP);
 	direccionServidor.sin_port = htons(PUERTO);
 
 	int servidor = socket(AF_INET, SOCK_STREAM, 0);
@@ -72,7 +72,7 @@ void sigchld_handler(int s)
 
      my_addr.sin_family = AF_INET;         // Ordenación de bytes de la máquina
      my_addr.sin_port = htons(PUERTO);     // short, Ordenación de bytes de la red
-     my_addr.sin_addr.s_addr = INADDR_ANY; // Rellenar con mi dirección IP
+     my_addr.sin_addr.s_addr = inet_addr(IP); // Rellenar con mi dirección IP
      memset(&(my_addr.sin_zero), '\0', 8); // Poner a cero el resto de la estructura
 
      if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr))

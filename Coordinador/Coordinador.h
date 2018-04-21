@@ -16,8 +16,8 @@
 #include <readline/readline.h> // Para usar readline
 #include <commons/log.h>
 #include <commons/collections/list.h>
-#define IP "127.0.0.1"
-#define PUERTO 8080
+#define IP "127.0.0.2"
+#define PUERTO 8081
 
 
 int crearServidor(void);

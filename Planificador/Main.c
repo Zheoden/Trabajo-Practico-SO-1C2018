@@ -3,6 +3,6 @@
 
 int main(int argc, char ** argv){
 //	consola();
-	crearServidor2();
+	crearServidor();
 	return EXIT_SUCCESS;
 }
