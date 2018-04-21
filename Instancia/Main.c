@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "Instancia.h"
 
-int main(int argc, char ** argv){
-	printf("Hola Mundo, Soy una Instancia");
-	return EXIT_SUCCESS;
+int main() {
+	int aux = crearCliente();
+	return aux;
 }
