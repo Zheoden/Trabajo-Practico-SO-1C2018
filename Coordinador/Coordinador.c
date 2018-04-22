@@ -131,6 +131,7 @@ int servidorConSelect(void) {
 		exit(1);
 	}
 	printf("Estoy Escuchando en %s\n", inet_ntoa(myaddr.sin_addr));
+	log_info(logger,"Estoy escuchando en %s:",inet_ntoa(myaddr.sin_addr));
 	// añadir listener al conjunto maestro
 	FD_SET(listener, &master);
 	// seguir la pista del descriptor de fichero mayor
