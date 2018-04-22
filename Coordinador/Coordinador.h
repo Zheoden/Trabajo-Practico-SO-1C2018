@@ -17,17 +17,22 @@
 #include <commons/log.h>
 #include <commons/config.h>
 #include <commons/collections/list.h>
-#define IP "127.0.0.1"
-#define PUERTO 8080
 
+
+
+char* server_ip;
+int server_puerto;
 t_log * logger;
 
 void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
 void configure_logger();
-
 int crearServidor(void);
+void leerArchivoDeConfiguracion(char * configPath);
+void leerConfig(char * configPath);
 void sigchld_handler(int s);
 int servidorConSelect(void);
+int verificarExistenciaDeArchivo(char* rutaArchivoConfig);
+void setearValores(t_config * archivoConfig);
 
 
 #endif /* CLIENTE_H_ */

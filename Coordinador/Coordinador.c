@@ -26,8 +26,8 @@ int crearServidor(void)
      }
 
      my_addr.sin_family = AF_INET;         // Ordenación de bytes de la máquina
-     my_addr.sin_port = htons(PUERTO);     // short, Ordenación de bytes de la red
-     my_addr.sin_addr.s_addr = inet_addr(IP); // Rellenar con mi dirección IP
+     my_addr.sin_port = htons(server_puerto);     // short, Ordenación de bytes de la red
+     my_addr.sin_addr.s_addr = inet_addr(server_ip); // Rellenar con mi dirección IP
      memset(&(my_addr.sin_zero), '\0', 8); // Poner a cero el resto de la estructura
 
      if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr))
@@ -118,8 +118,8 @@ int servidorConSelect(void) {
 	}
 	// enlazar
 	myaddr.sin_family = AF_INET;
-	myaddr.sin_addr.s_addr = inet_addr(IP);
-	myaddr.sin_port = htons(PUERTO);
+	myaddr.sin_addr.s_addr = inet_addr(server_ip);
+	myaddr.sin_port = htons(server_puerto);
 	memset(&(myaddr.sin_zero), '\0', 8);
 	if (bind(listener, (struct sockaddr *) &myaddr, sizeof(myaddr)) == -1) {
 		perror("bind");
@@ -213,3 +213,36 @@ void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva) {
 	free(logPath);
 }
 
+void leerConfig(char * configPath) {
+	leerArchivoDeConfiguracion(configPath);
+//free(configPath);
+	log_info(logger, "Archivo de configuracion leido correctamente");
+}
+
+void leerArchivoDeConfiguracion(char * configPath) {
+	t_config * archivoConfig;
+
+	archivoConfig = config_create(configPath);
+
+	if (archivoConfig == NULL){
+		perror("[ERROR] Archivo de configurarchcion no encontrado");
+		log_error(logger,"Archivo de configurarchcion no encontrado");
+	}
+
+	setearValores(archivoConfig);
+	config_destroy(archivoConfig);
+}
+
+int verificarExistenciaDeArchivo(char* rutaArchivoConfig) {
+	FILE * archivoConfig = fopen(rutaArchivoConfig, "r");
+	if (archivoConfig != NULL) {
+		fclose(archivoConfig);
+		return 1;
+	}
+	return -1;
+}
+
+void setearValores(t_config * archivoConfig) {
+	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
+	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
+}
