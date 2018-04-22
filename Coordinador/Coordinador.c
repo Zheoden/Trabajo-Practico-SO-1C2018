@@ -233,15 +233,6 @@ void leerArchivoDeConfiguracion(char * configPath) {
 	config_destroy(archivoConfig);
 }
 
-int verificarExistenciaDeArchivo(char* rutaArchivoConfig) {
-	FILE * archivoConfig = fopen(rutaArchivoConfig, "r");
-	if (archivoConfig != NULL) {
-		fclose(archivoConfig);
-		return 1;
-	}
-	return -1;
-}
-
 void setearValores(t_config * archivoConfig) {
 	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
 	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
