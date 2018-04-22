@@ -20,6 +20,10 @@
 #define IP "127.0.0.1"
 #define PUERTO 8080
 
+t_log * logger;
+
+void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
+void configure_logger();
 
 int crearServidor(void);
 void sigchld_handler(int s);

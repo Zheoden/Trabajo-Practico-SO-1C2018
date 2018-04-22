@@ -198,4 +198,17 @@ int servidorConSelect(void) {
 	return 0;
 }
 
+void configure_logger() {
+  /*
+    1.  Creemos el logger con la funcion de las commons log_create.
+        Tiene que: guardarlo en el archivo tp0.log, mostrar 'tp0' al loggear,
+        mostrarse por pantalla y mostrar solo los logs de nivel info para arriba
+        (info, warning y error!)
+  */
+  logger = log_create("coordinador.log", "Coordinador", true, LOG_LEVEL_INFO);
+}
+void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva) {
+	logger = log_create(logPath, logMemoNombreArch, consolaActiva, LOG_LEVEL_INFO);
+	free(logPath);
+}
 
