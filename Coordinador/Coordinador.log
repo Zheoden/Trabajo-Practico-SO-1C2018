@@ -1,1 +1,25 @@
-[INFO] 17:11:47:932 Coordinador/(5983:5983): Estoy Escuchando
+[INFO] 02:17:27:197 Coordinador/(12659:12659): Archivo de configuracion leido correctamente
+[INFO] 02:17:27:198 Coordinador/(12659:12659): Estoy escuchando en 127.10.10.10:
+[INFO] 02:17:32:886 Coordinador/(12659:12659): selectserver: new connection from 127.0.0.1 on socket 5
+[INFO] 02:17:34:66 Coordinador/(12659:12659): selectserver: new connection from 127.0.0.1 on socket 7
+[INFO] 02:17:36:455 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:38:896 Coordinador/(12659:12659): selectserver: socket 7 hung up
+[INFO] 02:17:40:725 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:41:795 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:43:365 Coordinador/(12659:12659): selectserver: new connection from 127.0.0.1 on socket 7
+[INFO] 02:17:45:654 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:47:854 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:49:954 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:50:455 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:53:264 Coordinador/(12659:12659): selectserver: socket 5 hung up
+[INFO] 02:17:55:864 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:56:504 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:56:995 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:17:58:935 Coordinador/(12659:12659): selectserver: new connection from 127.0.0.1 on socket 5
+[INFO] 02:18:00:404 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:18:02:524 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:18:02:995 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:18:03:884 Coordinador/(12659:12659): selectserver: socket 7 hung up
+[INFO] 02:18:05:645 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:18:06:84 Coordinador/(12659:12659): me llegaron 3 bytes con asd
+[INFO] 02:18:06:434 Coordinador/(12659:12659): selectserver: socket 5 hung up

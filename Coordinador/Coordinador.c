@@ -76,6 +76,8 @@ int servidorConSelect(void) {
 						printf("selectserver: new connection from %s on "
 								"socket %d\n", inet_ntoa(remoteaddr.sin_addr),
 								newfd);
+						log_info(logger,"selectserver: new connection from %s on "
+								"socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
 					}
 				} else {
 					char* buf = malloc(30);
@@ -85,6 +87,8 @@ int servidorConSelect(void) {
 						if (nbytes == 0) {
 							// conexión cerrada
 							printf("selectserver: socket %d hung up\n", i);
+							log_info(logger,"selectserver: socket %d hung up", i);
+
 						} else {
 							perror("recv");
 						}
@@ -93,6 +97,7 @@ int servidorConSelect(void) {
 					} else {
 						buf[nbytes] = (char)'\0';
 						printf("me llegaron %d bytes con %s\n", nbytes, buf);
+						log_info(logger, "me llegaron %d bytes con %s", nbytes, buf);
 						// tenemos datos de algún cliente
 						for (j = 0; j <= fdmax; j++) {
 							// ¡enviar a todo el mundo!
