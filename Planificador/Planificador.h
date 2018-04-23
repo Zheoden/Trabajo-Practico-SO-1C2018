@@ -16,17 +16,28 @@
 #include <readline/readline.h> // Para usar readline
 #include <readline/history.h>
 #include <commons/log.h>
+#include <commons/config.h>
 #include <commons/collections/list.h>
-#define IP "127.0.0.1"
-#define PUERTO 8080
 
-#define IP1 "127.0.0.2"
-#define PUERTO1 8081
 
 void consola();
 
 int crearServidor(void);
 void sigchld_handler(int s);
+
+char* server_ip;
+int server_puerto;
+char* client_ip;
+int client_puerto;
+
+t_log * logger;
+
+void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
+void leerArchivoDeConfiguracion(char * configPath);
+void leerConfig(char * configPath);
+void sigchld_handler(int s);
+int servidorConSelect(void);
 int crearCliente(void);
+void setearValores(t_config * archivoConfig);
 
 #endif /* CLIENTE_H_ */
