@@ -25,13 +25,10 @@ int server_puerto;
 t_log * logger;
 
 void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
-void configure_logger();
-int crearServidor(void);
 void leerArchivoDeConfiguracion(char * configPath);
 void leerConfig(char * configPath);
 void sigchld_handler(int s);
 int servidorConSelect(void);
-int verificarExistenciaDeArchivo(char* rutaArchivoConfig);
 void setearValores(t_config * archivoConfig);
 
 
