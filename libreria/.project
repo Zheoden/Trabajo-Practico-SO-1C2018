@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Coordinador</name>
+	<name>libreria</name>
 	<comment></comment>
 	<projects>
-		<project>libreria</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
