@@ -1,5 +1,5 @@
-#ifndef CLIENTE_H_
-#define CLIENTE_H_
+#ifndef PLANIFICADOR_H_
+#define PLANIFICADOR_H_
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> // Para malloc
@@ -40,4 +40,4 @@ int servidorConSelect(void);
 int crearCliente(void);
 void setearValores(t_config * archivoConfig);
 
-#endif /* CLIENTE_H_ */
+#endif /* PLANIFICADOR_H_ */

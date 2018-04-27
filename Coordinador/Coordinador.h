@@ -1,5 +1,5 @@
-#ifndef CLIENTE_H_
-#define CLIENTE_H_
+#ifndef COORDINADOR_H_
+#define COORDINADOR_H_
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> // Para malloc
@@ -17,14 +17,14 @@
 #include <commons/log.h>
 #include <commons/config.h>
 #include <commons/collections/list.h>
+#include <Funciones/logs.h>
 
 
 
 char* server_ip;
 int server_puerto;
-t_log * logger;
 
-void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
+
 void leerArchivoDeConfiguracion(char * configPath);
 void leerConfig(char * configPath);
 void sigchld_handler(int s);
@@ -32,4 +32,4 @@ int servidorConSelect(void);
 void setearValores(t_config * archivoConfig);
 
 
-#endif /* CLIENTE_H_ */
+#endif /* COORDINADOR_H_ */

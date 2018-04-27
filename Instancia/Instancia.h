@@ -1,5 +1,5 @@
-#ifndef CLIENTE_H_
-#define CLIENTE_H_
+#ifndef INSTANCIA_H_
+#define INSTANCIA_H_
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> // Para malloc
@@ -27,4 +27,4 @@ void leerConfig(char * configPath);
 void setearValores(t_config * archivoConfig);
 
 
-#endif /* CLIENTE_H_ */
+#endif /* INSTANCIA_H_ */
