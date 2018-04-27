@@ -23,3 +23,39 @@
 [INFO] 02:18:05:645 Coordinador/(12659:12659): me llegaron 3 bytes con asd
 [INFO] 02:18:06:84 Coordinador/(12659:12659): me llegaron 3 bytes con asd
 [INFO] 02:18:06:434 Coordinador/(12659:12659): selectserver: socket 5 hung up
+[INFO] 17:35:54:475 Coordinador/(12764:12764): Archivo de configuracion leido correctamente
+[INFO] 17:35:54:477 Coordinador/(12764:12764): Estoy escuchando en 127.10.10.10:
+[INFO] 17:37:57:253 Coordinador/(13011:13011): Archivo de configuracion leido correctamente
+[INFO] 17:37:57:262 Coordinador/(13011:13011): Estoy escuchando en 127.10.10.10:
+[INFO] 17:55:45:923 Coordinador/(8198:8198): Archivo de configuracion leido correctamente
+[INFO] 17:55:45:935 Coordinador/(8198:8198): Estoy escuchando en 127.10.10.10:
+[INFO] 18:12:34:405 Coordinador/(10027:10027): Archivo de configuracion leido correctamente
+[INFO] 18:12:34:405 Coordinador/(10027:10027): Estoy escuchando en 127.10.10.10:
+[INFO] 18:15:18:766 Coordinador/(10219:10219): Archivo de configuracion leido correctamente
+[INFO] 18:20:34:378 Coordinador/(3796:3796): Archivo de configuracion leido correctamente
+[INFO] 18:20:34:391 Coordinador/(3796:3796): Estoy escuchando en 127.10.10.10:
+[INFO] 18:20:38:312 Coordinador/(3796:3796): selectserver: new connection from 127.0.0.1 on socket 5
+[INFO] 18:20:44:492 Coordinador/(3796:3796): selectserver: new connection from 127.0.0.1 on socket 7
+[INFO] 18:20:49:910 Coordinador/(3796:3796): selectserver: new connection from 127.0.0.1 on socket 8
+[INFO] 18:20:52:76 Coordinador/(3796:3796): me llegaron 3 bytes con asd
+[INFO] 18:20:54:29 Coordinador/(3796:3796): me llegaron 3 bytes con asd
+[INFO] 18:20:56:96 Coordinador/(3796:3796): me llegaron 3 bytes con asd
+[INFO] 18:20:56:811 Coordinador/(3796:3796): me llegaron 3 bytes con asd
+[INFO] 18:20:57:296 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:20:57:479 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:20:57:663 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:20:57:837 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:20:58:46 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:20:59:855 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:21:00:6 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:21:00:169 Coordinador/(3796:3796): me llegaron 3 bytes con asd
+[INFO] 18:21:00:339 Coordinador/(3796:3796): me llegaron 3 bytes con asd
+[INFO] 18:21:00:468 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:21:01:975 Coordinador/(3796:3796): me llegaron 2 bytes con ds
+[INFO] 18:21:02:160 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:21:02:322 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:21:02:483 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:21:02:644 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:21:02:818 Coordinador/(3796:3796): me llegaron 3 bytes con ads
+[INFO] 18:31:17:324 Coordinador/(4605:4605): Archivo de configuracion leido correctamente
+[INFO] 18:31:17:338 Coordinador/(4605:4605): Estoy escuchando en 127.10.10.10:

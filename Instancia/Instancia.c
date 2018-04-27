@@ -32,10 +32,6 @@ int crearCliente(void) {
 
 	return 0;
 }
-void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva) {
-	logger = log_create(logPath, logMemoNombreArch, consolaActiva, LOG_LEVEL_INFO);
-	free(logPath);
-}
 void leerConfig(char * configPath) {
  	leerArchivoDeConfiguracion(configPath);
  //free(configPath);

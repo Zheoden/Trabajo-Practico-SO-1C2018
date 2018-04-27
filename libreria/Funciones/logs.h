@@ -1,5 +1,6 @@
 #ifndef LOGS_H_
 #define LOGS_H_
+#include <stdlib.h>
 #include <commons/log.h>
 
 

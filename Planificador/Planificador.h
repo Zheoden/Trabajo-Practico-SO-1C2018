@@ -18,6 +18,8 @@
 #include <commons/log.h>
 #include <commons/config.h>
 #include <commons/collections/list.h>
+#include <Funciones/logs.h>
+
 
 
 void consola();
@@ -30,9 +32,6 @@ int server_puerto;
 char* client_ip;
 int client_puerto;
 
-t_log * logger;
-
-void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
 void leerArchivoDeConfiguracion(char * configPath);
 void leerConfig(char * configPath);
 void sigchld_handler(int s);

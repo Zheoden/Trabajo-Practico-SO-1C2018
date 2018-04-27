@@ -9,10 +9,18 @@
 #include <sys/socket.h> // Para crear sockets, enviar, recibir, etc
 #include <readline/readline.h> // Para usar readline
 #include <commons/log.h>
+#include <commons/config.h>
 #include <commons/collections/list.h>
-#define IP "127.10.10.10"
-#define PUERTO 8443
+
+#include <Funciones/logs.h>
 
 int crearCliente(void);
+char* client_ip;
+int client_puerto;
+
+void leerArchivoDeConfiguracion(char * configPath);
+void leerConfig(char * configPath);
+void setearValores(t_config * archivoConfig);
 
 #endif /* CLIENTE_H_ */
+
