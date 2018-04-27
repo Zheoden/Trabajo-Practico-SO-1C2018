@@ -3,8 +3,9 @@
 int crearCliente(void) {
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family = AF_INET;
-	direccionServidor.sin_addr.s_addr = inet_addr(IP);
-	direccionServidor.sin_port = htons(PUERTO);
+	direccionServidor.sin_addr.s_addr = inet_addr(client_ip);
+	direccionServidor.sin_port = htons(client_puerto);
+
 
 	int cliente = socket(AF_INET, SOCK_STREAM, 0);
 	if (connect(cliente,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
@@ -31,3 +32,31 @@ int crearCliente(void) {
 
 	return 0;
 }
+void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva) {
+	logger = log_create(logPath, logMemoNombreArch, consolaActiva, LOG_LEVEL_INFO);
+	free(logPath);
+}
+void leerConfig(char * configPath) {
+ 	leerArchivoDeConfiguracion(configPath);
+ //free(configPath);
+ 	log_info(logger, "Archivo de configuracion leido correctamente");
+ }
+void leerArchivoDeConfiguracion(char * configPath) {
+ 	t_config * archivoConfig;
+
+ 	archivoConfig = config_create(configPath);
+
+ 	if (archivoConfig == NULL){
+ 		perror("[ERROR] Archivo de configurarchcion no encontrado");
+ 		log_error(logger,"Archivo de configurarchcion no encontrado");
+ 	}
+
+ 	setearValores(archivoConfig);
+ 	config_destroy(archivoConfig);
+ }
+
+void setearValores(t_config * archivoConfig) {
+
+ 	client_puerto = config_get_int_value(archivoConfig, "CLIENT_PUERTO");
+ 	client_ip = strdup(config_get_string_value(archivoConfig, "CLIENT_IP"));
+ }
