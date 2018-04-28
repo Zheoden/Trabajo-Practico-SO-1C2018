@@ -2,3 +2,14 @@
 [INFO] 18:00:10:517 Planificador/(8479:8479): Archivo de configuracion leido correctamente
 [INFO] 18:01:28:159 Planificador/(8627:8627): Archivo de configuracion leido correctamente
 [INFO] 18:20:44:478 Planificador/(3798:3798): Archivo de configuracion leido correctamente
+[INFO] 18:28:47:427 Planificador/(10967:10967): Archivo de configuracion leido correctamente
+[INFO] 18:28:47:427 Planificador/(10967:10967): Estoy escuchando en 127.0.0.1:
+[INFO] 18:30:24:153 Planificador/(10996:10996): Archivo de configuracion leido correctamente
+[INFO] 18:30:24:155 Planificador/(10996:10996): Estoy escuchando en 127.10.10.10:
+[INFO] 18:30:29:204 Planificador/(10996:10996): selectserver: new connection from 127.0.0.1 on socket 5
+[INFO] 18:30:30:273 Planificador/(10996:10996): me llegaron 3 bytes con asd
+[INFO] 18:30:30:663 Planificador/(10996:10996): me llegaron 3 bytes con asd
+[INFO] 18:30:31:33 Planificador/(10996:10996): me llegaron 3 bytes con asd
+[INFO] 18:30:31:353 Planificador/(10996:10996): me llegaron 3 bytes con asd
+[INFO] 18:30:31:663 Planificador/(10996:10996): me llegaron 3 bytes con asd
+[INFO] 18:30:32:603 Planificador/(10996:10996): selectserver: socket 5 hung up

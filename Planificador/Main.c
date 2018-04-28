@@ -10,8 +10,8 @@ int main(int argc, char ** argv){
 	crearLogger(planificador_log_ruta, "Planificador", 0);
 	char* planificador_config_ruta = strdup("/home/utnso/Proyectos/tp-2018-1c-PC-citos/Planificador/Planificador.cfg");
 	leerConfig(planificador_config_ruta);
-	int aux = crearCliente();
-	//int aux = servidorConSelect();
+	//crearCliente();
+	crearServidor();
 
-	return aux;
+	return EXIT_SUCCESS;
 }
