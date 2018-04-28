@@ -24,7 +24,7 @@ int crearCliente(void) {
      		perror("El chabon se desconecto o bla bla bla");
      		return 1;
      	}
-     	buffer[bytesRecibidos] = "\0";
+     	buffer[bytesRecibidos] = '\0';
      	printf("me llegaron %d bytes con %s\n", bytesRecibidos, buffer);
      	free(buffer);
 	}

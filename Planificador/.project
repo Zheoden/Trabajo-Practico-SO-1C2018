@@ -3,7 +3,6 @@
 	<name>Planificador</name>
 	<comment></comment>
 	<projects>
-		<project>Libreria</project>
 		<project>libreria</project>
 	</projects>
 	<buildSpec>

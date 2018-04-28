@@ -2,6 +2,9 @@
 #define COORDINADOR_H_
 #include <string.h>
 #include <netdb.h> // Para getaddrinfo
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/wait.h>
 #include <commons/config.h>
 #include <Funciones/logs.h>
 

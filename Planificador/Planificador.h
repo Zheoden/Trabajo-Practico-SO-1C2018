@@ -2,8 +2,13 @@
 #define PLANIFICADOR_H_
 #include <string.h>
 #include <signal.h>
-#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 #include <sys/wait.h>
+#include <sys/socket.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include <commons/config.h>
 #include <Funciones/logs.h>
 
