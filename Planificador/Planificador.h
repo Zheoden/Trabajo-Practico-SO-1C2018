@@ -13,19 +13,15 @@
 #include <pthread.h>
 #include <Funciones/logs.h>
 
-
+char* server_ip;
+int server_puerto;
+char* coordinador_ip;
+int coordinador_puerto;
 
 void consola();
 void iniciarConsola();
-
 int crearServidor(void);
 void sigchld_handler(int s);
-
-char* server_ip;
-int server_puerto;
-char* client_ip;
-int client_puerto;
-
 void leerArchivoDeConfiguracion(char * configPath);
 void leerConfig(char * configPath);
 void sigchld_handler(int s);

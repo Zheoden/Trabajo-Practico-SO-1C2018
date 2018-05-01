@@ -23,10 +23,11 @@ void consola(){
   }
 }
 
- void sigchld_handler(int s)
+void sigchld_handler(int s)
  {
      while(wait(NULL) > 0);
  }
+
 int crearServidor(void) {
 	fd_set master;   // conjunto maestro de descriptores de fichero
 	fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
@@ -144,8 +145,8 @@ int crearServidor(void) {
 int crearCliente(void) {
  	struct sockaddr_in direccionServidor;
  	direccionServidor.sin_family = AF_INET;
- 	direccionServidor.sin_addr.s_addr = inet_addr(client_ip);
- 	direccionServidor.sin_port = htons(client_puerto);
+ 	direccionServidor.sin_addr.s_addr = inet_addr(coordinador_ip);
+ 	direccionServidor.sin_port = htons(coordinador_puerto);
 
  	int cliente = socket(AF_INET, SOCK_STREAM, 0);
  	if (connect(cliente,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
@@ -176,7 +177,6 @@ int crearCliente(void) {
 
 void leerConfig(char * configPath) {
  	leerArchivoDeConfiguracion(configPath);
- //free(configPath);
  	log_info(logger, "Archivo de configuracion leido correctamente");
  }
 
@@ -197,7 +197,7 @@ void leerArchivoDeConfiguracion(char * configPath) {
 void setearValores(t_config * archivoConfig) {
  	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
  	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
- 	client_puerto = config_get_int_value(archivoConfig, "CLIENT_PUERTO");
- 	client_ip = strdup(config_get_string_value(archivoConfig, "CLIENT_IP"));
+ 	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
+ 	coordinador_ip = strdup(config_get_string_value(archivoConfig, "COORDINADOR_IP"));
  }
 
