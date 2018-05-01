@@ -1,5 +1,12 @@
 #include "Planificador.h"
 
+
+void iniciarConsola() {
+	pthread_t hilo;
+	pthread_create(&hilo, NULL, (void *) consola, NULL);
+	pthread_detach(hilo);
+}
+
 void consola(){
   char * linea;
   while(1) {
