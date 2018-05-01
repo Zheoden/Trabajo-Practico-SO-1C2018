@@ -58,3 +58,14 @@ void setearValores(t_config * archivoConfig) {
  	client_ip = strdup(config_get_string_value(archivoConfig, "CLIENT_IP"));
  }
 
+int cantidadDeApariciones(char * cadena, char separador){
+	int i;
+	int cont = 0;
+	for(i=0;i < strlen(cadena);i++){
+		if (cadena[i] == separador){
+			cont++;
+		}
+	}
+	return cont;
+}
+
