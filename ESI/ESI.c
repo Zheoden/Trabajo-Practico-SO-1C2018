@@ -76,25 +76,6 @@ void atenderCoordinador(){
 	pthread_detach(unHilo);
 }
 
-void leerConfig(char * configPath) {
- 	leerArchivoDeConfiguracion(configPath);
- //free(configPath);
- 	log_info(logger, "Archivo de configuracion leido correctamente");
- }
-
-void leerArchivoDeConfiguracion(char * configPath) {
- 	t_config * archivoConfig;
-
- 	archivoConfig = config_create(configPath);
-
- 	if (archivoConfig == NULL){
- 		perror("[ERROR] Archivo de configurarchcion no encontrado");
- 		log_error(logger,"Archivo de configurarchcion no encontrado");
- 	}
-
- 	setearValores(archivoConfig);
- 	config_destroy(archivoConfig);
- }
 
 void setearValores(t_config * archivoConfig) {
  	planificador_puerto = config_get_int_value(archivoConfig, "PLANIFICADOR_PUERTO");

@@ -10,6 +10,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <commons/config.h>
+#include <Funciones/configs.h>
 #include <pthread.h>
 #include <Funciones/logs.h>
 
@@ -22,8 +23,6 @@ void consola();
 void iniciarConsola();
 int crearServidor(void);
 void sigchld_handler(int s);
-void leerArchivoDeConfiguracion(char * configPath);
-void leerConfig(char * configPath);
 void sigchld_handler(int s);
 int servidorConSelect(void);
 int crearCliente(void);

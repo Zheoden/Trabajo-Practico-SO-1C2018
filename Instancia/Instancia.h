@@ -5,18 +5,15 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <commons/config.h>
+#include <Funciones/configs.h>
 #include <Funciones/logs.h>
 
 
-// #define IP "127.10.10.10"
-//  #define PUERTO 8443
-
-int crearCliente(void);
 char* client_ip;
 int client_puerto;
 
-void leerArchivoDeConfiguracion(char * configPath);
-void leerConfig(char * configPath);
+
+int crearCliente(void);
 void setearValores(t_config * archivoConfig);
 
 

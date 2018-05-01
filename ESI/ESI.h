@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <commons/config.h>
 #include <Funciones/logs.h>
+#include <Funciones/configs.h>
 #include <parsi/parser.h>
 #include <pthread.h>
 #include <commons/collections/list.h>
@@ -31,8 +32,6 @@ int crearClienteCoor();
 void atenderPlanificador();
 void atenderCoordinador();
 void crearCliente();
-void leerArchivoDeConfiguracion(char * configPath);
-void leerConfig(char * configPath);
 void setearValores(t_config * archivoConfig);
 int cantidadDeApariciones(char * cadena, char separador);
 

@@ -120,26 +120,6 @@ int servidorConSelect(void) {
 	return 0;
 }
 
-void leerArchivoDeConfiguracion(char * configPath) {
-	t_config * archivoConfig;
-
-	archivoConfig = config_create(configPath);
-
-	if (archivoConfig == NULL){
-		perror("[ERROR] Archivo de configurarchcion no encontrado");
-		log_error(logger,"Archivo de configurarchcion no encontrado");
-	}
-
-	setearValores(archivoConfig);
-	config_destroy(archivoConfig);
-}
-
-void leerConfig(char * configPath) {
-	leerArchivoDeConfiguracion(configPath);
-//free(configPath);
-	log_info(logger, "Archivo de configuracion leido correctamente");
-}
-
 void setearValores(t_config * archivoConfig) {
 	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
 	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
