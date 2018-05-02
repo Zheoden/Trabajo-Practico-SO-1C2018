@@ -6,7 +6,6 @@
 #include <errno.h>
 #include <commons/config.h>
 #include <commons/log.h>
-#include "logs.h"
 
 
 // Prototipos
