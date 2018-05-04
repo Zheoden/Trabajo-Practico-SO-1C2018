@@ -13,11 +13,19 @@
 #include <Funciones/configs.h>
 #include <pthread.h>
 #include <Funciones/logs.h>
+#include <Funciones/serializacion.h>
+#include <stdlib.h>
+#include <commons/collections/dictionary.h>
+#include <stdbool.h>
 
 char* server_ip;
 int server_puerto;
 char* coordinador_ip;
 int coordinador_puerto;
+char* algoritmo_planificacion;
+int estimacion_inicial;
+char* claves_bloqueadas;
+
 
 void consola();
 void iniciarConsola();

@@ -252,9 +252,18 @@ int crearCliente(void) {
  }
 
 void setearValores(t_config * archivoConfig) {
+
+
  	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
  	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
  	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
  	coordinador_ip = strdup(config_get_string_value(archivoConfig, "COORDINADOR_IP"));
+ 	algoritmo_planificacion = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_PLANIFICACION"));
+ 	estimacion_inicial = config_get_int_value(archivoConfig, "ESTIMACION_INICIAL");
+ 	claves_bloqueadas = config_get_array_value(archivoConfig, "CLAVES_BLOQUEADAS");
+
+
+
+
  }
 

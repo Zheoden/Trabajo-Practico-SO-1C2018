@@ -13,6 +13,10 @@
 
 char* server_ip;
 int server_puerto;
+char* algoritmo_de_distribucion;
+int cantidad_entradas;
+int tamanio_entradas;
+int retardo;
 
 
 void sigchld_handler(int s);
