@@ -9,10 +9,7 @@
 #include <pthread.h>
 #include <Funciones/logs.h>
 #include <Funciones/configs.h>
-
-#define ESI 0
-#define PLANIFICADOR 1
-#define INSTANCIA 2
+#include <Funciones/serializacion.h>
 
 char* server_ip;
 int server_puerto;
