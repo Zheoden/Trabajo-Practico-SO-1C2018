@@ -6,8 +6,9 @@ int main(int argc, char ** argv){
 	crearLogger(planificador_log_ruta, "Planificador", 0);
 	char* planificador_config_ruta = strdup("/home/utnso/Proyectos/tp-2018-1c-PC-citos/Planificador/Planificador.cfg");
 	leerConfig(planificador_config_ruta,logger);
-	iniciarConsola();
-	crearServidor();
+//	iniciarConsola();
+	atenderCoordinador();
+	crearServidorSencillo();
 
 
 	return EXIT_SUCCESS;

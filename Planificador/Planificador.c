@@ -15,6 +15,7 @@ void consola(){
     if(linea){
       add_history(linea);
     }
+
     if((!strncmp(linea, "pausar", 6)) || (!strncmp(linea, "continuar", 9)) ) {
 
     	printf("//Hay que ejecutar pausar() o continuar()\n");
@@ -179,6 +180,9 @@ int crearServidor(void) {
 								"socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
 					}
 				} else {
+					if(RecibirHandshake(i,ESI)){
+						atenderESI();
+					}
 					char* buf = malloc(30);
 					// gestionar datos de un cliente
 					if ((nbytes = recv(i, buf, 30 , 0)) <= 0) {
@@ -219,6 +223,70 @@ int crearServidor(void) {
 	return 0;
 }
 
+int crearServidorSencillo() {
+	int sockfd, new_fd; // Escuchar sobre sock_fd, nuevas conexiones sobre new_fd
+	struct sockaddr_in my_addr;    // información sobre mi dirección
+	struct sockaddr_in their_addr; // información sobre la dirección del cliente
+	int sin_size;
+	struct sigaction sa;
+	int yes = 1;
+
+	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+		perror("socket");
+		exit(1);
+	}
+
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+		perror("setsockopt");
+		exit(1);
+	}
+
+	my_addr.sin_family = AF_INET;         // Ordenación de bytes de la máquina
+	my_addr.sin_port = htons(server_puerto);    // short, Ordenación de bytes de la red
+	my_addr.sin_addr.s_addr = inet_addr(server_ip); // Rellenar con mi dirección IP
+	memset(&(my_addr.sin_zero), '\0', 8); // Poner a cero el resto de la estructura
+
+	if (bind(sockfd, (struct sockaddr *) &my_addr, sizeof(struct sockaddr))
+			== -1) {
+		perror("bind");
+		exit(1);
+	}
+
+	if (listen(sockfd, 10) == -1) {
+		perror("listen");
+		exit(1);
+	}
+
+	sa.sa_handler = sigchld_handler; // Eliminar procesos muertos
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
+	if (sigaction(SIGCHLD, &sa, NULL) == -1) {
+		perror("sigaction");
+		exit(1);
+	}
+
+	while (1) {  // main accept() loop
+		sin_size = sizeof(struct sockaddr_in);
+		if ((new_fd = accept(sockfd, (struct sockaddr *) &their_addr, &sin_size))
+				== -1) {
+			perror("accept");
+			continue;
+		}
+		printf("server: got connection from %s\n",
+				inet_ntoa(their_addr.sin_addr));
+		if (!fork()) { // Este es el proceso hijo
+			close(sockfd); // El hijo no necesita este descriptor
+			if (send(new_fd, "Hello, world!\n", 14, 0) == -1)
+				perror("send");
+			close(new_fd);
+			exit(0);
+		}
+		close(new_fd);  // El proceso padre no lo necesita
+	}
+
+	return 0;
+}
+
 int crearCliente(void) {
  	struct sockaddr_in direccionServidor;
  	direccionServidor.sin_family = AF_INET;
@@ -230,6 +298,7 @@ int crearCliente(void) {
  		perror("No se pudo conectar");
  		return 1;
  	}
+ 	EnviarHandshake(cliente,PLANIFICADOR);
 
  	while(1){
  		char mensaje [1000];
@@ -251,8 +320,23 @@ int crearCliente(void) {
  	return 0;
  }
 
-void setearValores(t_config * archivoConfig) {
+void atenderESI(){
+	pthread_t hilo;
+	pthread_create(&hilo, NULL, (void *) crearServidorSencillo, NULL);
+	pthread_detach(hilo);
+}
 
+void test(){
+	printf("SOY UN TEST!!!!!!! FUNCIONA EL HILO!!!!! HEY!!!!!");
+}
+
+void atenderCoordinador(){
+	pthread_t unHilo;
+	pthread_create(&unHilo, NULL, (void *) crearCliente,NULL);
+	pthread_detach(unHilo);
+}
+
+void setearValores(t_config * archivoConfig) {
 
  	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
  	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
@@ -261,9 +345,6 @@ void setearValores(t_config * archivoConfig) {
  	algoritmo_planificacion = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_PLANIFICACION"));
  	estimacion_inicial = config_get_int_value(archivoConfig, "ESTIMACION_INICIAL");
  	claves_bloqueadas = config_get_array_value(archivoConfig, "CLAVES_BLOQUEADAS");
-
-
-
 
  }
 

@@ -11,9 +11,9 @@
 #include <readline/history.h>
 #include <commons/config.h>
 #include <Funciones/configs.h>
-#include <pthread.h>
 #include <Funciones/logs.h>
 #include <Funciones/serializacion.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <commons/collections/dictionary.h>
 #include <stdbool.h>
@@ -26,7 +26,10 @@ char* algoritmo_planificacion;
 int estimacion_inicial;
 char* claves_bloqueadas;
 
-
+void test();
+int crearServidorSencillo();
+void atenderESI();
+void atenderCoordinador();
 void consola();
 void iniciarConsola();
 int crearServidor(void);

@@ -1,7 +1,5 @@
 #ifndef SERIALIZACION_H_
 #define SERIALIZACION_H_
-
-
 #include <stdlib.h>
 #include <commons/string.h>
 #include <commons/bitarray.h>
@@ -13,9 +11,9 @@
 //           Tipos de Mensajes          //
 //////////////////////////////////////////
 typedef enum t_protocolo {
-	GET = 1,
-	SET,
-	STORE,
+	GET1 = 1,
+	SET1,
+	STORE1,
 	HANDSHAKE,
 	TEST,
 	tFinDeProtocolo //NO SACAR Y DEJAR A LO ULTIMO!!!
@@ -68,14 +66,12 @@ bool EnviarMensaje(int socketFD, char* msg, proceso quienEnvia);
 
 bool EnviarPaquete(int socketCliente, Paquete* paquete);
 
-void RecibirHandshake(int socketFD, proceso quienEnvia);
+bool RecibirHandshake(int socketFD, proceso quienEnvia);
 
 int RecibirDatos(void* paquete, int socketFD, uint32_t cantARecibir);
 
 int RecibirPaqueteServidor(int socketFD, proceso quienEnvia, Paquete* paquete); //Responde al recibir un Handshake
 
 int RecibirPaqueteCliente(int socketFD, proceso quienEnvia, Paquete* paquete); //No responde los Handshakes
-
-
 
 #endif /* SOCKETS_H_ */

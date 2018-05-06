@@ -66,22 +66,28 @@ bool EnviarDatos(int socketFD, proceso quienEnvia, void* datos, int tamDatos) {
 	return EnviarDatosTipo(socketFD, quienEnvia, datos, tamDatos, TEST);
 }
 
-void RecibirHandshake(int socketFD, proceso quienEnvia) {
+bool RecibirHandshake(int socketFD, proceso quienEnvia) {
 	Header header;
 	int resul = RecibirDatos(&header, socketFD, sizeof(Header));
 	if (resul > 0) { // si no hubo error en la recepcion
 		if (header.quienEnvia == quienEnvia) {
 			if (header.tipoMensaje == HANDSHAKE){
-				nombreProceso aux = getNombreDelProceso(quienEnvia);
-				char paraImprimir[aux.tamanio];
-				strcpy(paraImprimir,aux.nombre);
-				printf("\nConectado con el servidor %s\n", paraImprimir);
+//				nombreProceso aux = getNombreDelProceso(quienEnvia);
+//				char paraImprimir[aux.tamanio];
+//				strcpy(paraImprimir,aux.nombre);
+				printf("\nConectado con el servidor %d\n",header.quienEnvia);
+				return true;
+/*				printf("%d\n",header.quienEnvia);
+				printf("%d\n",header.tipoMensaje);
+				printf("%d\n",header.tamanioMensaje);
+*/
 			}else{
 				perror("Error de Conexion, no se recibio un handshake\n");
 			}
 		} else
 			perror("Error, no se recibio un handshake del servidor esperado\n");
 	}
+	return false;
 }
 
 int RecibirDatos(void* paquete, int socketFD, uint32_t cantARecibir) {

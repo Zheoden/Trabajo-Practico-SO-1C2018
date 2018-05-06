@@ -44,6 +44,8 @@ int crearClientePlanif() {
 		return 1;
 	}
 
+	EnviarHandshake(cliente,ESI);
+
 	while(1){
 		char mensaje [1000];
 		scanf("%s", mensaje);
