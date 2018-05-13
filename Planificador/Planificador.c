@@ -274,6 +274,57 @@ int crearServidorSencillo() {
 		}
 		printf("server: got connection from %s\n",
 				inet_ntoa(their_addr.sin_addr));
+
+        t_dictionary* ESI_listos = dictionary_create();
+		t_dictionary* ESI_ejecucion = dictionary_create();
+		t_dictionary* ESI_bloqueados = dictionary_create();
+		t_dictionary* ESI_finalizados = dictionary_create();
+		char* primero;
+
+		while (dictionary_is_empty(ESI_listos)) {
+			//mensaje al ESI para que lea una linea
+			RecibirPaqueteESI(sockfd, ESI, paquete);
+			dictionary_put(ESI_listos, paquete.clave, Paquete.valor);
+			primero = paquete.clave;
+		}
+
+		while (dictionary_is_empty(ESI_ejecucion)) {
+
+			if (!dictionary_is_empty(ESI_bloqueados)) {
+				if () {
+					aux = dictionary_remove(ESI_bloqueados,
+							key_del_desbloqueado)
+					dictionary_put(ESI_ejecucion, desbloqueado.id,
+							desbloqueado.data)
+				}
+
+			switch (algoritmo_planificacion) {
+				default:
+					aux = dictionary_remove(ESI_listos,
+							primero);
+					dictionary_put(ESI_ejecucion, aux.ID, aux.mensaje);
+					break;
+
+				case "SJF":
+					break;
+				case "HRRN":
+					break;
+
+				}
+
+				if (ESI termina) {
+					aux = dictionary_remove(ESI_ejecucion, FINALIZADO.ID,
+							FINALIZADO.DATA)
+					dictionary_put(ESI_finalizado, FINALIZADO.ID,
+							FINALIZADO.DATA)
+
+				}
+				if (interaccion con coordinador) {
+					aux =
+					list_add_all(claves_bloqueadas, claves_a_bloquear);
+				}
+
+			}
 		if (!fork()) { // Este es el proceso hijo
 			close(sockfd); // El hijo no necesita este descriptor
 			if (send(new_fd, "Hello, world!\n", 14, 0) == -1)

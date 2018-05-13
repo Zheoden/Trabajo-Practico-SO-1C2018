@@ -4,6 +4,7 @@
 #include <commons/string.h>
 #include <commons/bitarray.h>
 #include <readline/readline.h>
+#include <stdbool.h>
 #include <netinet/in.h>
 
 
@@ -54,7 +55,13 @@ typedef struct {
 //          Estructuras Utiles          //
 //////////////////////////////////////////
 
-
+typedef struct {
+	int ID;
+	char* clave;
+	char* valor;
+	bool bloqueado;
+	char* razon_bloqueo;
+}__attribute__((packed)) t_ESIPlanificador;
 
 //////////////////////////////////////////
 //              Funciones               //

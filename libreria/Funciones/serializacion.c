@@ -129,6 +129,24 @@ int RecibirPaqueteServidor(int socketFD, proceso quienManda, Paquete* paquete) {
 	return resul;
 }
 
+int RecibirPaqueteESI(int socketFD, proceso quienManda, Paquete* paquete) {
+	void* aux = paquete->mensaje;
+	(t_ESIplanificador) aux= NULL;
+	void* resul = RecibirDatos(&(paquete->header), socketFD, sizeof(Header));
+	if (resul > 0) { //si no hubo error
+		if (paquete->header.tipoMensaje == HANDSHAKE) { //vemos si es un handshake
+			nombreProceso aux = getNombreDelProceso(paquete->header.quienEnvia);
+			char paraImprimir[aux.tamanio];
+			strcpy(paraImprimir,aux.nombre);
+			printf("Se establecio conexion con %s\n", paraImprimir);
+			EnviarHandshake(socketFD, quienManda); // paquete->header.emisor
+		} else if (paquete->header.tamanioMensaje > 0){ //recibimos un payload y lo procesamos (por ej, puede mostrarlo)
+			paquete->mensaje = malloc(paquete->header.tamanioMensaje);
+			resul = RecibirDatos(paquete->mensaje, socketFD, paquete->header.tamanioMensaje);
+		}
+	}
+	return resul;
+
 int RecibirPaqueteCliente(int socketFD, proceso quienEnvia, Paquete* paquete) {
 	paquete->mensaje = NULL;
 	int resul = RecibirDatos(&(paquete->header), socketFD, sizeof(Header));
