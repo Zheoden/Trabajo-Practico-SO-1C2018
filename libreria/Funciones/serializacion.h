@@ -11,9 +11,9 @@
 //           Tipos de Mensajes          //
 //////////////////////////////////////////
 typedef enum t_protocolo {
-	GET1 = 1,
-	SET1,
-	STORE1,
+	_GET = 1,
+	_SET,
+	_STORE,
 	HANDSHAKE,
 	TEST,
 	tFinDeProtocolo //NO SACAR Y DEJAR A LO ULTIMO!!!
@@ -49,6 +49,12 @@ typedef struct {
 	Header header;
 	void* mensaje;
 }__attribute__((packed)) Paquete;
+
+//////////////////////////////////////////
+//          Estructuras Utiles          //
+//////////////////////////////////////////
+
+
 
 //////////////////////////////////////////
 //              Funciones               //
