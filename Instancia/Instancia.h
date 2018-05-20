@@ -11,6 +11,10 @@
 
 char* client_ip;
 int client_puerto;
+char* algoritmo_de_reemplazo;
+char* punto_de_montaje;
+char* nombre_de_la_instancia;
+int intervalo_de_dump;
 
 
 int crearCliente(void);

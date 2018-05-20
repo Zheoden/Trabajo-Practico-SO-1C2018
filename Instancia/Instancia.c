@@ -37,4 +37,8 @@ void setearValores(t_config * archivoConfig) {
 
  	client_puerto = config_get_int_value(archivoConfig, "CLIENT_PUERTO");
  	client_ip = strdup(config_get_string_value(archivoConfig, "CLIENT_IP"));
+	algoritmo_de_reemplazo = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_REEMPLAZO"));
+	punto_de_montaje = strdup(config_get_string_value(archivoConfig, "PUNTO_DE_MONTAJE"));
+	nombre_de_la_instancia = strdup(config_get_string_value(archivoConfig, "NOMBRE_DE_LA_INSTANCIA"));
+	intervalo_de_dump = config_get_int_value(archivoConfig, "INTERVALO_DE_DUMP");
  }
