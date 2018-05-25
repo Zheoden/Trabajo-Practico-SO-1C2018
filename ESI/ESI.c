@@ -150,9 +150,8 @@ void parsear(int argc, char **argv) {
 				datos += strlen(parsed.argumentos.SET.valor) + 1;
 				datos -= tamanio;
 				EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
-//				printf("SET\tclave: <%s>\tvalor: <%s>\n",
-//						parsed.argumentos.SET.clave,
-//						parsed.argumentos.SET.valor);
+				log_info(logger,"para el ESI con el id: %s, se ejecuto el comando SET, para la clave %s y el valor %s",
+						IDEsiActual,parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
 				break;
 			case STORE:
 				tamanio = strlen(IDEsiActual)
