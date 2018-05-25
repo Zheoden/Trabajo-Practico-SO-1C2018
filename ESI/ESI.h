@@ -17,11 +17,15 @@ char* planificador_ip;
 int planificador_puerto;
 char* coordinador_ip;
 int coordinador_puerto;
+int socket_planificador;
+int socket_coordinador;
+char* IDEsiActual;
 
 typedef struct{
 	char* ip;
 	int puerto;
 }argumentos;
+
 typedef struct {
 	int id;
 	t_esi_operacion* operaciones;
