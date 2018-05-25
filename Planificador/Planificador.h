@@ -18,6 +18,12 @@
 #include <commons/collections/dictionary.h>
 #include <stdbool.h>
 
+t_list* ESI_clavesBloqueadas;
+t_list* ESI_listos;
+t_list* ESI_ejecucion;
+t_list* ESI_bloqueados;
+t_list* ESI_finalizados;
+
 char* server_ip;
 int server_puerto;
 char* coordinador_ip;
@@ -26,17 +32,21 @@ char* algoritmo_planificacion;
 int estimacion_inicial;
 char* claves_bloqueadas;
 
-void test();
-int crearServidorSencillo();
+bool estadoDePlanificacion;
+
+int socket_esi;
+int socket_coordinador;
+
+void planificar();
+void crearServidorSencillo();
 void atenderESI();
 void atenderCoordinador();
 void consola();
 void iniciarConsola();
-int crearServidor(void);
 void sigchld_handler(int s);
 void sigchld_handler(int s);
 int servidorConSelect(void);
-int crearCliente(void);
+void crearCliente(void);
 void setearValores(t_config * archivoConfig);
 
 #endif /* PLANIFICADOR_H_ */
