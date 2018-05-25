@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <commons/string.h>
 #include <commons/bitarray.h>
+#include <commons/collections/list.h>
 #include <readline/readline.h>
 #include <stdbool.h>
 #include <netinet/in.h>
@@ -12,12 +13,16 @@
 //           Tipos de Mensajes          //
 //////////////////////////////////////////
 typedef enum t_protocolo {
-	_GET = 1,
-	_SET,
-	_STORE,
-	HANDSHAKE,
-	TEST,
-	tFinDeProtocolo //NO SACAR Y DEJAR A LO ULTIMO!!!
+	t_GET = 1,
+	t_SET,
+	t_STORE,
+	t_HANDSHAKE,
+	t_SOLICITUDNOMBRE,
+	t_CONFIGURACIONINSTANCIA,
+	t_IDENTIFICACIONINSTANCIA,
+	t_RESPUESTASET,
+	t_NUEVOESI,
+	t_ABORTARESI
 } t_protocolo;
 
 //////////////////////////////////////////
@@ -56,12 +61,37 @@ typedef struct {
 //////////////////////////////////////////
 
 typedef struct {
-	int ID;
+	char* ID;
 	char* clave;
 	char* valor;
 	bool bloqueado;
 	char* razon_bloqueo;
 }__attribute__((packed)) t_ESIPlanificador;
+
+typedef struct {
+	char* ID;
+	char* clave;
+	char* valor;
+}__attribute__((packed)) t_ESICoordinador;
+
+typedef struct {
+	char* ID;
+	t_list* clave;
+}__attribute__((packed)) t_listaDeESICoordinador;
+
+typedef struct {
+	int socket;
+	char* nombre;
+	bool activo;
+	t_list* claves;
+}__attribute__((packed)) t_Instancia;
+
+typedef struct {
+	char* clave;
+	int index;
+	int entradasOcupadas;
+	int tamanio;
+}__attribute__((packed)) t_AlmacenamientoEntradaAdministrativa;
 
 //////////////////////////////////////////
 //              Funciones               //

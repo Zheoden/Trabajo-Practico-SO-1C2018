@@ -5,7 +5,7 @@ bool EnviarPaquete(int socketCliente, Paquete* paquete) {
 	int cantAEnviar = sizeof(Header) + paquete->header.tamanioMensaje;
 	void* datos = malloc(cantAEnviar);
 	memcpy(datos, &(paquete->header), sizeof(Header));
-	if (paquete->header.tamanioMensaje > 0){ //No sea handshake
+	if (paquete->header.tamanioMensaje > 0){ //No sea t_HANDSHAKE
 		memcpy(datos + sizeof(Header), (paquete->mensaje), paquete->header.tamanioMensaje);
 	}
 	int enviado = 0; //bytes enviados
@@ -44,7 +44,7 @@ bool EnviarDatosTipo(int socketFD, proceso quienEnvia, void* datos, int tamDatos
 bool EnviarMensaje(int socketFD, char* msg, proceso quienEnvia) {
 	Paquete paquete;
 	paquete.header.quienEnvia = quienEnvia;
-	paquete.header.tipoMensaje = TEST;
+	paquete.header.tipoMensaje = t_HANDSHAKE;
 	paquete.header.tamanioMensaje = string_length(msg) + 1;
 	paquete.mensaje = msg;
 	return EnviarPaquete(socketFD, &paquete);
@@ -53,7 +53,7 @@ bool EnviarMensaje(int socketFD, char* msg, proceso quienEnvia) {
 bool EnviarHandshake(int socketFD, proceso quienEnvia) {
 	Paquete* paquete = malloc(sizeof(Header));
 	Header header;
-	header.tipoMensaje = HANDSHAKE;
+	header.tipoMensaje = t_HANDSHAKE;
 	header.tamanioMensaje = 0;
 	header.quienEnvia = quienEnvia;
 	paquete->header = header;
@@ -63,7 +63,7 @@ bool EnviarHandshake(int socketFD, proceso quienEnvia) {
 }
 
 bool EnviarDatos(int socketFD, proceso quienEnvia, void* datos, int tamDatos) {
-	return EnviarDatosTipo(socketFD, quienEnvia, datos, tamDatos, TEST);
+	return EnviarDatosTipo(socketFD, quienEnvia, datos, tamDatos, t_HANDSHAKE);
 }
 
 bool RecibirHandshake(int socketFD, proceso quienEnvia) {
@@ -71,7 +71,7 @@ bool RecibirHandshake(int socketFD, proceso quienEnvia) {
 	int resul = RecibirDatos(&header, socketFD, sizeof(Header));
 	if (resul > 0) { // si no hubo error en la recepcion
 		if (header.quienEnvia == quienEnvia) {
-			if (header.tipoMensaje == HANDSHAKE){
+			if (header.tipoMensaje == t_HANDSHAKE){
 //				nombreProceso aux = getNombreDelProceso(quienEnvia);
 //				char paraImprimir[aux.tamanio];
 //				strcpy(paraImprimir,aux.nombre);
@@ -82,10 +82,10 @@ bool RecibirHandshake(int socketFD, proceso quienEnvia) {
 				printf("%d\n",header.tamanioMensaje);
 */
 			}else{
-				perror("Error de Conexion, no se recibio un handshake\n");
+				perror("Error de Conexion, no se recibio un t_HANDSHAKE\n");
 			}
 		} else
-			perror("Error, no se recibio un handshake del servidor esperado\n");
+			perror("Error, no se recibio un t_HANDSHAKE del servidor esperado\n");
 	}
 	return false;
 }
@@ -115,7 +115,7 @@ int RecibirPaqueteServidor(int socketFD, proceso quienManda, Paquete* paquete) {
 	paquete->mensaje = NULL;
 	int resul = RecibirDatos(&(paquete->header), socketFD, sizeof(Header));
 	if (resul > 0) { //si no hubo error
-		if (paquete->header.tipoMensaje == HANDSHAKE) { //vemos si es un handshake
+		if (paquete->header.tipoMensaje == t_HANDSHAKE) { //vemos si es un t_HANDSHAKE
 			nombreProceso aux = getNombreDelProceso(paquete->header.quienEnvia);
 			char paraImprimir[aux.tamanio];
 			strcpy(paraImprimir,aux.nombre);
@@ -129,28 +129,29 @@ int RecibirPaqueteServidor(int socketFD, proceso quienManda, Paquete* paquete) {
 	return resul;
 }
 
-int RecibirPaqueteESI(int socketFD, proceso quienManda, Paquete* paquete) {
+/*int RecibirPaqueteESI(int socketFD, proceso quienManda, Paquete* paquete) {
 	void* aux = paquete->mensaje;
 	(t_ESIplanificador) aux= NULL;
 	void* resul = RecibirDatos(&(paquete->header), socketFD, sizeof(Header));
 	if (resul > 0) { //si no hubo error
-		if (paquete->header.tipoMensaje == HANDSHAKE) { //vemos si es un handshake
+		if (paquete->header.tipoMensaje == t_HANDSHAKE) { //vemos si es un t_HANDSHAKE
 			nombreProceso aux = getNombreDelProceso(paquete->header.quienEnvia);
 			char paraImprimir[aux.tamanio];
 			strcpy(paraImprimir,aux.nombre);
 			printf("Se establecio conexion con %s\n", paraImprimir);
-			EnviarHandshake(socketFD, quienManda); // paquete->header.emisor
+			Enviart_HANDSHAKE(socketFD, quienManda); // paquete->header.emisor
 		} else if (paquete->header.tamanioMensaje > 0){ //recibimos un payload y lo procesamos (por ej, puede mostrarlo)
 			paquete->mensaje = malloc(paquete->header.tamanioMensaje);
 			resul = RecibirDatos(paquete->mensaje, socketFD, paquete->header.tamanioMensaje);
 		}
 	}
 	return resul;
+}*/
 
 int RecibirPaqueteCliente(int socketFD, proceso quienEnvia, Paquete* paquete) {
 	paquete->mensaje = NULL;
 	int resul = RecibirDatos(&(paquete->header), socketFD, sizeof(Header));
-	if (resul > 0 && paquete->header.tipoMensaje != HANDSHAKE && paquete->header.tamanioMensaje > 0) { //si no hubo error ni es un handshake
+	if (resul > 0 && paquete->header.tipoMensaje != t_HANDSHAKE && paquete->header.tamanioMensaje > 0) { //si no hubo error ni es un t_HANDSHAKE
 		paquete->mensaje = malloc(paquete->header.tamanioMensaje);
 		resul = RecibirDatos(paquete->mensaje, socketFD, paquete->header.tamanioMensaje);
 	}
@@ -183,3 +184,127 @@ nombreProceso getNombreDelProceso(proceso proceso){
 	}
 	return aux;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int ConectarAServidor(int puertoAConectar, char* ipAConectar, proceso servidor,
+		proceso cliente, void RecibirHandshake(int socketFD, proceso emisor)) {
+	int socketFD = socket(AF_INET, SOCK_STREAM, 0);
+
+	struct sockaddr_in direccion;
+
+	direccion.sin_family = AF_INET;
+	direccion.sin_port = htons(puertoAConectar);
+	direccion.sin_addr.s_addr = inet_addr(ipAConectar);
+	memset(&(direccion.sin_zero), '\0', 8);
+
+	while (connect(socketFD, (struct sockaddr *) &direccion, sizeof(struct sockaddr))<0)
+		sleep(1); //Espera un segundo y se vuelve a tratar de conectar.
+	EnviarHandshake(socketFD, cliente);
+	RecibirHandshake(socketFD, servidor);
+	return socketFD;
+
+}
+
+int ConectarAServidorESI(int puertoAConectar, char* ipAConectar, proceso servidor,
+		proceso cliente, void RecibirHandshake(int socketFD, proceso emisor), void EnviarHandshake(int socketFD, proceso emisor)) {
+	int socketFD = socket(AF_INET, SOCK_STREAM, 0);
+
+	struct sockaddr_in direccion;
+
+	direccion.sin_family = AF_INET;
+	direccion.sin_port = htons(puertoAConectar);
+	direccion.sin_addr.s_addr = inet_addr(ipAConectar);
+	memset(&(direccion.sin_zero), '\0', 8);
+
+	while (connect(socketFD, (struct sockaddr *) &direccion, sizeof(struct sockaddr))<0)
+		sleep(1); //Espera un segundo y se vuelve a tratar de conectar.
+	EnviarHandshake(socketFD, cliente);
+	RecibirHandshake(socketFD, servidor);
+	return socketFD;
+
+}
+
+int ConectarAServidorPlanificador(int puertoAConectar, char* ipAConectar, char servidor[13],
+		char cliente[13], void RecibirHandshake(int socketFD, char emisor[13]), void EnviarHandshake(int socketFD, char emisor[13])) {
+	int socketFD = socket(AF_INET, SOCK_STREAM, 0);
+
+	struct sockaddr_in direccion;
+
+	direccion.sin_family = AF_INET;
+	direccion.sin_port = htons(puertoAConectar);
+	direccion.sin_addr.s_addr = inet_addr(ipAConectar);
+	memset(&(direccion.sin_zero), '\0', 8);
+
+	while (connect(socketFD, (struct sockaddr *) &direccion, sizeof(struct sockaddr))<0)
+		sleep(1); //Espera un segundo y se vuelve a tratar de conectar.
+	EnviarHandshake(socketFD, cliente);
+	RecibirHandshake(socketFD, servidor);
+	return socketFD;
+
+}
+
+
