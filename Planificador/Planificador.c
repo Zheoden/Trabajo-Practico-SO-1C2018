@@ -152,13 +152,16 @@ void crearCliente(void) {
 		case t_GET: {
 			//Se fija si la clave que recibio está en la lista de claves bloqueadas
 
-			bool vericarClavesBloqueadas(t_ESIPlanificador* item1) {
-				return !strcmp(item1->clave, paquete.mensaje);
+			bool vericarClavesBloqueadas(t_ESIPlanificador* esi) {
+				return !strcmp(esi->clave, paquete.mensaje);
 			}
 
 			if(list_any_satisfy(ESI_clavesBloqueadas,(void*) vericarClavesBloqueadas)) {
 				//Si está, bloquea al proceso ESI
-				t_ESIPlanificador* esiABloquear = (t_ESIPlanificador*) list_remove_by_condition(ESI_ejecucion, LAMBDA(bool _(procesoEsi* item1) {return !strcmp(item1->id, paquete.Payload + strlen(paquete.Payload)+1);}));
+				bool buscarEsiPorID(t_ESIPlanificador* esi) {
+					return !strcmp(esi->ID, paquete.mensaje + strlen(paquete.mensaje)+1);
+				}
+				t_ESIPlanificador* esiABloquear = (t_ESIPlanificador*) list_remove_by_condition(ESI_ejecucion,(void*)buscarEsiPorID );
 				list_add(ESI_bloqueados, esiABloquear);
 			}
 			else {
@@ -173,10 +176,12 @@ void crearCliente(void) {
 		}
 		break;
 
-		case t_ABORTARESI:
-		{
-			t_ESIPlanificador* esiAAbortar = (procesoEsi*) list_remove_by_condition(EJECUCION, LAMBDA(bool _(procesoEsi* item1) {return !strcmp(item1->id, datos);}));
-			EnviarDatosTipo(socket_esi,PLANIFICADOR, NULL, 0, ABORTAR);
+		case t_ABORTARESI:{
+			bool buscarEsiPorID(t_ESIPlanificador* esi) {
+				return !strcmp(esi->ID, datos);
+			}
+			t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove_by_condition(ESI_ejecucion,(void*)buscarEsiPorID );
+			EnviarDatosTipo(socket_esi,PLANIFICADOR, NULL, 0, t_ABORTARESI);
 			//liberarrecursos()
 			list_add(ESI_finalizados, esiAAbortar);
 		}
