@@ -11,8 +11,8 @@ int main() {
 	//////////////////////////////////////////
 	//Llamado a funciones de Prueba para Dump/
 	//////////////////////////////////////////
-	tamanio_entrada = 15;
-	cantidad_de_entradas= 120;
+	tamanio_entrada = 100;
+	cantidad_de_entradas= 50;
 	verificarPuntoMontaje();
 	foo();
 	cargarDatosFicticios("ElFede","Hola Como Andas?");
@@ -20,7 +20,7 @@ int main() {
 	cargarDatosFicticios("LaCaro","Io khe ze, no soi 100tifiko");
 	cargarDatosFicticios("LaMikis","Holiiiiiiisssss");
 	cargarDatosFicticios("ElYoff","Veamos que tan bien funciona esto");
-	cargarDatosFicticios("Comodin","Comodin Comodin Comodin Comodin?");
+	cargarDatosFicticios("Comodin","Comodin Comodin?");
 	dump();
 	//////////////////////////////////////////
 	//            Fin de Pruebas            //
