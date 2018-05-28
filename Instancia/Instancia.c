@@ -1,18 +1,18 @@
 #include "Instancia.h"
 
-int crearCliente(void) {
+void crearCliente(void) {
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family = AF_INET;
 	direccionServidor.sin_addr.s_addr = inet_addr(client_ip);
 	direccionServidor.sin_port = htons(client_puerto);
 
-
 	socket_coordinador = socket(AF_INET, SOCK_STREAM, 0);
 	if (connect(socket_coordinador,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
-		perror("No se pudo conectar");
-		return 1;
+		log_error(logger,"No se pudo conectar: %s",strerror(errno));
 	}
-
+	log_info(logger,"Se establecio conexion con el Coordinador correctamente");
+	iniciarManejoDeEntradas();
+	/*
 	while(1){
 		char mensaje [1000];
 		scanf("%s", mensaje);
@@ -22,31 +22,40 @@ int crearCliente(void) {
      	char* buffer = malloc(30);
      	int bytesRecibidos = recv(socket_coordinador,buffer, 25, 0);
      	if (bytesRecibidos <= 0) {
-     		perror("El chabon se desconecto o bla bla bla");
-     		return 1;
+     		log_error(logger,"Se desconecto el socket: %d",socket_coordinador);
      	}
      	buffer[bytesRecibidos] = '\0';
      	printf("me llegaron %d bytes con %s\n", bytesRecibidos, buffer);
      	free(buffer);
-	}
+	}*/
 
-	return 0;
 }
 
 void setearValores(t_config * archivoConfig) {
-
  	client_puerto = config_get_int_value(archivoConfig, "CLIENT_PUERTO");
  	client_ip = strdup(config_get_string_value(archivoConfig, "CLIENT_IP"));
 	algoritmo_de_reemplazo = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_REEMPLAZO"));
 	punto_de_montaje = strdup(config_get_string_value(archivoConfig, "PUNTO_DE_MONTAJE"));
 	nombre_de_la_instancia = strdup(config_get_string_value(archivoConfig, "NOMBRE_DE_LA_INSTANCIA"));
 	intervalo_de_dump = config_get_int_value(archivoConfig, "INTERVALO_DE_DUMP");
+
+	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
+	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Reemplazo: %s",algoritmo_de_reemplazo);
  }
+
 bool handshakeInstanciaCoordinador(){
 	EnviarDatosTipo(socket_coordinador, INSTANCIA,(void*)cantidad_de_entradas, sizeof(cantidad_de_entradas),t_HANDSHAKE);
 	EnviarDatosTipo(socket_coordinador, INSTANCIA,(void*)tamanio_entrada, sizeof(tamanio_entrada),t_HANDSHAKE);
 	return true;
 }
+
+void iniciarManejoDeEntradas(){
+	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
+//	pthread_create(&hilo, NULL, (void *) manejarEntradas, NULL);
+//	pthread_detach(hilo);
+}
+
 void manejarEntradas() {
 
 	Paquete paquete;
@@ -65,15 +74,17 @@ void manejarEntradas() {
 				tabla_entradas[i] = malloc(tamanio_entrada);
 				strcpy(tabla_entradas[i], "null");
 			}
-
 			handshakeInstanciaCoordinador();
+			log_info(logger,"Se envio un Handshake al Coordiandor");
 		}
 			break;
 		case t_STORE: {
-
+			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.");
+			log_info(logger,"Se proceso correctamente el STORE.");
 		}
 			break;
 		case t_SET: {
+			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
 			datos += strlen(datos) + 1;
@@ -86,6 +97,7 @@ void manejarEntradas() {
 			nueva->tamanio = strlen(valor);//nueva->tamanio = strlen(valor) + strlen(clave);
 			nueva->index = getFirstIndex(nueva->entradasOcupadas);
 			list_add(entradas_administrativa, nueva);
+			log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
 			int i;
 			char *valueAux = malloc(strlen(valor) + 1);
 			strcpy(valueAux, valor);
@@ -99,6 +111,7 @@ void manejarEntradas() {
 				valueAux += tamanio_entrada;
 			}
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_SET);
+			log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
 			free(clave);
 			free(valor);
 			free(valueAux);
@@ -109,7 +122,9 @@ void manejarEntradas() {
 		}
 		if (paquete.mensaje != NULL) {
 			free(paquete.mensaje);
+			log_info(logger,"Se libero la memoria del paquete.");
 		}
+
 	}
 
 }

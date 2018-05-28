@@ -4,6 +4,7 @@
 #include <netdb.h> // Para getaddrinfo
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 #include <commons/config.h>
 #include <Funciones/configs.h>
 #include <Funciones/logs.h>
@@ -24,8 +25,9 @@ int socket_coordinador;
 char **tabla_entradas;
 t_list *entradas_administrativa;
 
-
-int crearCliente(void);
+void iniciarManejoDeEntradas();
+void manejarEntradas();
+void crearCliente(void);
 void setearValores(t_config * archivoConfig);
 bool handshakeInstanciaCoordinador();
 
