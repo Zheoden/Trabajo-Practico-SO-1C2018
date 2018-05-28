@@ -20,20 +20,10 @@ int coordinador_puerto;
 int socket_planificador;
 int socket_coordinador;
 char* IDEsiActual;
-esi nuevoEsi;
 
-typedef struct{
-	char* ip;
-	int puerto;
-}argumentos;
 
-typedef struct {
-	int id;
-	t_esi_operacion* operaciones;
-} esi;
-
-int crearClientePlanif();
-int crearClienteCoor();
+void crearClientePlanif();
+void crearClienteCoor();
 
 void atenderPlanificador();
 void atenderCoordinador();

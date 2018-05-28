@@ -1,40 +1,37 @@
 #include "ESI.h"
 
-int crearClienteCoor() {
+void crearClienteCoor() {
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family = AF_INET;
 	direccionServidor.sin_addr.s_addr = inet_addr(coordinador_ip);
 	direccionServidor.sin_port = htons(coordinador_puerto);
 
-	int cliente = socket(AF_INET, SOCK_STREAM, 0);
-	if (connect(cliente,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
-		perror("No se pudo conectar");
-//		return 1;
+	socket_coordinador = socket(AF_INET, SOCK_STREAM, 0);
+	if (connect(socket_coordinador,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
+		log_error(logger,"No se pudo conectar: %s",strerror(errno));
 	}
 
-	EnviarDatosTipo(socket_coordinador,ESI,(void*)cliente, sizeof(cliente),t_HANDSHAKE);
+	EnviarHandshake(socket_coordinador,ESI);
 
 	while(1){
 		char mensaje [1000];
 		scanf("%s", mensaje);
-		send(cliente, mensaje, strlen(mensaje), 0);
+		send(socket_coordinador, mensaje, strlen(mensaje), 0);
 
 
      	char* buffer = malloc(30);
-     	int bytesRecibidos = recv(cliente,buffer, 25, 0);
+     	int bytesRecibidos = recv(socket_coordinador,buffer, 25, 0);
      	if (bytesRecibidos <= 0) {
-     		perror("El chabon se desconecto o bla bla bla");
-//     		return 1;
+     		log_error(logger,"Se desconecto el socket: %d",socket_coordinador);
      	}
      	buffer[bytesRecibidos] = '\0';
      	printf("me llegaron %d bytes con %s\n", bytesRecibidos, buffer);
      	free(buffer);
 	}
 
-//	return 0;
 }
 
-int crearClientePlanif() {
+void crearClientePlanif() {
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family = AF_INET;
 	direccionServidor.sin_addr.s_addr = inet_addr(planificador_ip);
@@ -42,11 +39,10 @@ int crearClientePlanif() {
 
 	socket_planificador = socket(AF_INET, SOCK_STREAM, 0);
 	if (connect(socket_planificador,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
-		perror("No se pudo conectar");
-		return 1;
+		log_error(logger,"No se pudo conectar: %s",strerror(errno));
 	}
 
-	EnviarDatosTipo(socket_planificador,ESI,(void*) nuevoEsi,strlen(nuevoEsi),t_HANDSHAKE);
+	EnviarHandshake(socket_planificador,ESI);
 
 	while(1){
 		char mensaje [1000];
@@ -57,25 +53,26 @@ int crearClientePlanif() {
      	char* buffer = malloc(30);
      	int bytesRecibidos = recv(socket_planificador,buffer, 25, 0);
      	if (bytesRecibidos <= 0) {
-     		perror("El chabon se desconecto o bla bla bla");
-     		return 1;
+     		log_error(logger,"Se desconecto el socket: %d",socket_planificador);
      	}
      	buffer[bytesRecibidos] = '\0';
-     	printf("me llegaron %d bytes con %s\n", bytesRecibidos, buffer);
+     	log_error(logger,"me llegaron %d bytes con %s",bytesRecibidos, buffer);
+
      	free(buffer);
 	}
 
-	return 0;
 }
 
 void atenderPlanificador(){
 	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para manejar la comunicacion con el Planificador.");
 	pthread_create(&hilo, NULL, (void *) crearClientePlanif, NULL);
 	pthread_detach(hilo);
 }
 
 void atenderCoordinador(){
 	pthread_t unHilo;
+	log_info(logger,"Se inicio un hilo para manejar la comunicacion con el Coordinador.");
 	pthread_create(&unHilo, NULL, (void *) crearClienteCoor,NULL);
 	pthread_detach(unHilo);
 }
@@ -85,6 +82,8 @@ void setearValores(t_config * archivoConfig) {
  	planificador_ip = strdup(config_get_string_value(archivoConfig, "PLANIFICADOR_IP"));
  	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
  	coordinador_ip = strdup(config_get_string_value(archivoConfig, "COORDINADOR_IP"));
+
+ 	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
  }
 
 int cantidadDeApariciones(char * cadena, char separador){
@@ -111,13 +110,13 @@ void parsear(int argc, char **argv) {
 	int tamanio;
 
 	t_esi_operacion parsed;
-	char* operacion = string_new();
-	esi unEsi;
 
 	fp = fopen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/script.esi", "r");
 	if (fp == NULL) {
-		perror("Error al abrir el archivo: ");
+		log_error(logger,"Error al abrir el archivo: %s",strerror(errno));
 		matarESI();
+		log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
+		log_info(logger,"Se va a pasar a cerrar el archivo %s",fp);
 		fclose(fp);
 	}
 
@@ -135,8 +134,8 @@ void parsear(int argc, char **argv) {
 				datos += strlen(parsed.argumentos.GET.clave) + 1;
 				datos -= tamanio;
 				EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);
-//				printf("%d\tclave: <%s>\n", parsed.keyword,
-//						parsed.argumentos.GET.clave);
+				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando GET, para la clave %s",
+						IDEsiActual,parsed.argumentos.GET.clave);
 				break;
 			case SET:
 
@@ -152,7 +151,7 @@ void parsear(int argc, char **argv) {
 				datos += strlen(parsed.argumentos.SET.valor) + 1;
 				datos -= tamanio;
 				EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
-				log_info(logger,"para el ESI con el id: %s, se ejecuto el comando SET, para la clave %s y el valor %s",
+				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando SET, para la clave %s y el valor %s",
 						IDEsiActual,parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
 				break;
 			case STORE:
@@ -167,23 +166,29 @@ void parsear(int argc, char **argv) {
 				EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,
 						t_STORE);
 
-//				printf("STORE\tclave: <%s>\n", parsed.argumentos.STORE.clave);
+				printf("STORE\tclave: <%s>\n", parsed.argumentos.STORE.clave);
+				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando STORE, para la clave %s",
+						IDEsiActual,parsed.argumentos.STORE.clave);
 				break;
 			default:
-				fprintf(stderr, "No pude interpretar <%s>\n", line);
 				matarESI();
+				log_info(logger,"No pude interpretar <%s>\n", line);
+				log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
 				fclose(fp);
 			}
 			destruir_operacion(parsed);
 		} else {
-			fprintf(stderr, "La linea <%s> no es valida\n", line);
 			matarESI();
+			log_info(logger,"La linea <%s> no es valida\n", line);
+			log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
 			fclose(fp);
 		}
 
 	}
-
+	log_info(logger,"Se va a pasar a cerrar el archivo %s",fp);
 	fclose(fp);
-	if (line)
+	if (line){
 		free(line);
+		log_info(logger,"Se libero la memoria de la linea actual.");
+	}
 }
