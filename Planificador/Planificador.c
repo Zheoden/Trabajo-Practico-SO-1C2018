@@ -3,31 +3,33 @@
 
 void iniciarConsola() {
 	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para manejar la consola.");
 	pthread_create(&hilo, NULL, (void *) consola, NULL);
 	pthread_detach(hilo);
 }
 
 void atenderESI(){
 	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para manejar la comunicación con el ESI.");
 	pthread_create(&hilo, NULL, (void *) crearServidorSencillo, NULL);
 	pthread_detach(hilo);
 }
 
 void iniciarPlanificacion(){
 	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para manejar la Planificación.");
 	pthread_create(&hilo, NULL, (void *) planificar, NULL);
 	pthread_detach(hilo);
 }
 
-
 void atenderCoordinador(){
 	pthread_t unHilo;
+	log_info(logger,"Se inicio un hilo para manejar la comunicacion con el Coordinador.");
 	pthread_create(&unHilo, NULL, (void *) crearCliente,NULL);
 	pthread_detach(unHilo);
 }
 
-void sigchld_handler(int s)
- {
+void sigchld_handler(int s){
      while(wait(NULL) > 0);
  }
 
@@ -40,11 +42,11 @@ void crearServidorSencillo() {
 	int yes = 1;
 
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-		perror("socket");
+		log_error(logger,"Socket: %s",strerror(errno));
 	}
 
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-		perror("setsockopt");
+		log_error(logger,"Setsockopt: %s",strerror(errno));
 	}
 
 	my_addr.sin_family = AF_INET;         // Ordenación de bytes de la máquina
@@ -52,34 +54,32 @@ void crearServidorSencillo() {
 	my_addr.sin_addr.s_addr = inet_addr(server_ip); // Rellenar con mi dirección IP
 	memset(&(my_addr.sin_zero), '\0', 8); // Poner a cero el resto de la estructura
 
-	if (bind(sockfd, (struct sockaddr *) &my_addr, sizeof(struct sockaddr))
-			== -1) {
-		perror("bind");
+	if (bind(sockfd, (struct sockaddr *) &my_addr, sizeof(struct sockaddr)) == -1) {
+		log_error(logger,"Bind: %s",strerror(errno));
 	}
-
+	log_info(logger,"El Servidor esta levantado esperando conexiones.");
 	if (listen(sockfd, 10) == -1) {
-		perror("listen");
+		log_error(logger,"Listen: %s",strerror(errno));
 	}
 
 	sa.sa_handler = sigchld_handler; // Eliminar procesos muertos
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
+
 	if (sigaction(SIGCHLD, &sa, NULL) == -1) {
-		perror("sigaction");
+		log_error(logger,"Sigaction: %s",strerror(errno));
 	}
 
 	while (true) {  // main accept() loop
 		sin_size = sizeof(struct sockaddr_in);
 		if ((socket_esi = accept(sockfd, (struct sockaddr *) &their_addr, &sin_size)) == -1) {
-			perror("accept");
+			log_error(logger,"Accept: %s",strerror(errno));
 			continue;
 		}
-//		printf("server: got connection from %s\n",inet_ntoa(their_addr.sin_addr));
+		log_info(logger,"Se recibio una conexion de: %s",inet_ntoa(their_addr.sin_addr));
 		if (!fork()) { // Este es el proceso hijo
 			close(sockfd); // El hijo no necesita este descriptor
-
-
-
+			log_info(logger,"Se cerró el socket %d.",sockfd);
 			int socket_esi = *(int*) socket;
 			Paquete paquete;
 
@@ -87,27 +87,27 @@ void crearServidorSencillo() {
 				if (paquete.header.quienEnvia == ESI) {
 					switch(paquete.header.tipoMensaje){
 						case t_HANDSHAKE:
-							printf("El proceso ESI es %s\n", (char*)paquete.mensaje);
-							fflush(stdout);
+							log_info(logger,"El proceso ESI es %s.", (char*)paquete.mensaje);
 							t_ESIPlanificador* nuevoEsi =  malloc(sizeof(t_ESIPlanificador));
 							nuevoEsi->ID = malloc(strlen(paquete.mensaje) + 1);
 							strcpy(nuevoEsi->ID, paquete.mensaje);
 							list_add(ESI_listos, nuevoEsi);
+							log_info(logger,"Se agrego al ESI: %s, a la lista de Listos.", nuevoEsi->ID);
 							break;
 					}
 				}else{
-					perror("No es ningún proceso ESI.\n");
+					log_error(logger,"No es ningún proceso ESI.");
 				}
 				if (paquete.mensaje != NULL){
 					free(paquete.mensaje);
+					log_info(logger,"Se libero la memoria del paquete.");
 				}
 			}
-
-
-
 			close(socket_esi);
+			log_info(logger,"Se cerró el socket %d.",socket_esi);
 		}
 		close(socket_esi);  // El proceso padre no lo necesita
+		log_info(logger,"Se cerró el socket %d.",socket_esi);
 	}
 
 }
@@ -115,7 +115,6 @@ void crearServidorSencillo() {
 void planificar() {
 	while (!estadoDePlanificacion) {
 		if (!strcmp(algoritmo_planificacion, "FIFO")) {
-
 			t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
 			list_add(ESI_ejecucion, esiAEjecutar);
 
@@ -129,7 +128,6 @@ void planificar() {
 	}
 }
 
-
 void crearCliente(void) {
 	Paquete paquete;
 	void* datos;
@@ -141,9 +139,12 @@ void crearCliente(void) {
 	socket_coordinador = socket(AF_INET, SOCK_STREAM, 0);
 	if (connect(socket_coordinador, (void*) &direccionServidor,
 			sizeof(direccionServidor)) != 0) {
-		perror("No se pudo conectar");
+		log_error(logger,"No se pudo conectar: %s",strerror(errno));
 	}
+
+	log_info(logger,"Se establecio conexion con el Coordinador correctamente");
 	EnviarHandshake(socket_coordinador, PLANIFICADOR);
+	log_info(logger,"Se envio un Handshake al Coordiandor");
 
 
 	while (RecibirPaqueteCliente(socket_coordinador, PLANIFICADOR, &paquete) > 0) {
@@ -163,6 +164,7 @@ void crearCliente(void) {
 				}
 				t_ESIPlanificador* esiABloquear = (t_ESIPlanificador*) list_remove_by_condition(ESI_ejecucion,(void*)buscarEsiPorID );
 				list_add(ESI_bloqueados, esiABloquear);
+				log_info(logger,"Se bloqueo correctamente el ESI: %s, y se agrego a la lista de Bloqueados.",esiABloquear->ID);
 			}
 			else {
 				//Sino, agrega la clave a claves bloqueadas
@@ -171,6 +173,7 @@ void crearCliente(void) {
 				strcpy(claveABloquear->ID, paquete.mensaje);
 				strcpy(claveABloquear->clave, paquete.mensaje+ strlen(paquete.mensaje) + 1);
 				list_add(ESI_clavesBloqueadas, claveABloquear);
+				log_info(logger,"Se bloqueo correctamente la clave: %s, y se agrego a la lista de claves Bloqueadas.",claveABloquear->clave);
 			}
 
 		}
@@ -184,6 +187,7 @@ void crearCliente(void) {
 			EnviarDatosTipo(socket_esi,PLANIFICADOR, NULL, 0, t_ABORTARESI);
 			//liberarrecursos()
 			list_add(ESI_finalizados, esiAAbortar);
+			log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
 		}
 		break;
 		}
@@ -191,6 +195,7 @@ void crearCliente(void) {
 	}
 	if (paquete.mensaje != NULL) {
 		free(paquete.mensaje);
+		log_info(logger,"Se libero la memoria del paquete.");
 	}
 }
 
@@ -200,10 +205,11 @@ void inicializar(){
 	ESI_ejecucion = list_create();
 	ESI_bloqueados = list_create();
 	ESI_finalizados = list_create();
+
+	log_info(logger,"Se inicio inicializaron las listas correctamente.");
 }
 
 void setearValores(t_config * archivoConfig) {
-
  	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
  	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
  	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
@@ -211,5 +217,8 @@ void setearValores(t_config * archivoConfig) {
  	algoritmo_planificacion = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_PLANIFICACION"));
  	estimacion_inicial = config_get_int_value(archivoConfig, "ESTIMACION_INICIAL");
  	claves_bloqueadas = config_get_array_value(archivoConfig, "CLAVES_BLOQUEADAS");
+
+ 	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
+ 	log_info(logger,"Se inicio el Planificador con el siguiente Algoritmo de Planificación: %s",algoritmo_planificacion);
 
  }
