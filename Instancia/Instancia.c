@@ -184,14 +184,17 @@ void verificarPuntoMontaje(){
 void dump(){
 
 	int i,j;
+	//Recoro las entradas para saber cuales tengo
 	for (i=0;  i< list_size(entradas_administrativas); i++) {
+		//Agarro las entradas de a 1
 		t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas, i);
 		char* directorio_actual = malloc(strlen(punto_de_montaje) + strlen(actual->clave) + 2);
 		strcpy(directorio_actual, punto_de_montaje);
 		strcpy(directorio_actual+strlen(punto_de_montaje),actual->clave);
 
+		//hago un malloc para el valor que voy a sacar de la tabla de entrada
 		char* valor=malloc(actual->tamanio);
-		int tamanioPegado=0;
+		int tamanioPegado=0; //Variable auxiliar para cuando el nodo ocupa mas de 2 entradas
 
 		for (j = actual->index; j < (actual->index + actual->entradasOcupadas);j++) {
 			if((actual->index + actual->entradasOcupadas) -1 == j){
