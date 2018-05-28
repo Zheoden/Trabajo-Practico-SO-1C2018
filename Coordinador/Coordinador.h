@@ -28,7 +28,7 @@ int retardo;
 
 
 void sigchld_handler(int s);
-int servidorConSelect(void);
+void servidorConSelect(void);
 void setearValores(t_config * archivoConfig);
 
 

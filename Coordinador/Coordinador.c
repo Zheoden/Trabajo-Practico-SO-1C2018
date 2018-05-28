@@ -1,12 +1,11 @@
 #include "Coordinador.h"
 
 
-void sigchld_handler(int s)
- {
+void sigchld_handler(int s){
      while(wait(NULL) > 0);
  }
 
-int servidorConSelect(void) {
+void servidorConSelect(void) {
 	fd_set master;   // conjunto maestro de descriptores de fichero
 	fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
 	struct sockaddr_in myaddr;     // dirección del servidor
@@ -23,14 +22,11 @@ int servidorConSelect(void) {
 	FD_ZERO(&read_fds);
 	// obtener socket a la escucha
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-		perror("socket");
-		exit(1);
+		log_error(logger,"Socket: %s",strerror(errno));
 	}
 	// obviar el mensaje "address already in use" (la dirección ya se está usando)
-	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int))
-			== -1) {
-		perror("setsockopt");
-		exit(1);
+	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+		log_error(logger,"Setsockopt: %s",strerror(errno));
 	}
 	// enlazar
 	myaddr.sin_family = AF_INET;
@@ -38,13 +34,11 @@ int servidorConSelect(void) {
 	myaddr.sin_port = htons(server_puerto);
 	memset(&(myaddr.sin_zero), '\0', 8);
 	if (bind(listener, (struct sockaddr *) &myaddr, sizeof(myaddr)) == -1) {
-		perror("bind");
-		exit(1);
+		log_error(logger,"Bind: %s",strerror(errno));
 	}
 	// escuchar
 	if (listen(listener, 10) == -1) {
-		perror("listen");
-		exit(1);
+		log_error(logger,"Listen: %s",strerror(errno));
 	}
 	printf("Estoy Escuchando en %s\n", inet_ntoa(myaddr.sin_addr));
 	log_info(logger,"Estoy escuchando en %s:",inet_ntoa(myaddr.sin_addr));
@@ -56,8 +50,7 @@ int servidorConSelect(void) {
 	for (;;) {
 		read_fds = master; // cópialo
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1) {
-			perror("select");
-			exit(1);
+			log_error(logger,"Select: %s",strerror(errno));
 		}
 		// explorar conexiones existentes en busca de datos que leer
 		for (i = 0; i <= fdmax; i++) {
@@ -67,7 +60,7 @@ int servidorConSelect(void) {
 					addrlen = sizeof(remoteaddr);
 					if ((newfd = accept(listener,
 							(struct sockaddr *) &remoteaddr, &addrlen)) == -1) {
-						perror("accept");
+						log_error(logger,"Accept: %s",strerror(errno));
 					} else {
 						FD_SET(newfd, &master); // añadir al conjunto maestro
 						if (newfd > fdmax) {    // actualizar el máximo
@@ -90,7 +83,7 @@ int servidorConSelect(void) {
 							log_info(logger,"selectserver: socket %d hung up", i);
 
 						} else {
-							perror("recv");
+							log_error(logger,"Recv: %s",strerror(errno));
 						}
 						close(i); // bye!
 						FD_CLR(i, &master); // eliminar del conjunto maestro
@@ -105,7 +98,7 @@ int servidorConSelect(void) {
 								// excepto al listener y a nosotros mismos
 								if (j != listener && j == i) {
 									if (send(j, buf, nbytes+1, 0) == -1) {
-										perror("send");
+										log_error(logger,"Send: %s",strerror(errno));
 									}
 								}
 							}
@@ -116,8 +109,6 @@ int servidorConSelect(void) {
 			}
 		}
 	}
-
-	return 0;
 }
 
 void setearValores(t_config * archivoConfig) {
@@ -128,24 +119,34 @@ void setearValores(t_config * archivoConfig) {
 	cantidad_entradas = config_get_int_value(archivoConfig, "CANTIDAD_DE_ENTRADAS");
 	tamanio_entradas = config_get_int_value(archivoConfig, "TAMAÑO_DE_ENTRADAS");
 	retardo = config_get_int_value(archivoConfig, "RETARDO");
+
+	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
+	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Distribución: %s",algoritmo_de_distribucion);
 }
 
 void inicializar(){
 	lista_ESIs = list_create();
 	todas_las_claves = list_create();
 	instancias = list_create();
+
+	log_info(logger,"Se inicio inicializaron las listas correctamente.");
 }
 
 void coordinar(void* socket) {
 	int socketActual = *(int*) socket;
+	log_info(logger,"Se va a proceder a Coordinar el socket: %d", socketActual);
 	Paquete paquete;
 	void* datos;
 	while (RecibirPaqueteServidor(socketActual, COORDINADOR,&paquete) > 0) {
 		switch (paquete.header.quienEnvia) {
 		case INSTANCIA:
+			//log_info(logger,"Llego un mensaje de una Instancia");
 			switch (paquete.header.tipoMensaje) {
 			case t_HANDSHAKE: {
-				EnviarDatosTipo(socketActual, COORDINADOR, 1, 0, t_SOLICITUDNOMBRE);
+				log_info(logger,"Se recibio un Handshake de una Instancia");
+				//Evaluar si es mejor que mande directamente el nombre en el handshake o no
+				EnviarDatosTipo(socketActual, COORDINADOR, (void*)NULL, 0, t_SOLICITUDNOMBRE);
+				log_info(logger,"Se le envio a la Instancia una solicitud de Nombre");
 				int tamanioDatosEntradas = sizeof(int) * 2;
 				void *datosEntradas = malloc(tamanioDatosEntradas);
 				*((int*) datosEntradas) = tamanio_entradas;
@@ -153,8 +154,10 @@ void coordinar(void* socket) {
 				*((int*) datosEntradas) = cantidad_entradas;
 				datosEntradas += sizeof(int);
 				datosEntradas -= tamanioDatosEntradas;
+				log_info(logger,"Se le envio a la Instancia la informacion de las entradas con la que se va a trabajar");
 				EnviarDatosTipo(socketActual, COORDINADOR, datosEntradas,tamanioDatosEntradas, t_CONFIGURACIONINSTANCIA);
 				free(datosEntradas);
+				log_info(logger,"Se libero la memoria utilizada para enviar los datos a la instancia");
 			}
 			break;
 			case t_IDENTIFICACIONINSTANCIA: {
@@ -167,6 +170,7 @@ void coordinar(void* socket) {
 				instancia->claves = list_create();
 				strcpy(instancia->nombre, nombreInstancia);
 				list_add(instancias, instancia);
+				log_info(logger,"Se agrego la Instancia: %s, a la lista de Instancias.", instancia->nombre);
 			}
 			break;
 			case t_RESPUESTASET: {
@@ -175,7 +179,9 @@ void coordinar(void* socket) {
 						return instancia->socket != socketActual;
 					}
 				}
-				list_add(((t_Instancia*) list_find(instancias,(void*) tiene_socket))->claves, (char*) paquete.mensaje);
+				t_Instancia* aux = ((t_Instancia*) list_find(instancias,(void*) tiene_socket));
+				list_add(aux->claves, (char*) paquete.mensaje);
+				log_info(logger,"Se le agrego a la Instancia: %s, la clave %s.", aux->nombre,(char*) paquete.mensaje);
 				break;
 			}
 			}
@@ -184,13 +190,18 @@ void coordinar(void* socket) {
 				switch (paquete.header.tipoMensaje) {
 				case t_HANDSHAKE: {
 					socket_ESI = socketActual;
+					log_info(logger,"Se recibio un Handshake del ESI");
+					log_info(logger,"Se guardo el sockte del ESI, con el numero: %d",socket_ESI);
 					break;
 				}
 				case t_NUEVOESI: {
 					t_listaDeESICoordinador* nuevo = malloc(sizeof(t_listaDeESICoordinador));
 					strcpy(nuevo->ID, (char*) paquete.mensaje);
+					log_info(logger,"Se recibio informacion de un nuevo ESI con el id: %s",nuevo->ID);
 					nuevo->clave = list_create();
 					list_add(lista_ESIs, nuevo);
+					log_info(logger,"Se agrego al ESI: %s, a la lista de ESIs.", nuevo->ID);
+
 				}
 				break;
 				case t_SET: {
@@ -198,6 +209,7 @@ void coordinar(void* socket) {
 					t_ESICoordinador* nuevo = malloc(sizeof(t_ESICoordinador));
 					datos = paquete.mensaje;
 					strcpy(nuevo->ID, datos);
+					log_info(logger,"Se recibio un SET del ESI: %s",nuevo->ID);
 					datos += strlen(datos) + 1;
 					strcpy(nuevo->clave, datos);
 					datos += strlen(datos) + 1;
@@ -221,12 +233,8 @@ void coordinar(void* socket) {
 							(void*) verificarExistenciaEnListaDeClaves)) {
 						if (!list_any_satisfy(instancias, (void*) verificarClave)) {
 							//clave existe en el sistema, pero la instancia esta caida
-							printf(
-									"Se intenta bloquear la clave %s pero en este momento no esta disponible",
-									nuevo->clave);
-							fflush(stdout);
-							EnviarDatosTipo(socket_planificador, COORDINADOR, nuevo->ID,
-									sizeof(int), t_ABORTARESI);
+							log_info(logger,"Se intenta bloquear la clave %s pero en este momento no esta disponible.", nuevo->clave);
+							EnviarDatosTipo(socket_planificador, COORDINADOR, nuevo->ID,sizeof(int), t_ABORTARESI);
 						} else {
 							int tam = strlen(nuevo->clave) + strlen(nuevo->valor) + 2;
 							void*sendInstancia = malloc(tam);
@@ -306,6 +314,7 @@ void coordinar(void* socket) {
 }
 
 int obtenerProximaInstancia() {
+	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo Circular.");
 	if (list_size(instancias) == 0){
 		return 0;
 	}
@@ -337,6 +346,7 @@ int obtenerProximaInstancia() {
 	aux = list_get(instancias, i);
 	aux->activo = true;
 	list_replace(instancias, i, aux);
+	log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
 	return aux->socket;
 }
 
