@@ -111,7 +111,7 @@ void parsear() {
 
 	t_esi_operacion parsed;
 
-	fp = fopen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/prueba.esi", "r");
+	fp = fopen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/script.esi", "r");
 	if (fp == NULL) {
 		log_error(logger,"Error al abrir el archivo: %s",strerror(errno));
 		//matarESI();
