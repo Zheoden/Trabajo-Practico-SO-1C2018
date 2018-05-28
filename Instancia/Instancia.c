@@ -1,5 +1,9 @@
 #include "Instancia.h"
 
+void inicializar(){
+	entradas_administrativas = list_create();
+}
+
 void crearCliente(void) {
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family = AF_INET;
@@ -96,7 +100,7 @@ void manejarEntradas() {
 			nueva->entradasOcupadas = ceilDivision(strlen(valor));
 			nueva->tamanio = strlen(valor);//nueva->tamanio = strlen(valor) + strlen(clave);
 			nueva->index = getFirstIndex(nueva->entradasOcupadas);
-			list_add(entradas_administrativa, nueva);
+			list_add(entradas_administrativas, nueva);
 			log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
 			int i;
 			char *valueAux = malloc(strlen(valor) + 1);
@@ -131,7 +135,7 @@ void manejarEntradas() {
 
 int ceilDivision(int lengthValue) {
 	double cantidadEntradas;
-	cantidadEntradas = lengthValue / tamanio_entrada;
+	cantidadEntradas = (lengthValue + tamanio_entrada -1 )/ tamanio_entrada;
 	return cantidadEntradas;
 }
 
@@ -154,4 +158,99 @@ int getFirstIndex (int entradasValue){
 		}
 	}
 	return -1;
+}
+
+void verificarPuntoMontaje(){
+
+	DIR* directorio_de_montaje = opendir(punto_de_montaje);
+	if (ENOENT == errno){
+			//el directorio no existe
+			log_info(logger,"Existe el punto de montaje, se va a proceder a crear el punto de montaje.");
+			mkdir(punto_de_montaje,0777);
+			log_info(logger,"El punto de montaje se creo exitosamente.");
+	}
+	if (directorio_de_montaje != NULL){
+	    /* Directory exists. */
+		/* El directorio existe. Hay que recorrer todos sus archivos y por cada uno de ellos
+		 *  verificar el nombre del archivo(clave) y lo que haya dentro es el value(valor)
+		 * Despues hay que añadirlo a la tabla de entradas y mandarle un mensaje a COORDINADOR con las entradas que tiene */
+	    closedir(directorio_de_montaje);
+	}else{
+		log_error(logger, "Se detectó el siguiente error al abrir el directorio: %s", strerror(errno));
+	}
+}
+
+//no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.
+void dump(){
+
+	int i,j;
+	for (i=0;  i< list_size(entradas_administrativas); i++) {
+		t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas, i);
+		char* directorio_actual = malloc(strlen(punto_de_montaje) + strlen(actual->clave) + 2);
+		strcpy(directorio_actual, punto_de_montaje);
+		strcpy(directorio_actual+strlen(punto_de_montaje),actual->clave);
+
+		char* valor=malloc(actual->tamanio);
+
+		for (j = actual->index; j < (actual->index + actual->entradasOcupadas);j++) {
+			if((actual->index + actual->entradasOcupadas) -1 == j){
+				strcpy(valor, tabla_entradas[j]);
+			}else{
+				strcpy(valor, tabla_entradas[j]);
+				valor += tamanio_entrada;
+			}
+		}
+
+		FILE* file_a_crear = fopen(directorio_actual,"w+");
+		fwrite(valor,actual->tamanio,sizeof(char),file_a_crear);
+
+		free(valor);
+		fclose(file_a_crear);
+	}
+}
+
+//funcion para probar el dump
+void cargarDatosFicticios(char* unaClave, char* unValor) {
+
+	log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
+	char*clave =malloc(strlen(unaClave) + 1);
+	strcpy(clave, unaClave);
+	char* valor = malloc(strlen(unValor) + 1);
+	strcpy(valor, unValor);
+
+	t_AlmacenamientoEntradaAdministrativa* nueva = malloc(sizeof(t_AlmacenamientoEntradaAdministrativa));
+	nueva->clave = malloc(strlen(clave) + 1);
+	strcpy(nueva->clave, clave);
+	nueva->entradasOcupadas = ceilDivision(strlen(valor));
+	nueva->tamanio = strlen(valor);//nueva->tamanio = strlen(valor) + strlen(clave);
+
+	nueva->index = getFirstIndex(nueva->entradasOcupadas);
+	list_add(entradas_administrativas, nueva);
+	log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
+	int i;
+	char *valueAux = malloc(strlen(valor) + 1);
+	strcpy(valueAux, valor);
+	for (i = nueva->index; i < (nueva->index + nueva->entradasOcupadas);i++) {
+		if ((nueva->index + nueva->entradasOcupadas) - 1 == i) {
+			strcpy(tabla_entradas[i], valueAux);
+			break;
+		}
+		strncpy(tabla_entradas[i], valueAux, tamanio_entrada);
+		valueAux += tamanio_entrada;
+	}
+	log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
+	free(clave);
+	free(valor);
+	free(valueAux);
+
+
+}
+//funcion para probar el dump
+void foo(){
+	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+1);
+	int i;
+	for (i = 0; i < cantidad_de_entradas; i++) {
+		tabla_entradas[i] = malloc(tamanio_entrada);
+		strcpy(tabla_entradas[i], "null");
+	}
 }

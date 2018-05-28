@@ -9,6 +9,7 @@
 #include <Funciones/configs.h>
 #include <Funciones/logs.h>
 #include <Funciones/serializacion.h>
+#include <dirent.h>
 
 
 char* client_ip;
@@ -22,9 +23,15 @@ int cantidad_de_entradas;
 int socket_coordinador;
 
 
-char **tabla_entradas;
-t_list *entradas_administrativa;
+char** tabla_entradas;
+t_list* entradas_administrativas;
 
+
+void dump();
+void cargarDatosFicticios(char* unaClave, char* unValor);
+void foo();
+void verificarPuntoMontaje();
+void inicializar();
 void iniciarManejoDeEntradas();
 void manejarEntradas();
 void crearCliente(void);
