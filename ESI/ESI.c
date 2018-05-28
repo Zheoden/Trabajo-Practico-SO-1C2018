@@ -101,7 +101,7 @@ void matarESI(){
 	EnviarDatosTipo(socket_planificador, ESI, NULL, 0, t_ABORTARESI);
 }
 
-void parsear(int argc, char **argv) {
+void parsear() {
 	FILE * fp;
 	char * line = NULL;
 	size_t len = 0;
@@ -111,12 +111,11 @@ void parsear(int argc, char **argv) {
 
 	t_esi_operacion parsed;
 
-	fp = fopen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/script.esi", "r");
+	fp = fopen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/prueba.esi", "r");
 	if (fp == NULL) {
 		log_error(logger,"Error al abrir el archivo: %s",strerror(errno));
-		matarESI();
+		//matarESI();
 		log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
-		log_info(logger,"Se va a pasar a cerrar el archivo %s",fp);
 		fclose(fp);
 	}
 
@@ -133,7 +132,7 @@ void parsear(int argc, char **argv) {
 				strcpy(datos, parsed.argumentos.GET.clave);
 				datos += strlen(parsed.argumentos.GET.clave) + 1;
 				datos -= tamanio;
-				EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);
+				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);
 				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando GET, para la clave %s",
 						IDEsiActual,parsed.argumentos.GET.clave);
 				break;
@@ -150,7 +149,7 @@ void parsear(int argc, char **argv) {
 				strcpy(datos, parsed.argumentos.SET.valor);
 				datos += strlen(parsed.argumentos.SET.valor) + 1;
 				datos -= tamanio;
-				EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
+				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
 				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando SET, para la clave %s y el valor %s",
 						IDEsiActual,parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
 				break;
@@ -163,29 +162,27 @@ void parsear(int argc, char **argv) {
 				strcpy(datos, parsed.argumentos.STORE.clave);
 				datos += strlen(parsed.argumentos.STORE.clave) + 1;
 				datos -= tamanio;
-				EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,
-						t_STORE);
+				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);
 
 				printf("STORE\tclave: <%s>\n", parsed.argumentos.STORE.clave);
 				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando STORE, para la clave %s",
 						IDEsiActual,parsed.argumentos.STORE.clave);
 				break;
 			default:
-				matarESI();
+				//matarESI();
 				log_info(logger,"No pude interpretar <%s>\n", line);
 				log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
 				fclose(fp);
 			}
 			destruir_operacion(parsed);
 		} else {
-			matarESI();
+			//matarESI();
 			log_info(logger,"La linea <%s> no es valida\n", line);
 			log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
 			fclose(fp);
 		}
 
 	}
-	log_info(logger,"Se va a pasar a cerrar el archivo %s",fp);
 	fclose(fp);
 	if (line){
 		free(line);

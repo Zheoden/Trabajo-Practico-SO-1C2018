@@ -24,7 +24,7 @@ char* IDEsiActual;
 
 void crearClientePlanif();
 void crearClienteCoor();
-
+void parsear();
 void atenderPlanificador();
 void atenderCoordinador();
 void crearCliente();
