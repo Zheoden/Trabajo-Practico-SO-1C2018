@@ -12,6 +12,8 @@ int crearClienteCoor() {
 //		return 1;
 	}
 
+	EnviarDatosTipo(socket_coordinador,ESI,(void*)cliente, sizeof(cliente),t_HANDSHAKE);
+
 	while(1){
 		char mensaje [1000];
 		scanf("%s", mensaje);
@@ -44,7 +46,7 @@ int crearClientePlanif() {
 		return 1;
 	}
 
-	EnviarHandshake(socket_planificador,ESI);
+	EnviarDatosTipo(socket_planificador,ESI,(void*) nuevoEsi,strlen(nuevoEsi),t_HANDSHAKE);
 
 	while(1){
 		char mensaje [1000];

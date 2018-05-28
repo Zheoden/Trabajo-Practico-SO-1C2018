@@ -20,6 +20,7 @@ int coordinador_puerto;
 int socket_planificador;
 int socket_coordinador;
 char* IDEsiActual;
+esi nuevoEsi;
 
 typedef struct{
 	char* ip;
