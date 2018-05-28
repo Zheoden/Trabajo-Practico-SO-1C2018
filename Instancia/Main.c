@@ -11,8 +11,8 @@ int main() {
 	//////////////////////////////////////////
 	//Llamado a funciones de Prueba para Dump/
 	//////////////////////////////////////////
-	tamanio_entrada = 100;
-	cantidad_de_entradas= 50;
+	tamanio_entrada = 10;
+	cantidad_de_entradas= 500;
 	verificarPuntoMontaje();
 	foo();
 	cargarDatosFicticios("ElFede","Hola Como Andas?");

@@ -191,13 +191,14 @@ void dump(){
 		strcpy(directorio_actual+strlen(punto_de_montaje),actual->clave);
 
 		char* valor=malloc(actual->tamanio);
+		int tamanioPegado=0;
 
 		for (j = actual->index; j < (actual->index + actual->entradasOcupadas);j++) {
 			if((actual->index + actual->entradasOcupadas) -1 == j){
-				strcpy(valor, tabla_entradas[j]);
+				strcpy(valor+tamanioPegado, tabla_entradas[j]);
 			}else{
-				strcpy(valor, tabla_entradas[j]);
-				valor += tamanio_entrada;
+				strcpy(valor+tamanioPegado, tabla_entradas[j]);
+				tamanioPegado+=tamanio_entrada;
 			}
 		}
 
@@ -241,7 +242,7 @@ void cargarDatosFicticios(char* unaClave, char* unValor) {
 	log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
 	free(clave);
 	free(valor);
-	free(valueAux);
+//	free(valueAux);
 
 
 }
