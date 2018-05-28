@@ -27,6 +27,7 @@ t_list *entradas_administrativa;
 
 int crearCliente(void);
 void setearValores(t_config * archivoConfig);
+bool handshakeInstanciaCoordinador();
 
 
 #endif /* INSTANCIA_H_ */

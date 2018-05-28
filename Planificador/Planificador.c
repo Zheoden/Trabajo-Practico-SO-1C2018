@@ -77,6 +77,7 @@ void crearServidorSencillo() {
 			continue;
 		}
 		log_info(logger,"Se recibio una conexion de: %s",inet_ntoa(their_addr.sin_addr));
+		EnviarHandshake(socket_esi,PLANIFICADOR);
 		if (!fork()) { // Este es el proceso hijo
 			close(sockfd); // El hijo no necesita este descriptor
 			log_info(logger,"Se cerró el socket %d.",sockfd);

@@ -42,7 +42,11 @@ void setearValores(t_config * archivoConfig) {
 	nombre_de_la_instancia = strdup(config_get_string_value(archivoConfig, "NOMBRE_DE_LA_INSTANCIA"));
 	intervalo_de_dump = config_get_int_value(archivoConfig, "INTERVALO_DE_DUMP");
  }
-
+bool handshakeInstanciaCoordinador(){
+	EnviarDatosTipo(socket_coordinador, INSTANCIA,(void*)cantidad_de_entradas, sizeof(cantidad_de_entradas),t_HANDSHAKE);
+	EnviarDatosTipo(socket_coordinador, INSTANCIA,(void*)tamanio_entrada, sizeof(tamanio_entrada),t_HANDSHAKE);
+	return true;
+}
 void manejarEntradas() {
 
 	Paquete paquete;
@@ -62,7 +66,7 @@ void manejarEntradas() {
 				strcpy(tabla_entradas[i], "null");
 			}
 
-			EnviarHandshake(socket_coordinador, INSTANCIA);
+			handshakeInstanciaCoordinador();
 		}
 			break;
 		case t_STORE: {
