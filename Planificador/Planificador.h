@@ -1,5 +1,6 @@
 #ifndef PLANIFICADOR_H_
 #define PLANIFICADOR_H_
+#include "Consola.h"
 #include <string.h>
 #include <signal.h>
 #include <netdb.h>
@@ -7,8 +8,6 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 #include <commons/config.h>
 #include <Funciones/configs.h>
 #include <Funciones/logs.h>
@@ -32,8 +31,6 @@ char* algoritmo_planificacion;
 int estimacion_inicial;
 char* claves_bloqueadas;
 
-bool estadoDePlanificacion;
-
 int socket_esi;
 int socket_coordinador;
 
@@ -41,9 +38,7 @@ void planificar();
 void crearServidorSencillo();
 void atenderESI();
 void atenderCoordinador();
-void consola();
 void iniciarConsola();
-void sigchld_handler(int s);
 void sigchld_handler(int s);
 int servidorConSelect(void);
 void crearCliente(void);

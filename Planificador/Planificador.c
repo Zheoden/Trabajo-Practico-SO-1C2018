@@ -18,6 +18,7 @@ void atenderESI(){
 void iniciarPlanificacion(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para manejar la Planificación.");
+	planificacion_activa = true;
 	pthread_create(&hilo, NULL, (void *) planificar, NULL);
 	pthread_detach(hilo);
 }
@@ -114,7 +115,7 @@ void crearServidorSencillo() {
 }
 
 void planificar() {
-	while (!estadoDePlanificacion) {
+	while (planificacion_activa) {
 		if (!strcmp(algoritmo_planificacion, "FIFO")) {
 			t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
 			list_add(ESI_ejecucion, esiAEjecutar);

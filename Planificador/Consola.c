@@ -1,4 +1,4 @@
-#include "Planificador.h"
+#include "Consola.h"
 
 void consola(){
   char * linea;
@@ -92,4 +92,9 @@ void consola(){
     }
     free(linea);
   }
+}
+
+
+void pausarOContinuar(){
+	planificacion_activa = !planificacion_activa;
 }
