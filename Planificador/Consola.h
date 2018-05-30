@@ -12,7 +12,7 @@ void pausarOContinuar();
 void bloquear();
 void desbloquear();
 void listar();
-void kill();
+void killProceso();
 void status();
 void deadlock();
 

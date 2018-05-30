@@ -82,7 +82,6 @@ void crearServidorSencillo() {
 		if (!fork()) { // Este es el proceso hijo
 			close(sockfd); // El hijo no necesita este descriptor
 			log_info(logger,"Se cerró el socket %d.",sockfd);
-			int socket_esi = *(int*) socket;
 			Paquete paquete;
 
 			while (RecibirPaqueteServidor(socket_esi, PLANIFICADOR, &paquete) > 0) {

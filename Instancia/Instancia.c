@@ -72,7 +72,7 @@ void manejarEntradas() {
 			datos += sizeof(int);
 			cantidad_de_entradas = *((int*) datos);
 			datos += sizeof(int);
-			tabla_entradas = malloc(cantidad_de_entradas * sizeof(char*));
+			tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+1);
 			int i;
 			for (i = 0; i < cantidad_de_entradas; i++) {
 				tabla_entradas[i] = malloc(tamanio_entrada);
