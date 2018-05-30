@@ -48,5 +48,7 @@ void sigchld_handler(int s);
 int servidorConSelect(void);
 void crearCliente(void);
 void setearValores(t_config * archivoConfig);
+void iniciarPlanificacion();
+void inicializar();
 
 #endif /* PLANIFICADOR_H_ */

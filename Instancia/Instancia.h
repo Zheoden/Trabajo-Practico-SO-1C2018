@@ -37,6 +37,9 @@ void manejarEntradas();
 void crearCliente(void);
 void setearValores(t_config * archivoConfig);
 bool handshakeInstanciaCoordinador();
+int ceilDivision(int lengthValue);
+int getFirstIndex (int entradasValue);
+
 
 
 #endif /* INSTANCIA_H_ */

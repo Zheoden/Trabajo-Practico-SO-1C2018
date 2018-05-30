@@ -30,6 +30,10 @@ int retardo;
 void sigchld_handler(int s);
 void servidorConSelect(void);
 void setearValores(t_config * archivoConfig);
+void inicializar();
+void coordinar(void* socket);
+int obtenerProximaInstancia();
+void sacar_instancia(int socket);
 
 
 #endif /* COORDINADOR_H_ */

@@ -30,6 +30,7 @@ void atenderCoordinador();
 void crearCliente();
 void setearValores(t_config * archivoConfig);
 int cantidadDeApariciones(char * cadena, char separador);
+void matarESI();
 
 #endif /* CLIENTE_H_ */
 
