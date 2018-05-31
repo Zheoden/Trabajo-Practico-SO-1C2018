@@ -22,6 +22,7 @@ int main() {
 	cargarDatosFicticios("ElYoff","Veamos que tan bien funciona esto");
 	cargarDatosFicticios("Comodin","Comodin Comodin?");
 	dump();
+	for(;;);
 	//////////////////////////////////////////
 	//            Fin de Pruebas            //
 	//////////////////////////////////////////

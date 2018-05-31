@@ -182,34 +182,36 @@ void verificarPuntoMontaje(){
 
 //no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.
 void dump(){
+	while(1){
+		usleep(20000000);//20 segundos
+		int i,j;
+		//Recoro las entradas para saber cuales tengo
+		for (i=0;  i< list_size(entradas_administrativas); i++) {
+			//Agarro las entradas de a 1
+			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas, i);
+			char* directorio_actual = malloc(strlen(punto_de_montaje) + strlen(actual->clave) + 2);
+			strcpy(directorio_actual, punto_de_montaje);
+			strcpy(directorio_actual+strlen(punto_de_montaje),actual->clave);
 
-	int i,j;
-	//Recoro las entradas para saber cuales tengo
-	for (i=0;  i< list_size(entradas_administrativas); i++) {
-		//Agarro las entradas de a 1
-		t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas, i);
-		char* directorio_actual = malloc(strlen(punto_de_montaje) + strlen(actual->clave) + 2);
-		strcpy(directorio_actual, punto_de_montaje);
-		strcpy(directorio_actual+strlen(punto_de_montaje),actual->clave);
+			//hago un malloc para el valor que voy a sacar de la tabla de entrada
+			char* valor=malloc(actual->tamanio);
+			int tamanioPegado=0; //Variable auxiliar para cuando el nodo ocupa mas de 2 entradas
 
-		//hago un malloc para el valor que voy a sacar de la tabla de entrada
-		char* valor=malloc(actual->tamanio);
-		int tamanioPegado=0; //Variable auxiliar para cuando el nodo ocupa mas de 2 entradas
-
-		for (j = actual->index; j < (actual->index + actual->entradasOcupadas);j++) {
-			if((actual->index + actual->entradasOcupadas) -1 == j){
-				strcpy(valor+tamanioPegado, tabla_entradas[j]);
-			}else{
-				strcpy(valor+tamanioPegado, tabla_entradas[j]);
-				tamanioPegado+=tamanio_entrada;
+			for (j = actual->index; j < (actual->index + actual->entradasOcupadas);j++) {
+				if((actual->index + actual->entradasOcupadas) -1 == j){
+					strcpy(valor+tamanioPegado, tabla_entradas[j]);
+				}else{
+					strcpy(valor+tamanioPegado, tabla_entradas[j]);
+					tamanioPegado+=tamanio_entrada;
+				}
 			}
+
+			FILE* file_a_crear = fopen(directorio_actual,"w+");
+			fwrite(valor,actual->tamanio,sizeof(char),file_a_crear);
+
+			free(valor);
+			fclose(file_a_crear);
 		}
-
-		FILE* file_a_crear = fopen(directorio_actual,"w+");
-		fwrite(valor,actual->tamanio,sizeof(char),file_a_crear);
-
-		free(valor);
-		fclose(file_a_crear);
 	}
 }
 
