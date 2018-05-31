@@ -25,7 +25,7 @@ char* IDEsiActual;
 
 const char* get_filename_extension(const char* filename);
 char* getNextFile();
-void incrementarID(char* ID);
+char* incrementarID(char* ID);
 void crearClientePlanif();
 void crearClienteCoor();
 void parsear();

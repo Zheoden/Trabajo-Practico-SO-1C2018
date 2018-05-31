@@ -98,8 +98,8 @@ void parsear() {
 	void* datos;
 	int tamanio;
 
-	IDEsiActual = malloc (strlen("test")+1);
-	strcpy(IDEsiActual, "test");
+	IDEsiActual = malloc (strlen("000")+1);
+	strcpy(IDEsiActual, "000");
 
 	t_esi_operacion parsed;
 	char* file = getNextFile();
@@ -188,10 +188,42 @@ void parsear() {
 	free(file);
 }
 
-void incrementarID(char* ID){
+char * incrementarID(char *ID){
+	int i, begin, tail, len;
+	int neg = (*ID == '-');
+	char tgt = neg ? '0' : '9';
 
+	/* special case: "-1" */
+	if (!strcmp(ID, "-1")) {
+		ID[0] = '0', ID[1] = '\0';
+		return ID;
+	}
 
+	len = strlen(ID);
+	begin = (*ID == '-' || *ID == '+') ? 1 : 0;
+
+	/* find out how many digits need to be changed */
+	for (tail = len - 1; tail >= begin && ID[tail] == tgt; tail--);
+
+	if (tail < begin && !neg) {
+		/* special case: all 9s, string will grow */
+		if (!begin) ID = realloc(ID, len + 2);
+		ID[0] = '1';
+		for (i = 1; i <= len - begin; i++) ID[i] = '0';
+		ID[len + 1] = '\0';
+	} else if (tail == begin && neg && ID[1] == '1') {
+		/* special case: -1000..., so string will shrink */
+		for (i = 1; i < len - begin; i++) ID[i] = '9';
+		ID[len - 1] = '\0';
+	} else { /* normal case; change tail to all 0 or 9, change prev digit by 1*/
+		for (i = len - 1; i > tail; i--)
+			ID[i] = neg ? '9' : '0';
+		ID[tail] += neg ? -1 : 1;
+	}
+
+	return ID;
 }
+
 char* getNextFile(){
 
 	char* ruta = malloc(strlen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/")+1);
