@@ -161,7 +161,6 @@ void parsear() {
 				datos -= tamanio;
 				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);*/
 
-				printf("STORE\tclave: <%s>\n", parsed.argumentos.STORE.clave);
 				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando STORE, para la clave %s",
 						IDEsiActual,parsed.argumentos.STORE.clave);
 				break;
