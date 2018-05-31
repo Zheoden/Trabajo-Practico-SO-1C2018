@@ -188,7 +188,7 @@ void parsear() {
 	free(file);
 }
 
-char * incrementarID(char *ID){
+char* incrementarID(char *ID){
 	int i, begin, tail, len;
 	int neg = (*ID == '-');
 	char tgt = neg ? '0' : '9';
