@@ -11,7 +11,5 @@ int main(int argc, char ** argv) {
 	//atenderPlanificador();
 	parsear();
 
-	for(;;);
-
 	return EXIT_SUCCESS;
 }

@@ -185,6 +185,8 @@ void parsear() {
 		free(line);
 		log_info(logger,"Se libero la memoria de la linea actual.");
 	}
+	free(ruta);
+	free(file);
 }
 
 void incrementarID(char* ID){
