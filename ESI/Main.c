@@ -10,6 +10,8 @@ int main(int argc, char ** argv) {
 	//atenderCoordinador();
 	//atenderPlanificador();
 	parsear();
+
 	for(;;);
+
 	return EXIT_SUCCESS;
 }

@@ -86,17 +86,6 @@ void setearValores(t_config * archivoConfig) {
  	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
  }
 
-int cantidadDeApariciones(char * cadena, char separador){
-	int i;
-	int cont = 0;
-	for(i=0;i < strlen(cadena);i++){
-		if (cadena[i] == separador){
-			cont++;
-		}
-	}
-	return cont;
-}
-
 void matarESI(){
 	EnviarDatosTipo(socket_planificador, ESI, NULL, 0, t_ABORTARESI);
 }
@@ -109,15 +98,23 @@ void parsear() {
 	void* datos;
 	int tamanio;
 
-	t_esi_operacion parsed;
+	IDEsiActual = malloc (strlen("test")+1);
+	strcpy(IDEsiActual, "test");
 
-	fp = fopen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/script.esi", "r");
-	if (fp == NULL) {
+	t_esi_operacion parsed;
+	char* file = getNextFile();
+	char* ruta = malloc(strlen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/") + strlen(file) + 1);
+	strcpy(ruta,"/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/");
+	strcpy(ruta+strlen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/"),file);
+
+
+    fp = fopen(ruta, "r");
+    if (fp == NULL){
 		log_error(logger,"Error al abrir el archivo: %s",strerror(errno));
 		//matarESI();
 		log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
 		fclose(fp);
-	}
+    }
 
 	while ((read = getline(&line, &len, fp)) != -1) {
 		parsed = parse(line);
@@ -132,7 +129,7 @@ void parsear() {
 				strcpy(datos, parsed.argumentos.GET.clave);
 				datos += strlen(parsed.argumentos.GET.clave) + 1;
 				datos -= tamanio;
-				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);
+				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);*/
 				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando GET, para la clave %s",
 						IDEsiActual,parsed.argumentos.GET.clave);
 				break;
@@ -149,7 +146,7 @@ void parsear() {
 				strcpy(datos, parsed.argumentos.SET.valor);
 				datos += strlen(parsed.argumentos.SET.valor) + 1;
 				datos -= tamanio;
-				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
+				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);*/
 				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando SET, para la clave %s y el valor %s",
 						IDEsiActual,parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
 				break;
@@ -162,7 +159,7 @@ void parsear() {
 				strcpy(datos, parsed.argumentos.STORE.clave);
 				datos += strlen(parsed.argumentos.STORE.clave) + 1;
 				datos -= tamanio;
-				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);
+				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);*/
 
 				printf("STORE\tclave: <%s>\n", parsed.argumentos.STORE.clave);
 				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando STORE, para la clave %s",
@@ -188,4 +185,57 @@ void parsear() {
 		free(line);
 		log_info(logger,"Se libero la memoria de la linea actual.");
 	}
+}
+
+void incrementarID(char* ID){
+
+
+}
+char* getNextFile(){
+
+	char* ruta = malloc(strlen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/")+1);
+	strcpy(ruta,"/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/");
+	DIR* directorio = opendir("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/");
+
+	if (directorio != NULL){
+
+		struct dirent *ent;
+		while( (ent = readdir(directorio)) != NULL ){
+			if( (strncmp(ent->d_name, ".", 1)) && (strncmp(get_filename_extension(ent->d_name), "bak", 3)) ){
+				char* nuevo_nombre = malloc(strlen(ent->d_name)+strlen(".bak")+1);
+				strcpy(nuevo_nombre, ent->d_name);
+				strcpy(nuevo_nombre+strlen(ent->d_name),".bak");
+
+				char* directorio_nuevo = malloc(strlen(ruta) + strlen(nuevo_nombre) + 2);
+				strcpy(directorio_nuevo, ruta);
+				strcpy(directorio_nuevo+strlen(ruta),nuevo_nombre);
+
+				char* directorio_viejo = malloc(strlen(ruta) + strlen(ent->d_name) + 2);
+				strcpy(directorio_viejo, ruta);
+				strcpy(directorio_viejo+strlen(ruta),ent->d_name);
+
+				rename(directorio_viejo,directorio_nuevo);
+
+				printf("%s\n", nuevo_nombre);
+
+				closedir(directorio);
+				free(directorio_viejo);
+				free(directorio_nuevo);
+				free(ruta);
+
+				return nuevo_nombre;
+			}
+
+		}
+	    closedir(directorio);
+	}else{
+		log_error(logger, "Se detectó el siguiente error al abrir el directorio: %s", strerror(errno));
+	}
+	return "";
+}
+
+const char* get_filename_extension(const char* filename){
+	const char *dot = strrchr(filename,'.');
+	if(!dot || dot == filename) return "";
+	return dot +1;
 }

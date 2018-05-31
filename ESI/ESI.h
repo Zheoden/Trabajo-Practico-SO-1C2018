@@ -12,6 +12,7 @@
 #include <Funciones/logs.h>
 #include <Funciones/configs.h>
 #include <Funciones/serializacion.h>
+#include <dirent.h>
 
 char* planificador_ip;
 int planificador_puerto;
@@ -22,13 +23,15 @@ int socket_coordinador;
 char* IDEsiActual;
 
 
+const char* get_filename_extension(const char* filename);
+char* getNextFile();
+void incrementarID(char* ID);
 void crearClientePlanif();
 void crearClienteCoor();
 void parsear();
 void atenderPlanificador();
 void atenderCoordinador();
 void setearValores(t_config * archivoConfig);
-int cantidadDeApariciones(char * cadena, char separador);
 void matarESI();
 
 #endif /* CLIENTE_H_ */
