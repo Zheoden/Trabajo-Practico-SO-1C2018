@@ -165,7 +165,7 @@ void verificarPuntoMontaje(){
 	DIR* directorio_de_montaje = opendir(punto_de_montaje);
 	if (ENOENT == errno){
 			//el directorio no existe
-			log_info(logger,"Existe el punto de montaje, se va a proceder a crear el punto de montaje.");
+			log_info(logger,"No existe el punto de montaje, se va a proceder a crearlo.");
 			mkdir(punto_de_montaje,0777);
 			log_info(logger,"El punto de montaje se creo exitosamente.");
 	}
@@ -174,12 +174,18 @@ void verificarPuntoMontaje(){
 		/* El directorio existe. Hay que recorrer todos sus archivos y por cada uno de ellos
 		 *  verificar el nombre del archivo(clave) y lo que haya dentro es el value(valor)
 		 * Despues hay que añadirlo a la tabla de entradas y mandarle un mensaje a COORDINADOR con las entradas que tiene */
+		struct dirent *ent;
+		while( (ent = readdir(directorio_de_montaje)) != NULL ){
+			if( (strncmp(ent->d_name, ".", 1)) ){
+				printf("%s\n", ent->d_name);
+			}
+		}
+
 	    closedir(directorio_de_montaje);
 	}else{
 		log_error(logger, "Se detectó el siguiente error al abrir el directorio: %s", strerror(errno));
 	}
 }
-
 //no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.
 void dump(){
 	while(1){
@@ -214,7 +220,6 @@ void dump(){
 		}
 	}
 }
-
 //funcion para probar el dump
 void cargarDatosFicticios(char* unaClave, char* unValor) {
 
