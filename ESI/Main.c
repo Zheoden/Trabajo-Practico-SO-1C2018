@@ -9,10 +9,7 @@ int main(int argc, char ** argv) {
 	leerConfig(instancia_config_ruta,logger);
 	//atenderCoordinador();
 	//atenderPlanificador();
-	//parsear();
-	char* a=malloc(3);
-	strcpy(a,"001");
-	printf("%s\n",incrementarID(a));
+	parsear();
 
 	return EXIT_SUCCESS;
 }

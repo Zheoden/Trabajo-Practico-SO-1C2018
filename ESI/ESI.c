@@ -98,94 +98,123 @@ void parsear() {
 	void* datos;
 	int tamanio;
 
-	IDEsiActual = malloc (strlen("000")+1);
+	IDEsiActual = malloc(strlen("000") + 1);
 	strcpy(IDEsiActual, "000");
 
 	t_esi_operacion parsed;
-	char* file = getNextFile();
-	char* ruta = malloc(strlen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/") + strlen(file) + 1);
-	strcpy(ruta,"/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/");
-	strcpy(ruta+strlen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/"),file);
 
+	while (1) {
 
-    fp = fopen(ruta, "r");
-    if (fp == NULL){
-		log_error(logger,"Error al abrir el archivo: %s",strerror(errno));
-		//matarESI();
-		log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
-		fclose(fp);
-    }
+		usleep(5 * 1000000); //1 segundo
+		char* file = getNextFile();
+		if ((strncmp(file, "" "", 2))) {
 
-	while ((read = getline(&line, &len, fp)) != -1) {
-		parsed = parse(line);
-		if (parsed.valido) {
-			switch (parsed.keyword) {
-			case GET:
-				tamanio = strlen(IDEsiActual)
-						+ strlen(parsed.argumentos.GET.clave) + 2;
-				datos = malloc(tamanio);
-				strcpy(datos, IDEsiActual);
-				datos += strlen(IDEsiActual) + 1;
-				strcpy(datos, parsed.argumentos.GET.clave);
-				datos += strlen(parsed.argumentos.GET.clave) + 1;
-				datos -= tamanio;
-				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);*/
-				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando GET, para la clave %s",
-						IDEsiActual,parsed.argumentos.GET.clave);
-				break;
-			case SET:
+			IDEsiActual = incrementarID(IDEsiActual);
 
-				tamanio = strlen(IDEsiActual)
-						+ strlen(parsed.argumentos.SET.clave)
-						+ strlen(parsed.argumentos.SET.valor) + 3;
-				datos = malloc(tamanio);
-				strcpy(datos, IDEsiActual);
-				datos += strlen(IDEsiActual) + 1;
-				strcpy(datos, parsed.argumentos.SET.clave);
-				datos += strlen(parsed.argumentos.SET.clave) + 1;
-				strcpy(datos, parsed.argumentos.SET.valor);
-				datos += strlen(parsed.argumentos.SET.valor) + 1;
-				datos -= tamanio;
-				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);*/
-				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando SET, para la clave %s y el valor %s",
-						IDEsiActual,parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
-				break;
-			case STORE:
-				tamanio = strlen(IDEsiActual)
-						+ strlen(parsed.argumentos.STORE.clave) + 2;
-				datos = malloc(tamanio);
-				strcpy(datos, IDEsiActual);
-				datos += strlen(IDEsiActual) + 1;
-				strcpy(datos, parsed.argumentos.STORE.clave);
-				datos += strlen(parsed.argumentos.STORE.clave) + 1;
-				datos -= tamanio;
-				//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);*/
+			char* ruta =
+					malloc(
+							strlen(
+									"/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/")
+									+ strlen(file) + 1);
+			strcpy(ruta, "/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/");
+			strcpy(
+					ruta
+							+ strlen(
+									"/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/"),
+					file);
 
-				log_info(logger,"Para el ESI con el id: %s, se ejecuto el comando STORE, para la clave %s",
-						IDEsiActual,parsed.argumentos.STORE.clave);
-				break;
-			default:
+			fp = fopen(ruta, "r");
+			if (fp == NULL) {
+				log_error(logger, "Error al abrir el archivo: %s",
+						strerror(errno));
 				//matarESI();
-				log_info(logger,"No pude interpretar <%s>\n", line);
-				log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
+				log_info(logger,
+						"Se le envio al planificador la orden de matar al ESI.");
 				fclose(fp);
+			} else {
+				log_info(logger,
+						"Cargo correctamente el nuevo archivo. Se va a proceder a procesarlo.");
 			}
-			destruir_operacion(parsed);
-		} else {
-			//matarESI();
-			log_info(logger,"La linea <%s> no es valida\n", line);
-			log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
-			fclose(fp);
-		}
 
+			while ((read = getline(&line, &len, fp)) != -1) {
+				parsed = parse(line);
+				if (parsed.valido) {
+					switch (parsed.keyword) {
+					case GET:
+						tamanio = strlen(IDEsiActual)
+								+ strlen(parsed.argumentos.GET.clave) + 2;
+						datos = malloc(tamanio);
+						strcpy(datos, IDEsiActual);
+						datos += strlen(IDEsiActual) + 1;
+						strcpy(datos, parsed.argumentos.GET.clave);
+						datos += strlen(parsed.argumentos.GET.clave) + 1;
+						datos -= tamanio;
+						//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);*/
+						log_info(logger,
+								"Para el ESI con el id: %s, se ejecuto el comando GET, para la clave %s",
+								//	"00","clave");
+								IDEsiActual, parsed.argumentos.GET.clave);
+						break;
+					case SET:
+
+						tamanio = strlen(IDEsiActual)
+								+ strlen(parsed.argumentos.SET.clave)
+								+ strlen(parsed.argumentos.SET.valor) + 3;
+						datos = malloc(tamanio);
+						strcpy(datos, IDEsiActual);
+						datos += strlen(IDEsiActual) + 1;
+						strcpy(datos, parsed.argumentos.SET.clave);
+						datos += strlen(parsed.argumentos.SET.clave) + 1;
+						strcpy(datos, parsed.argumentos.SET.valor);
+						datos += strlen(parsed.argumentos.SET.valor) + 1;
+						datos -= tamanio;
+						//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);*/
+						log_info(logger,
+								"Para el ESI con el id: %s, se ejecuto el comando SET, para la clave %s y el valor %s",
+								IDEsiActual, parsed.argumentos.SET.clave,
+								parsed.argumentos.SET.valor);
+						break;
+					case STORE:
+						tamanio = strlen(IDEsiActual)
+								+ strlen(parsed.argumentos.STORE.clave) + 2;
+						datos = malloc(tamanio);
+						strcpy(datos, IDEsiActual);
+						datos += strlen(IDEsiActual) + 1;
+						strcpy(datos, parsed.argumentos.STORE.clave);
+						datos += strlen(parsed.argumentos.STORE.clave) + 1;
+						datos -= tamanio;
+						//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);*/
+						log_info(logger,
+								"Para el ESI con el id: %s, se ejecuto el comando STORE, para la clave %s",
+								IDEsiActual, parsed.argumentos.STORE.clave);
+						break;
+					default:
+						//matarESI();
+						log_info(logger, "No pude interpretar <%s>\n", line);
+						log_info(logger,
+								"Se le envio al planificador la orden de matar al ESI.");
+						fclose(fp);
+					}
+					destruir_operacion(parsed);
+				} else {
+					//matarESI();
+					log_info(logger, "La linea <%s> no es valida\n", line);
+					log_info(logger,
+							"Se le envio al planificador la orden de matar al ESI.");
+					fclose(fp);
+				}
+			}
+			fclose(fp);
+			free(file);
+			free(datos);
+			free(ruta);
+		}
 	}
-	fclose(fp);
-	if (line){
+
+	if (line) {
 		free(line);
-		log_info(logger,"Se libero la memoria de la linea actual.");
+		log_info(logger, "Se libero la memoria de la linea actual.");
 	}
-	free(ruta);
-	free(file);
 }
 
 char* incrementarID(char *ID){

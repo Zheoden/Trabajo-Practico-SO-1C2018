@@ -1,0 +1,3 @@
+GET jugador2
+    SET jugador messi2
+    STORE jugador2
