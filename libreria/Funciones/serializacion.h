@@ -22,7 +22,8 @@ typedef enum t_protocolo {
 	t_IDENTIFICACIONINSTANCIA,
 	t_RESPUESTASET,
 	t_NUEVOESI,
-	t_ABORTARESI
+	t_ABORTARESI,
+	t_SIGUIENTELINEA
 } t_protocolo;
 
 //////////////////////////////////////////
@@ -77,7 +78,7 @@ typedef struct {
 typedef struct {
 	char* ID;
 	t_list* clave;
-}__attribute__((packed)) t_listaDeESICoordinador;
+}__attribute__((packed)) t_ESI;
 
 typedef struct {
 	int socket;

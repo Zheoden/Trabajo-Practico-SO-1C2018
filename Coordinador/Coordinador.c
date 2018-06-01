@@ -195,7 +195,7 @@ void coordinar(void* socket) {
 					break;
 				}
 				case t_NUEVOESI: {
-					t_listaDeESICoordinador* nuevo = malloc(sizeof(t_listaDeESICoordinador));
+					t_ESI* nuevo = malloc(sizeof(t_ESI));
 					strcpy(nuevo->ID, (char*) paquete.mensaje);
 					log_info(logger,"Se recibio informacion de un nuevo ESI con el id: %s",nuevo->ID);
 					nuevo->clave = list_create();
