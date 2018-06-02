@@ -123,7 +123,7 @@ void parsear() {
 	while(1){
 		//char * IDAux = malloc(paquete.header.tamanioMensaje);
 		//strcpy(IDAux,paquete.mensaje);
-		usleep(0.5 * 1000000); //5 segundos
+		usleep(0.5 * 1000000); //.5 segundos
 		Esi* aux = nextEsi(IDAux);
 		if(aux != NULL){
 			char* ruta = malloc(strlen("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/") + strlen(aux->file) + 1);
@@ -231,6 +231,10 @@ void parsear() {
 			}
 			break;
 			case t_ABORTARESI:{ // Mata el ESI Actual
+				char * IDAux = malloc(paquete.header.tamanioMensaje);
+				strcpy(IDAux,paquete.mensaje);
+				Esi* aux = nextEsi(IDAux);
+				free(aux);
 
 			}
 			break;
