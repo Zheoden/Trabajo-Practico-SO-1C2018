@@ -56,8 +56,8 @@ bool handshakeInstanciaCoordinador(){
 void iniciarManejoDeEntradas(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
-//	pthread_create(&hilo, NULL, (void *) manejarEntradas, NULL);
-//	pthread_detach(hilo);
+	pthread_create(&hilo, NULL, (void *) manejarEntradas, NULL);
+	pthread_detach(hilo);
 }
 
 void manejarEntradas() {
@@ -71,13 +71,9 @@ void manejarEntradas() {
 			tamanio_entrada = *((int*) datos);
 			datos += sizeof(int);
 			cantidad_de_entradas = *((int*) datos);
-			datos += sizeof(int);
-			tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+1);
-			int i;
-			for (i = 0; i < cantidad_de_entradas; i++) {
-				tabla_entradas[i] = malloc(tamanio_entrada);
-				strcpy(tabla_entradas[i], "null");
-			}
+
+			inicializarTabla();
+
 			handshakeInstanciaCoordinador();
 			log_info(logger,"Se envio un Handshake al Coordiandor");
 		}
@@ -206,10 +202,18 @@ void verificarPuntoMontaje(){
 		log_error(logger, "Se detectó el siguiente error al abrir el directorio: %s", strerror(errno));
 	}
 }
+
+void iniciarDump(){
+	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
+	pthread_create(&hilo, NULL, (void *) dump, NULL);
+	pthread_detach(hilo);
+}
 //no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.
 void dump(){
 	while(1){
 		usleep(intervalo_de_dump * 1000000); //intervalo_de_dump segundos :D!
+		imprimirTabla();
 		int i,j;
 		//Recoro las entradas para saber cuales tengo
 		for (i=0;  i< list_size(entradas_administrativas); i++) {
@@ -238,6 +242,7 @@ void dump(){
 			free(valor);
 			fclose(file_a_crear);
 		}
+		printf("%s\n",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	}
 }
 //funcion para probar el dump

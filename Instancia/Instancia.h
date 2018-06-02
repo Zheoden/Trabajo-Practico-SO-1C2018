@@ -27,6 +27,7 @@ char** tabla_entradas;
 t_list* entradas_administrativas;
 
 
+void iniciarDump();
 void imprimirTabla();
 void dump();
 void cargarDatos(char* unaClave, char* unValor);

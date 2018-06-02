@@ -41,7 +41,16 @@ int main() {
 	cantidad_de_entradas= 500;
 	inicializarTabla();
 	verificarPuntoMontaje();
-	imprimirTabla();
+	iniciarDump();
+	usleep(intervalo_de_dump * 2 * 1000000); //intervalo_de_dump segundos
+	cargarDatos("ElRicky","Ricky And Morty 4ever Ricky And Morty 4ever Ricky And Morty 4ever Ricky And Morty 4ever");
+	cargarDatos("ElMorty","Soy un Morty? Soy un Morty? Soy un Morty? Soy un Morty? Soy un Morty?");
+	cargarDatos("ElFede","Hola Como Andas?");
+	cargarDatos("ElSuperIvo","Todo Bien, y vos?");
+	cargarDatos("LaCaro","Io khe ze, no soi 100tifiko");
+	cargarDatos("LaMikis","Holiiiiiiisssss");
+	cargarDatos("ElYoff","Veamos que tan bien funciona esto");
+	cargarDatos("Comodin","Comodin Comodin?");
 	//////////////////////////////////////////
 	//            Fin de Pruebas            //
 	//////////////////////////////////////////
