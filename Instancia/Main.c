@@ -11,22 +11,41 @@ int main() {
 	//////////////////////////////////////////
 	//Llamado a funciones de Prueba para Dump/
 	//////////////////////////////////////////
+
+	/*
 	tamanio_entrada = 10;
 	cantidad_de_entradas= 500;
-	verificarPuntoMontaje();
 	inicializarTabla();
-	cargarDatosFicticios("ElFede","Hola Como Andas?");
-	cargarDatosFicticios("ElSuperIvo","Todo Bien, y vos?");
-	cargarDatosFicticios("LaCaro","Io khe ze, no soi 100tifiko");
-	cargarDatosFicticios("LaMikis","Holiiiiiiisssss");
-	cargarDatosFicticios("ElYoff","Veamos que tan bien funciona esto");
-	cargarDatosFicticios("Comodin","Comodin Comodin?");
+	verificarPuntoMontaje();
+	cargarDatos("ElFede","Hola Como Andas?");
+	cargarDatos("ElSuperIvo","Todo Bien, y vos?");
+	cargarDatos("LaCaro","Io khe ze, no soi 100tifiko");
+	cargarDatos("LaMikis","Holiiiiiiisssss");
+	cargarDatos("ElYoff","Veamos que tan bien funciona esto");
+	cargarDatos("Comodin","Comodin Comodin?");
 	dump();
-	for(;;);
+	*/
+
 	//////////////////////////////////////////
 	//            Fin de Pruebas            //
 	//////////////////////////////////////////
 
 
+
+
+
+	/////////////////////////////////////////////
+	//Llamado a funciones de Prueba para De-Dump/
+	/////////////////////////////////////////////
+	tamanio_entrada = 10;
+	cantidad_de_entradas= 500;
+	inicializarTabla();
+	verificarPuntoMontaje();
+	imprimirTabla();
+	//////////////////////////////////////////
+	//            Fin de Pruebas            //
+	//////////////////////////////////////////
+
+	for(;;);
 	return EXIT_SUCCESS;
 }

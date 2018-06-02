@@ -164,24 +164,44 @@ void verificarPuntoMontaje(){
 
 	DIR* directorio_de_montaje = opendir(punto_de_montaje);
 	if (ENOENT == errno){
-			//el directorio no existe
-			log_info(logger,"No existe el punto de montaje, se va a proceder a crearlo.");
-			mkdir(punto_de_montaje,0777);
-			log_info(logger,"El punto de montaje se creo exitosamente.");
+		//el directorio no existe
+		log_info(logger,"No existe el punto de montaje, se va a proceder a crearlo.");
+		mkdir(punto_de_montaje,0777);
+		log_info(logger,"El punto de montaje se creo exitosamente.");
 	}
 	if (directorio_de_montaje != NULL){
-	    /* Directory exists. */
+		/* Directory exists. */
 		/* El directorio existe. Hay que recorrer todos sus archivos y por cada uno de ellos
 		 *  verificar el nombre del archivo(clave) y lo que haya dentro es el value(valor)
 		 * Despues hay que añadirlo a la tabla de entradas y mandarle un mensaje a COORDINADOR con las entradas que tiene */
 		struct dirent *ent;
 		while( (ent = readdir(directorio_de_montaje)) != NULL ){
 			if( (strncmp(ent->d_name, ".", 1)) ){
-				printf("%s\n", ent->d_name);
+				FILE * fp;
+				char * line = NULL;
+				size_t len = 0;
+				ssize_t read;
+
+				char* ruta = malloc(strlen(punto_de_montaje) + strlen(ent->d_name) + 1);
+				strcpy(ruta, punto_de_montaje);
+				strcpy(ruta + strlen(punto_de_montaje),ent->d_name);
+
+				fp = fopen(ruta, "r");
+				if (fp == NULL) {
+					log_error(logger, "Error al abrir el archivo: %s",strerror(errno));
+					log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
+					fclose(fp);
+				}else{
+					while ((read = getline(&line, &len, fp)) != EOF) {
+						cargarDatos(ent->d_name,line);
+					}
+					free(ruta);
+					free(line);
+					fclose(fp);
+				}
 			}
 		}
-
-	    closedir(directorio_de_montaje);
+		closedir(directorio_de_montaje);
 	}else{
 		log_error(logger, "Se detectó el siguiente error al abrir el directorio: %s", strerror(errno));
 	}
@@ -221,9 +241,8 @@ void dump(){
 	}
 }
 //funcion para probar el dump
-void cargarDatosFicticios(char* unaClave, char* unValor) {
+void cargarDatos(char* unaClave, char* unValor) {
 
-	log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
 	char*clave =malloc(strlen(unaClave) + 1);
 	strcpy(clave, unaClave);
 	char* valor = malloc(strlen(unValor) + 1);
@@ -249,12 +268,8 @@ void cargarDatosFicticios(char* unaClave, char* unValor) {
 		strncpy(tabla_entradas[i], valueAux, tamanio_entrada);
 		valueAux += tamanio_entrada;
 	}
-	log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
 	free(clave);
 	free(valor);
-//	free(valueAux);
-
-
 }
 //funcion para probar el dump
 void inicializarTabla(){
@@ -263,5 +278,30 @@ void inicializarTabla(){
 	for (i = 0; i < cantidad_de_entradas; i++) {
 		tabla_entradas[i] = malloc(tamanio_entrada);
 		strcpy(tabla_entradas[i], "null");
+	}
+}
+
+void imprimirTabla(){
+	int i,j;
+	for (i = 0; i < list_size(entradas_administrativas); i++) {
+		t_AlmacenamientoEntradaAdministrativa* nueva = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas,i);
+		printf("Clave: %s\n",nueva->clave);
+		printf("Entradas Que Ocupa: %d\n",nueva->entradasOcupadas);
+		printf("Index: %d\n",nueva->index);
+		printf("Tamanio: %d\n",nueva->tamanio);
+
+		char* valor=malloc(nueva->tamanio);
+		int tamanioPegado=0;
+
+		for (j = nueva->index; j < (nueva->index + nueva->entradasOcupadas);j++) {
+			if((nueva->index + nueva->entradasOcupadas) -1 == j){
+				strcpy(valor+tamanioPegado, tabla_entradas[j]);
+			}else{
+				strcpy(valor+tamanioPegado, tabla_entradas[j]);
+				tamanioPegado+=tamanio_entrada;
+			}
+		}
+		printf("Valor: %s\n",valor);
+		printf("%s\n","------------------");
 	}
 }

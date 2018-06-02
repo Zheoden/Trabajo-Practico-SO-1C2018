@@ -27,8 +27,9 @@ char** tabla_entradas;
 t_list* entradas_administrativas;
 
 
+void imprimirTabla();
 void dump();
-void cargarDatosFicticios(char* unaClave, char* unValor);
+void cargarDatos(char* unaClave, char* unValor);
 void inicializarTabla();
 void verificarPuntoMontaje();
 void inicializar();
