@@ -206,17 +206,17 @@ void parsear() {
 
 				//tengo que agregar el esi a la lista de todos los esis modificado
 				fflush(fp);
-				aux->linea = ftell(fp);
+				//ftell(fp)-(ftell(fp)-estadoAnterior)
+				aux->linea = ftell(fp); // ftell te da los bytes desde el principio del archivo hasta la pos actual del puntero
 				list_add(todos_los_esis,aux);
 				fclose(fp);
-
 			} else{ /*Cierra el If de readLine*/
 
 				//todo lo que necesito cuando se termina un esi
 
 				fclose(fp);
 				renombrarArchivo(aux->file,".bak");
-				IDAux = incrementarID(IDAux);
+				IDAux = incrementarID(IDAux); // aca tendria que llamar a getnextesi
 				free(aux);
 				//matarESI();
 				//break;

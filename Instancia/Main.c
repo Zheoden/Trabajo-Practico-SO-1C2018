@@ -14,7 +14,7 @@ int main() {
 	tamanio_entrada = 10;
 	cantidad_de_entradas= 500;
 	verificarPuntoMontaje();
-	foo();
+	inicializarTabla();
 	cargarDatosFicticios("ElFede","Hola Como Andas?");
 	cargarDatosFicticios("ElSuperIvo","Todo Bien, y vos?");
 	cargarDatosFicticios("LaCaro","Io khe ze, no soi 100tifiko");

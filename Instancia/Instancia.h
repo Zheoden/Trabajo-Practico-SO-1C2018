@@ -29,7 +29,7 @@ t_list* entradas_administrativas;
 
 void dump();
 void cargarDatosFicticios(char* unaClave, char* unValor);
-void foo();
+void inicializarTabla();
 void verificarPuntoMontaje();
 void inicializar();
 void iniciarManejoDeEntradas();

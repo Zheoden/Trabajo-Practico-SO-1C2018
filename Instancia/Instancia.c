@@ -189,7 +189,7 @@ void verificarPuntoMontaje(){
 //no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.
 void dump(){
 	while(1){
-		usleep(20000000);//20 segundos
+		usleep(intervalo_de_dump * 1000000); //intervalo_de_dump segundos :D!
 		int i,j;
 		//Recoro las entradas para saber cuales tengo
 		for (i=0;  i< list_size(entradas_administrativas); i++) {
@@ -257,7 +257,7 @@ void cargarDatosFicticios(char* unaClave, char* unValor) {
 
 }
 //funcion para probar el dump
-void foo(){
+void inicializarTabla(){
 	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+1);
 	int i;
 	for (i = 0; i < cantidad_de_entradas; i++) {
