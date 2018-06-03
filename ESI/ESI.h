@@ -20,28 +20,9 @@ char* coordinador_ip;
 int coordinador_puerto;
 int socket_planificador;
 int socket_coordinador;
-char* IDEsiActual;
-char* IDAux;
+FILE* fp;
 
-
-t_list* todos_los_esis;
-
-typedef struct {
-	char* ID;
-	char* file;
-	long int linea; //bytes de lo que leyo, para recuperar el archivo con fseek
-}__attribute__((packed)) Esi;
-
-Esi* ESI_Actual;
-
-Esi* nextEsi(char* ID);
-void cargarEsis();
-void inicializarSiguienteEsi();
-char* renombrarArchivo(char* file, char* ext);
-void inicializar();
-const char* get_filename_extension(const char* filename);
-char* getNextFile();
-char* incrementarID(char* ID);
+void abrirArchivo(char* path);
 void crearClientePlanif();
 void crearClienteCoor();
 void parsear();
