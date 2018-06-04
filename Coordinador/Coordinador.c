@@ -166,7 +166,7 @@ void coordinar(void* socket) {
 				t_Instancia* instancia = malloc(sizeof(t_Instancia));
 				instancia->socket = socketActual;
 				instancia->nombre = malloc(strlen(nombreInstancia) + 1);
-				instancia->activo = false;
+				instancia->flagEL = false;
 				instancia->claves = list_create();
 				strcpy(instancia->nombre, nombreInstancia);
 				list_add(instancias, instancia);
@@ -208,8 +208,6 @@ void coordinar(void* socket) {
 					usleep(retardo);
 					t_ESICoordinador* nuevo = malloc(sizeof(t_ESICoordinador));
 					datos = paquete.mensaje;
-					strcpy(nuevo->ID, datos);
-					log_info(logger,"Se recibio un SET del ESI: %s",nuevo->ID);
 					datos += strlen(datos) + 1;
 					strcpy(nuevo->clave, datos);
 					datos += strlen(datos) + 1;
@@ -234,7 +232,7 @@ void coordinar(void* socket) {
 						if (!list_any_satisfy(instancias, (void*) verificarClave)) {
 							//clave existe en el sistema, pero la instancia esta caida
 							log_info(logger,"Se intenta bloquear la clave %s pero en este momento no esta disponible.", nuevo->clave);
-							EnviarDatosTipo(socket_planificador, COORDINADOR, nuevo->ID,sizeof(int), t_ABORTARESI);
+							EnviarDatosTipo(socket_planificador, COORDINADOR, NULL ,0, t_ABORTARESI);
 						} else {
 							int tam = strlen(nuevo->clave) + strlen(nuevo->valor) + 2;
 							void*sendInstancia = malloc(tam);
@@ -259,7 +257,7 @@ void coordinar(void* socket) {
 					} else {
 						//clave no existe en el sistema
 						//					printf("Se intenta bloquear la clave %s pero no existe",nuevo->clave);
-						EnviarDatosTipo(socket_planificador, COORDINADOR, (void*)nuevo->ID, tamanioID, t_ABORTARESI);
+						EnviarDatosTipo(socket_planificador, COORDINADOR, NULL , 0, t_ABORTARESI);
 					}
 				}
 				break;
@@ -268,8 +266,6 @@ void coordinar(void* socket) {
 
 					t_ESICoordinador* nuevo = malloc(sizeof(t_ESICoordinador));
 					datos = paquete.mensaje;
-					strcpy(nuevo->ID, datos);
-					datos += strlen(datos) + 1;
 					strcpy(nuevo->clave, datos);
 
 					bool verificarExistenciaEnListaDeClaves(char*e) {
@@ -282,12 +278,10 @@ void coordinar(void* socket) {
 					}
 
 
-					int tamSend = strlen(paquete.mensaje) + strlen(nuevo->ID) + 2;
+					int tamSend = strlen(paquete.mensaje) + +1;
 					void* sendPlanificador = malloc(tamSend);
 					strcpy(sendPlanificador, paquete.mensaje);
 					sendPlanificador += strlen(paquete.mensaje) + 1;
-					strcpy(sendPlanificador, nuevo->ID);
-					sendPlanificador += strlen(nuevo->ID) + 1;
 					sendPlanificador -= tamSend;
 					EnviarDatosTipo(socket_planificador, COORDINADOR, sendPlanificador,tamSend, t_GET);
 				}
@@ -321,16 +315,16 @@ int obtenerProximaInstancia() {
 	t_Instancia* aux;
 
 	void inicializar(t_Instancia * elemento) {
-		elemento->activo=false;
+		elemento->flagEL=false;
 	}
 	bool verificarVacio(t_Instancia * elemento) {
-		return elemento->activo==true;
+		return elemento->flagEL==true;
 	}
 
 	if (list_all_satisfy(instancias,(void*)verificarVacio)){
 		list_iterate(instancias, (void*)inicializar );
 		aux = list_get(instancias, 0);
-		aux->activo = true;
+		aux->flagEL = true;
 		list_replace(instancias, 0, aux);
 		return aux->socket;
 	}
@@ -339,12 +333,12 @@ int obtenerProximaInstancia() {
 
 	bool proximo(t_Instancia *elemento) {
 		i++;
-		return !elemento->activo;
+		return !elemento->flagEL;
 	}
 
 	list_find(instancias, (void*) proximo);
 	aux = list_get(instancias, i);
-	aux->activo = true;
+	aux->flagEL = true;
 	list_replace(instancias, i, aux);
 	log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
 	return aux->socket;
