@@ -90,32 +90,11 @@ void manejarEntradas() {
 			datos += strlen(datos) + 1;
 			char* valor = malloc(strlen(datos) + 1);
 			strcpy(valor, datos);
-			t_AlmacenamientoEntradaAdministrativa* nueva = malloc(sizeof(t_AlmacenamientoEntradaAdministrativa));
-			nueva->clave = malloc(strlen(clave) + 1);
-			strcpy(nueva->clave, clave);
-			nueva->entradasOcupadas = ceilDivision(strlen(valor));
-			nueva->tamanio = strlen(valor);//nueva->tamanio = strlen(valor) + strlen(clave);
-			nueva->index = getFirstIndex(nueva->entradasOcupadas);
-			list_add(entradas_administrativas, nueva);
-			log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
-			int i;
-			char *valueAux = malloc(strlen(valor) + 1);
-			strcpy(valueAux, valor);
-			for (i = nueva->index; i < (nueva->index + nueva->entradasOcupadas);
-					i++) {
-				if ((nueva->index + nueva->entradasOcupadas) - 1 == i) {
-					strcpy(tabla_entradas[i], valueAux);
-					break;
-				}
-				strncpy(tabla_entradas[i], valueAux, tamanio_entrada);
-				valueAux += tamanio_entrada;
-			}
+			cargarDatos(clave,valor);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_SET);
 			log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
 			free(clave);
 			free(valor);
-			free(valueAux);
-
 		}
 			break;
 
