@@ -21,6 +21,7 @@ int coordinador_puerto;
 int socket_planificador;
 int socket_coordinador;
 FILE* fp;
+const char* filename;
 
 void abrirArchivo(char* path);
 void crearClientePlanif();
@@ -30,6 +31,8 @@ void atenderPlanificador();
 void atenderCoordinador();
 void setearValores(t_config * archivoConfig);
 void matarESI();
+void foo();
+const char* get_filename(const char* path);
 
 #endif /* CLIENTE_H_ */
 

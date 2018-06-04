@@ -162,24 +162,24 @@ nombreProceso getNombreDelProceso(proceso proceso){
 	nombreProceso aux;
 	switch (proceso) {
 		case ESI:
-			aux.tamanio=4;
-			memcpy(aux.nombre, "ESI", aux.tamanio);
+			aux.tamanio=strlen("ESI");
+			strcpy(aux.nombre, "ESI");
 			break;
 		case COORDINADOR:
-			aux.tamanio=12;
-			memcpy(aux.nombre, "COORDINADOR", aux.tamanio);
+			aux.tamanio=strlen("COORDINADOR");
+			strcpy(aux.nombre, "COORDINADOR");
 			break;
 		case PLANIFICADOR:
-			aux.tamanio=13;
-			memcpy(aux.nombre, "PLANIFICADOR", aux.tamanio);
+			aux.tamanio=strlen("PLANIFICADOR");
+			strcpy(aux.nombre, "PLANIFICADOR");
 			break;
 		case INSTANCIA:
-			aux.tamanio=10;
-			memcpy(aux.nombre, "INSTANCIA", aux.tamanio);
+			aux.tamanio=strlen("INSTANCIA");
+			strcpy(aux.nombre, "INSTANCIA");
 			break;
 		default:
-			aux.tamanio=6;
-			memcpy(aux.nombre, "ERROR", aux.tamanio);
+			aux.tamanio=strlen("ERROR");
+			strcpy(aux.nombre, "ERROR");
 			break;
 	}
 	return aux;

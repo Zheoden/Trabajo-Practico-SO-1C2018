@@ -23,8 +23,7 @@ typedef enum t_protocolo {
 	t_RESPUESTASET,
 	t_NUEVOESI,
 	t_ABORTARESI,
-	t_SIGUIENTELINEA,
-	t_CAMBIARESI
+	t_SIGUIENTELINEA
 } t_protocolo;
 
 //////////////////////////////////////////

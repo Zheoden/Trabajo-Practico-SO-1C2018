@@ -50,26 +50,25 @@ void crearClientePlanif() {
 	ssize_t read;
 	Paquete paquete;
 
-	while (RecibirPaqueteCliente(socket_coordinador, ESI, &paquete) > 0) {
-		switch (paquete.header.quienEnvia) {
-		case PLANIFICADOR: {
-			switch (paquete.header.tipoMensaje) {
-			case t_SIGUIENTELINEA: {
-				if ((read = getline(&line, &len, fp)) != EOF) {
-					parsear(line);
+	while (RecibirPaqueteCliente(socket_planificador, ESI, &paquete) > 0) {
+		switch (paquete.header.tipoMensaje) {
+		case t_SIGUIENTELINEA: {
+			if ((read = getline(&line, &len, fp)) != EOF) {
+				parsear(line);
+			}else{
+				if (line) {
+					free(line);
+					log_info(logger, "Se libero la memoria de la linea actual.");
 				}
-
-			}
-			break;
-			case t_ABORTARESI: {
-				matarESI();
-			}
-			break;
 			}
 		}
 		break;
-		case COORDINADOR:{
-
+		case t_ABORTARESI: {
+			matarESI();
+		}
+		break;
+		case t_HANDSHAKE: {
+			//revisar handshake
 		}
 		break;
 		}
@@ -108,32 +107,29 @@ void parsear(char* line) {
 	if (parsed.valido) {
 		switch (parsed.keyword) {
 		case GET:
-			tamanio = strlen(parsed.argumentos.GET.clave);
+			tamanio = strlen(parsed.argumentos.GET.clave)+1;
 			datos = malloc(tamanio);
 			strcpy(datos, parsed.argumentos.GET.clave);
 			//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);
 			log_info(logger,"Para el script: %s se ejecuto el comando GET, para la clave %s",
-					"",parsed.argumentos.GET.clave);
+					filename,parsed.argumentos.GET.clave);
 			break;
 		case SET:
 			tamanio = strlen(parsed.argumentos.SET.clave) + strlen(parsed.argumentos.SET.valor) + 2;
 			datos = malloc(tamanio);
 			strcpy(datos, parsed.argumentos.SET.clave);
-			datos += strlen(parsed.argumentos.SET.clave) + 1;
-			strcpy(datos, parsed.argumentos.SET.valor);
-			datos += strlen(parsed.argumentos.SET.valor) + 1;
-			datos -= tamanio;
+			strcpy(datos +(strlen(parsed.argumentos.SET.clave) + 1), parsed.argumentos.SET.valor);
 			//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
 			log_info(logger, "Para el script: %s se ejecuto el comando SET, para la clave %s y el valor %s",
-					"", parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
+					filename, parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
 			break;
 		case STORE:
-			tamanio = strlen(parsed.argumentos.STORE.clave);
+			tamanio = strlen(parsed.argumentos.STORE.clave) + 1;
 			datos = malloc(tamanio);
 			strcpy(datos, parsed.argumentos.STORE.clave);
 			//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);
 			log_info(logger,"Para el script: %s se ejecuto el comando STORE, para la clave %s",
-					"", parsed.argumentos.STORE.clave);
+					filename, parsed.argumentos.STORE.clave);
 			break;
 		default:
 			log_info(logger, "No pude interpretar <%s>\n", line);
@@ -147,11 +143,8 @@ void parsear(char* line) {
 		//matarESI();
 	}
 
+	printf("%s\n",(char*)datos);
 	free(datos);
-	if (line) {
-		free(line);
-		log_info(logger, "Se libero la memoria de la linea actual.");
-	}
 }
 
 void matarESI(){
@@ -165,7 +158,29 @@ void abrirArchivo(char* path){
 	if (fp == NULL) {
 		log_error(logger, "Error al abrir el archivo: %s",strerror(errno));
 		log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
-		fclose(fp);
+		perror("Error al abrir el archivo: ");
+		exit(1);
 		//matarESI();
 	}
+	filename = get_filename(path);
+}
+
+void foo(){
+	char * line = NULL;
+	size_t len = 0;
+	ssize_t read;
+
+	while ((read = getline(&line, &len, fp)) != EOF) {
+		parsear(line);
+	}
+	if (line) {
+		free(line);
+		log_info(logger, "Se libero la memoria de la linea actual.");
+	}
+}
+
+const char* get_filename(const char* path){
+	const char *file = strrchr(path,'/');
+	if(!file || file == path) return "";
+	return file +1;
 }
