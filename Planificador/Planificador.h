@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <commons/config.h>
 #include <Funciones/configs.h>
+#include <Funciones/lista.h>
 #include <Funciones/logs.h>
 #include <Funciones/serializacion.h>
 #include <pthread.h>
@@ -30,6 +31,7 @@ int coordinador_puerto;
 char* algoritmo_planificacion;
 int estimacion_inicial;
 char* claves_bloqueadas;
+int alfa_planificacion;
 
 int socket_esi;
 int socket_coordinador;
@@ -45,5 +47,12 @@ void crearCliente(void);
 void setearValores(t_config * archivoConfig);
 void iniciarPlanificacion();
 void inicializar();
+t_ESIPlanificador* inicializarESI(char* ID,	int rafagas_ejecutadas);
+void aplicarSJF();
+void aplicarSJFConDesalojo();
+void aplicarFIFO();
+void imprimir(t_list* self);
+void ejecutarEsi();
+bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
 
 #endif /* PLANIFICADOR_H_ */

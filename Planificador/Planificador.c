@@ -113,22 +113,6 @@ void crearServidorSencillo() {
 
 }
 
-void planificar() {
-	while (planificacion_activa) {
-		if (!strcmp(algoritmo_planificacion, "FIFO")) {
-			t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
-			list_add(ESI_ejecucion, esiAEjecutar);
-
-		} else if (!strcmp(algoritmo_planificacion, "SJF")) {
-
-
-		} else if (!strcmp(algoritmo_planificacion, "HRRN")) {
-
-
-		}
-	}
-}
-
 void crearCliente(void) {
 	Paquete paquete;
 	void* datos;
@@ -154,7 +138,7 @@ void crearCliente(void) {
 		case t_GET: {
 			//Se fija si la clave que recibio está en la lista de claves bloqueadas
 
-			bool vericarClavesBloqueadas(t_ESIPlanificador* esi) {
+			bool vericarClavesBloqueadas(t_PlanificadorCoordinador* esi) {
 				return !strcmp(esi->clave, paquete.mensaje);
 			}
 
@@ -170,8 +154,7 @@ void crearCliente(void) {
 			else {
 				//Sino, agrega la clave a claves bloqueadas
 				//primero recibe ID despues CLAVE
-				t_ESIPlanificador* claveABloquear = malloc(sizeof(t_ESIPlanificador));
-				strcpy(claveABloquear->ID, paquete.mensaje);
+				t_PlanificadorCoordinador* claveABloquear = malloc(sizeof(t_PlanificadorCoordinador));
 				strcpy(claveABloquear->clave, paquete.mensaje+ strlen(paquete.mensaje) + 1);
 				list_add(ESI_clavesBloqueadas, claveABloquear);
 				log_info(logger,"Se bloqueo correctamente la clave: %s, y se agrego a la lista de claves Bloqueadas.",claveABloquear->clave);
@@ -215,6 +198,8 @@ void setearValores(t_config * archivoConfig) {
  	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
  	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
  	coordinador_ip = strdup(config_get_string_value(archivoConfig, "COORDINADOR_IP"));
+ 	alfa_planificacion = config_get_int_value(archivoConfig, "ALFA_PLANIFICACION");
+ 	alfa_planificacion = alfa_planificacion/100;
  	algoritmo_planificacion = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_PLANIFICACION"));
  	estimacion_inicial = config_get_int_value(archivoConfig, "ESTIMACION_INICIAL");
  	claves_bloqueadas = config_get_array_value(archivoConfig, "CLAVES_BLOQUEADAS");
@@ -223,3 +208,93 @@ void setearValores(t_config * archivoConfig) {
  	log_info(logger,"Se inicio el Planificador con el siguiente Algoritmo de Planificación: %s",algoritmo_planificacion);
 
  }
+
+t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
+	unEsi->rafagas_estimadas = (alfa_planificacion * estimacion_inicial)
+			+ ((1 - alfa_planificacion) * (unEsi->rafagas_ejecutadas));
+	return unEsi;
+}
+
+void planificar() {
+	while (planificacion_activa) {
+		if (!strcmp(algoritmo_planificacion, "FIFO")) {
+			aplicarFIFO();
+			ejecutarEsi();
+
+		} else if (!strcmp(algoritmo_planificacion, "SJF/SD")) {
+			aplicarSJF();
+			ejecutarEsi();
+
+		} else if (!strcmp(algoritmo_planificacion, "SJF/CD")) {
+			aplicarSJFConDesalojo();
+				ejecutarEsi();
+		} else if (!strcmp(algoritmo_planificacion, "HRRN")) {
+
+
+		}
+	}
+}
+void aplicarFIFO(){
+	t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
+	list_add(ESI_ejecucion, esiAEjecutar);
+}
+
+void aplicarSJFConDesalojo(){
+	if (!list_is_empty(ESI_ejecucion)) {
+		t_ESIPlanificador* esiEnEjecucion = list_remove(ESI_ejecucion, 0);
+		list_add(ESI_listos, esiEnEjecucion);
+	}
+	aplicarSJF();
+}
+
+void aplicarSJF() {
+
+	t_list* aux = list_map(ESI_listos, (void*) CalcularEstimacion);
+	list_sort(aux, (void*) ComparadorDeRafagas);
+
+	t_ESIPlanificador* esiAux = (t_ESIPlanificador*) list_remove(aux, 0);
+
+	bool comparator(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
+		return unESI->ID == otroESI->ID;
+	}
+
+	int index = list_get_index(ESI_listos,esiAux,(void*)comparator);
+	t_ESIPlanificador* esiAEjecutar = list_remove(ESI_listos,index);
+	esiAEjecutar->rafagas_ejecutadas++;//BORRAR DE ACA CUANDO SE CONECTE TODO
+	list_add(ESI_ejecucion, esiAEjecutar);
+
+}
+
+bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
+	return unESI->rafagas_estimadas <= otroESI->rafagas_estimadas;
+}
+
+
+
+void ejecutarEsi() {
+	if(!list_is_empty(ESI_ejecucion)){
+		t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_get(ESI_ejecucion, 0);
+		esiAEjecutar->rafagas_ejecutadas++;
+		EnviarDatosTipo(esiAEjecutar->socket, PLANIFICADOR, NULL, 0, t_SIGUIENTELINEA);
+	}
+}
+
+t_ESIPlanificador* inicializarESI(char* ID,	int rafagas_ejecutadas){
+	t_ESIPlanificador*aux = malloc(sizeof(t_ESIPlanificador)+25);
+	aux->ID = malloc(4);
+	strcpy(aux->ID, ID);
+	aux->rafagas_ejecutadas = rafagas_ejecutadas;
+	return aux;
+}
+
+void imprimir(t_list* self){
+	int longitud_de_lista = list_size(self);
+	int i;
+	for(i = 0; i < longitud_de_lista; i++ ){
+		t_ESIPlanificador* aux = (t_ESIPlanificador*) list_get(self,i);
+		printf("ID: %s\n", aux->ID);
+		printf("rafagas_ejecutadas: %d\n", aux->rafagas_ejecutadas);
+		printf("rafagas_estimadas: %f\n", aux->rafagas_estimadas);
+	}
+}
+
