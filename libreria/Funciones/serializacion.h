@@ -62,15 +62,19 @@ typedef struct {
 //////////////////////////////////////////
 
 typedef struct {
-	char* ID;
 	char* clave;
-	char* valor;
+}__attribute__((packed)) t_PlanificadorCoordinador;
+
+typedef struct {
+	int socket;
+	char* ID;
 	bool bloqueado;
-	char* razon_bloqueo;
+	char* razon_bloqueo;//clave que lo bloqueo o "consola"
+	int rafagas_ejecutadas;
+	float rafagas_estimadas;
 }__attribute__((packed)) t_ESIPlanificador;
 
 typedef struct {
-	char* ID;
 	char* clave;
 	char* valor;
 }__attribute__((packed)) t_ESICoordinador;
@@ -83,7 +87,7 @@ typedef struct {
 typedef struct {
 	int socket;
 	char* nombre;
-	bool activo;
+	bool flagEL;
 	t_list* claves;
 }__attribute__((packed)) t_Instancia;
 
