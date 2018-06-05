@@ -239,6 +239,14 @@ void cargarDatos(char* unaClave, char* unValor) {
 	nueva->tamanio = strlen(valor);//nueva->tamanio = strlen(valor) + strlen(clave);
 
 	nueva->index = getFirstIndex(nueva->entradasOcupadas);
+
+	int indexClave = list_get_index(entradas_administrativas,nueva,(void*)comparadorDeClaves);
+	t_AlmacenamientoEntradaAdministrativa* instanciaACargar = (t_AlmacenamientoEntradaAdministrativa*) list_remove(entradas_administrativas,indexClave);
+	int j;
+	for (j = indexClave ; j < nueva->entradasOcupadas+1; j++){
+		strcpy(tabla_entradas[j],"null");
+	}
+
 	list_add(entradas_administrativas, nueva);
 	log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
 	int i;
@@ -255,7 +263,13 @@ void cargarDatos(char* unaClave, char* unValor) {
 	free(clave);
 	free(valor);
 }
+
+bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada){
+	return unaEntrada->clave == otraEntrada->clave;
+}
+
 //funcion para probar el dump
+
 void inicializarTabla(){
 	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+1);
 	int i;

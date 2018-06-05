@@ -9,6 +9,7 @@
 #include <Funciones/configs.h>
 #include <Funciones/logs.h>
 #include <Funciones/serializacion.h>
+#include <Funciones/lista.h>
 #include <dirent.h>
 
 
@@ -26,7 +27,6 @@ int socket_coordinador;
 char** tabla_entradas;
 t_list* entradas_administrativas;
 
-
 void iniciarDump();
 void imprimirTabla();
 void dump();
@@ -41,6 +41,7 @@ void setearValores(t_config * archivoConfig);
 bool handshakeInstanciaCoordinador();
 int ceilDivision(int lengthValue);
 int getFirstIndex (int entradasValue);
+bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada);
 
 
 

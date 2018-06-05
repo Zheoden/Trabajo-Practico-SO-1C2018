@@ -11,8 +11,7 @@ int main() {
 	//////////////////////////////////////////
 	//Llamado a funciones de Prueba para Dump/
 	//////////////////////////////////////////
-
-	/*
+/*
 	tamanio_entrada = 10;
 	cantidad_de_entradas= 500;
 	inicializarTabla();
@@ -24,7 +23,7 @@ int main() {
 	cargarDatos("ElYoff","Veamos que tan bien funciona esto");
 	cargarDatos("Comodin","Comodin Comodin?");
 	dump();
-	*/
+*/
 
 	//////////////////////////////////////////
 	//            Fin de Pruebas            //
