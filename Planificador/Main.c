@@ -7,7 +7,8 @@ int main(int argc, char ** argv){
 	char* planificador_config_ruta = strdup("/home/utnso/Proyectos/tp-2018-1c-PC-citos/Planificador/Planificador.cfg");
 	leerConfig(planificador_config_ruta,logger);
 	inicializar();
-//	iniciarConsola();
+	iniciarConsola();
+	iniciarPlanificacion();
 //	atenderCoordinador();
 //	crearServidorSencillo();
 
@@ -38,6 +39,7 @@ int main(int argc, char ** argv){
 
 	/*Fin de pruebas de SJF*/
 
+	for(;;);
 
 	return EXIT_SUCCESS;
 }

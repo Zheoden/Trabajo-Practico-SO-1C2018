@@ -183,6 +183,7 @@ void inicializar(){
 	ESI_ejecucion = list_create();
 	ESI_bloqueados = list_create();
 	ESI_finalizados = list_create();
+	planificacion_activa=true;
 
 	log_info(logger,"Se inicio inicializaron las listas correctamente.");
 }
@@ -214,21 +215,23 @@ void iniciarPlanificacion(){
 }
 
 void planificar() {
-	while (planificacion_activa) {
-		if (!strcmp(algoritmo_planificacion, "FIFO")) {
-			aplicarFIFO();
-			ejecutarEsi();
+	while(1){
+		while (planificacion_activa) {
+			if (!strcmp(algoritmo_planificacion, "FIFO")) {
+				//aplicarFIFO();
+				//ejecutarEsi();
 
-		} else if (!strcmp(algoritmo_planificacion, "SJF/SD")) {
-			aplicarSJF();
-			ejecutarEsi();
-
-		} else if (!strcmp(algoritmo_planificacion, "SJF/CD")) {
-			aplicarSJFConDesalojo();
+			} else if (!strcmp(algoritmo_planificacion, "SJF/SD")) {
+				aplicarSJF();
 				ejecutarEsi();
-		} else if (!strcmp(algoritmo_planificacion, "HRRN")) {
+
+			} else if (!strcmp(algoritmo_planificacion, "SJF/CD")) {
+				aplicarSJFConDesalojo();
+				ejecutarEsi();
+			} else if (!strcmp(algoritmo_planificacion, "HRRN")) {
 
 
+			}
 		}
 	}
 }

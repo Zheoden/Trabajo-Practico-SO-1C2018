@@ -9,12 +9,21 @@ void consola(){
       add_history(linea);
     }
 
-    if((!strncmp(linea, "pausar", 6)) || (!strncmp(linea, "continuar", 9)) ) {
+    if(!strncmp(linea, "pausar", 6)) {
+    	if(planificacion_activa){
+    		printf("Pausar\n");
+    		pausarOContinuar();
+    		log_info(logger,"//Hay que ejecutar pausar() o continuar()");
+    	}
 
-    	printf("//Hay que ejecutar pausar() o continuar()\n");
-    	log_info(logger,"//Hay que ejecutar pausar() o continuar()");
+    }else	if(!strncmp(linea, "continuar", 9) ) {
+    	if(!planificacion_activa){
+    		printf("continuar\n");
+    		pausarOContinuar();
+    		log_info(logger,"//Hay que ejecutar pausar() o continuar()");
+    	}
 
-    }else    if(!strncmp(linea, "bloquear", 8)) {
+    }else	if(!strncmp(linea, "bloquear", 8)) {
 
     	printf("//Hay que ejecutar bloquear()\n");
     	char **parametros = string_split(linea, " ");
