@@ -16,10 +16,13 @@
 
 char* planificador_ip;
 int planificador_puerto;
+
 char* coordinador_ip;
 int coordinador_puerto;
+
 int socket_planificador;
 int socket_coordinador;
+
 FILE* fp;
 const char* filename;
 

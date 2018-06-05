@@ -14,18 +14,18 @@
 
 char* client_ip;
 int client_puerto;
+int socket_coordinador;
+
 char* algoritmo_de_reemplazo;
 char* punto_de_montaje;
 char* nombre_de_la_instancia;
+
 int intervalo_de_dump;
 int tamanio_entrada;
 int cantidad_de_entradas;
-int socket_coordinador;
-
 
 char** tabla_entradas;
 t_list* entradas_administrativas;
-
 
 void iniciarDump();
 void imprimirTabla();

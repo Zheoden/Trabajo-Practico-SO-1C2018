@@ -26,15 +26,18 @@ t_list* ESI_finalizados;
 
 char* server_ip;
 int server_puerto;
+
 char* coordinador_ip;
 int coordinador_puerto;
+int socket_coordinador;
+
 char* algoritmo_planificacion;
-int estimacion_inicial;
 char* claves_bloqueadas;
+int estimacion_inicial;
 int alfa_planificacion;
 
 int socket_esi;
-int socket_coordinador;
+
 
 void planificar();
 void crearServidorSencillo();

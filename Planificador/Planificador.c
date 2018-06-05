@@ -234,6 +234,7 @@ void planificar() {
 		}
 	}
 }
+
 void aplicarFIFO(){
 	t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
 	list_add(ESI_ejecucion, esiAEjecutar);
@@ -268,8 +269,6 @@ void aplicarSJF() {
 bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
 	return unESI->rafagas_estimadas <= otroESI->rafagas_estimadas;
 }
-
-
 
 void ejecutarEsi() {
 	if(!list_is_empty(ESI_ejecucion)){

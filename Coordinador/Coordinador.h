@@ -17,10 +17,12 @@ t_list* instancias;
 t_list* lista_ESIs;
 t_list* todas_las_claves;
 
-int socket_planificador;
-int socket_ESI;
 char* server_ip;
 int server_puerto;
+
+int socket_planificador;
+int socket_ESI;
+
 char* algoritmo_de_distribucion;
 int cantidad_entradas;
 int tamanio_entradas;
