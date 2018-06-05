@@ -1,9 +1,11 @@
 #include "Instancia.h"
 
+/* Se inicializan las entradas administrativas */
 void inicializar(){
 	entradas_administrativas = list_create();
 }
 
+/* Conexión con el Coordinador */
 void crearCliente(void) {
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family = AF_INET;
@@ -35,6 +37,7 @@ void crearCliente(void) {
 
 }
 
+/* Se setean los valores en el archivo de configuración */
 void setearValores(t_config * archivoConfig) {
  	client_puerto = config_get_int_value(archivoConfig, "CLIENT_PUERTO");
  	client_ip = strdup(config_get_string_value(archivoConfig, "CLIENT_IP"));
@@ -47,12 +50,14 @@ void setearValores(t_config * archivoConfig) {
 	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Reemplazo: %s",algoritmo_de_reemplazo);
  }
 
+/* Envío de datos con Coordinador -- HANDSHAKE */
 bool handshakeInstanciaCoordinador(){
 	EnviarDatosTipo(socket_coordinador, INSTANCIA,(void*)cantidad_de_entradas, sizeof(cantidad_de_entradas),t_HANDSHAKE);
 	EnviarDatosTipo(socket_coordinador, INSTANCIA,(void*)tamanio_entrada, sizeof(tamanio_entrada),t_HANDSHAKE);
 	return true;
 }
 
+/* Creación de hilo para el manejo de entradas */
 void iniciarManejoDeEntradas(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
@@ -108,33 +113,7 @@ void manejarEntradas() {
 
 }
 
-int ceilDivision(int lengthValue) {
-	double cantidadEntradas;
-	cantidadEntradas = (lengthValue + tamanio_entrada -1 )/ tamanio_entrada;
-	return cantidadEntradas;
-}
-
-int getFirstIndex (int entradasValue){
-	int i;
-	for (i=0;  i< cantidad_de_entradas; i++) {
-		if(!strcmp(tabla_entradas[i],"null") &&  tabla_entradas[entradasValue-1]){
-			int aux;
-			bool cumple=true;
-			//evaluo valores intermedios entre el inicio y el supuesto final (entradasValue-1)
-			for(aux=i+1; aux< entradasValue; aux++){
-				if(strcmp(tabla_entradas[aux],"null")){
-					cumple=false;
-					break;
-				}
-			}
-			if(cumple){
-				return i;
-			}
-		}
-	}
-	return -1;
-}
-
+/* Verificar punto de montaje */
 void verificarPuntoMontaje(){
 
 	DIR* directorio_de_montaje = opendir(punto_de_montaje);
@@ -182,6 +161,7 @@ void verificarPuntoMontaje(){
 	}
 }
 
+/* Se inicializa la función de DUMP */
 void iniciarDump(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
@@ -224,7 +204,8 @@ void dump(){
 		printf("%s\n",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	}
 }
-//funcion para probar el dump
+
+//funciones para probar el dump
 void cargarDatos(char* unaClave, char* unValor) {
 
 	char*clave =malloc(strlen(unaClave) + 1);
@@ -264,11 +245,40 @@ void cargarDatos(char* unaClave, char* unValor) {
 	free(valor);
 }
 
+<<<<<<< HEAD
 bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada){
 	return unaEntrada->clave == otraEntrada->clave;
 }
 
 //funcion para probar el dump
+=======
+int ceilDivision(int lengthValue) {
+	double cantidadEntradas;
+	cantidadEntradas = (lengthValue + tamanio_entrada -1 )/ tamanio_entrada;
+	return cantidadEntradas;
+}
+
+int getFirstIndex (int entradasValue){
+	int i;
+	for (i=0;  i< cantidad_de_entradas; i++) {
+		if(!strcmp(tabla_entradas[i],"null") &&  tabla_entradas[entradasValue-1]){
+			int aux;
+			bool cumple=true;
+			//evaluo valores intermedios entre el inicio y el supuesto final (entradasValue-1)
+			for(aux=i+1; aux< entradasValue; aux++){
+				if(strcmp(tabla_entradas[aux],"null")){
+					cumple=false;
+					break;
+				}
+			}
+			if(cumple){
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+>>>>>>> 776d96ad21e93399498ac60f3469a4d727c390b7
 
 void inicializarTabla(){
 	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+1);

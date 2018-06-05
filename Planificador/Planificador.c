@@ -1,6 +1,6 @@
 #include "Planificador.h"
 
-
+/* Se inicia la consola del PLANIFICADOR */
 void iniciarConsola() {
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para manejar la consola.");
@@ -8,26 +8,12 @@ void iniciarConsola() {
 	pthread_detach(hilo);
 }
 
+/* Conexiones */
 void atenderESI(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para manejar la comunicación con el ESI.");
 	pthread_create(&hilo, NULL, (void *) crearServidorSencillo, NULL);
 	pthread_detach(hilo);
-}
-
-void iniciarPlanificacion(){
-	pthread_t hilo;
-	log_info(logger,"Se inicio un hilo para manejar la Planificación.");
-	planificacion_activa = true;
-	pthread_create(&hilo, NULL, (void *) planificar, NULL);
-	pthread_detach(hilo);
-}
-
-void atenderCoordinador(){
-	pthread_t unHilo;
-	log_info(logger,"Se inicio un hilo para manejar la comunicacion con el Coordinador.");
-	pthread_create(&unHilo, NULL, (void *) crearCliente,NULL);
-	pthread_detach(unHilo);
 }
 
 void sigchld_handler(int s){
@@ -183,6 +169,14 @@ void crearCliente(void) {
 	}
 }
 
+void atenderCoordinador(){
+	pthread_t unHilo;
+	log_info(logger,"Se inicio un hilo para manejar la comunicacion con el Coordinador.");
+	pthread_create(&unHilo, NULL, (void *) crearCliente,NULL);
+	pthread_detach(unHilo);
+}
+
+/* Se crean las listas de ESIS listos, ejecución, bloqueados, finalizados y claves bloqueadas */
 void inicializar(){
 	ESI_clavesBloqueadas = list_create();
     ESI_listos = list_create();
@@ -193,6 +187,7 @@ void inicializar(){
 	log_info(logger,"Se inicio inicializaron las listas correctamente.");
 }
 
+/* Se setea el archivo de configuración */
 void setearValores(t_config * archivoConfig) {
  	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
  	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
@@ -209,10 +204,13 @@ void setearValores(t_config * archivoConfig) {
 
  }
 
-t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
-	unEsi->rafagas_estimadas = (alfa_planificacion * estimacion_inicial)
-			+ ((1 - alfa_planificacion) * (unEsi->rafagas_ejecutadas));
-	return unEsi;
+/* Creación de hilo para realizar la planificación */
+void iniciarPlanificacion(){
+	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para manejar la Planificación.");
+	planificacion_activa = true;
+	pthread_create(&hilo, NULL, (void *) planificar, NULL);
+	pthread_detach(hilo);
 }
 
 void planificar() {
@@ -234,6 +232,8 @@ void planificar() {
 		}
 	}
 }
+
+/* Algoritmos de planificación */
 void aplicarFIFO(){
 	t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
 	list_add(ESI_ejecucion, esiAEjecutar);
@@ -265,12 +265,17 @@ void aplicarSJF() {
 
 }
 
+t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
+	unEsi->rafagas_estimadas = (alfa_planificacion * estimacion_inicial)
+			+ ((1 - alfa_planificacion) * (unEsi->rafagas_ejecutadas));
+	return unEsi;
+}
+
 bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
 	return unESI->rafagas_estimadas <= otroESI->rafagas_estimadas;
 }
 
-
-
+/* Ejecución de ESI */
 void ejecutarEsi() {
 	if(!list_is_empty(ESI_ejecucion)){
 		t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_get(ESI_ejecucion, 0);
@@ -287,6 +292,7 @@ t_ESIPlanificador* inicializarESI(char* ID,	int rafagas_ejecutadas){
 	return aux;
 }
 
+/* Impresión de los ESIS ejecutadas */
 void imprimir(t_list* self){
 	int longitud_de_lista = list_size(self);
 	int i;

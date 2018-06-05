@@ -5,6 +5,7 @@ void sigchld_handler(int s){
      while(wait(NULL) > 0);
  }
 
+/* Servidor */
 void servidorConSelect(void) {
 	fd_set master;   // conjunto maestro de descriptores de fichero
 	fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
@@ -111,6 +112,7 @@ void servidorConSelect(void) {
 	}
 }
 
+/* Archivo de Configuración */
 void setearValores(t_config * archivoConfig) {
 
 	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
@@ -124,6 +126,7 @@ void setearValores(t_config * archivoConfig) {
 	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Distribución: %s",algoritmo_de_distribucion);
 }
 
+/* Incialización de las listas de ESIS, claves e INSTANCIAS */
 void inicializar(){
 	lista_ESIs = list_create();
 	todas_las_claves = list_create();
@@ -132,6 +135,7 @@ void inicializar(){
 	log_info(logger,"Se inicio inicializaron las listas correctamente.");
 }
 
+/* Operaciones COORDINADOR */
 void coordinar(void* socket) {
 	int socketActual = *(int*) socket;
 	log_info(logger,"Se va a proceder a Coordinar el socket: %d", socketActual);

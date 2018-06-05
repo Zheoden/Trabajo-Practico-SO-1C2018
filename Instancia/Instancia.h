@@ -13,35 +13,53 @@
 #include <dirent.h>
 
 
+/* Variables globales */
+
 char* client_ip;
 int client_puerto;
+int socket_coordinador;
+
 char* algoritmo_de_reemplazo;
 char* punto_de_montaje;
 char* nombre_de_la_instancia;
+
 int intervalo_de_dump;
 int tamanio_entrada;
 int cantidad_de_entradas;
-int socket_coordinador;
-
 
 char** tabla_entradas;
 t_list* entradas_administrativas;
 
+<<<<<<< HEAD
 void iniciarDump();
 void imprimirTabla();
 void dump();
 void cargarDatos(char* unaClave, char* unValor);
 void inicializarTabla();
 void verificarPuntoMontaje();
+=======
+
+/* Funciones */
+
+>>>>>>> 776d96ad21e93399498ac60f3469a4d727c390b7
 void inicializar();
-void iniciarManejoDeEntradas();
-void manejarEntradas();
 void crearCliente(void);
 void setearValores(t_config * archivoConfig);
 bool handshakeInstanciaCoordinador();
+void iniciarManejoDeEntradas();
+void manejarEntradas();
+void verificarPuntoMontaje();
+void iniciarDump();
+void dump();
+void cargarDatos(char* unaClave, char* unValor);
 int ceilDivision(int lengthValue);
 int getFirstIndex (int entradasValue);
+<<<<<<< HEAD
 bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada);
+=======
+void inicializarTabla();
+void imprimirTabla();
+>>>>>>> 776d96ad21e93399498ac60f3469a4d727c390b7
 
 
 

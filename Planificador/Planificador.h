@@ -18,41 +18,51 @@
 #include <commons/collections/dictionary.h>
 #include <stdbool.h>
 
+
+/* Estructuras */
 t_list* ESI_clavesBloqueadas;
 t_list* ESI_listos;
 t_list* ESI_ejecucion;
 t_list* ESI_bloqueados;
 t_list* ESI_finalizados;
 
+/* Variables globales */
 char* server_ip;
 int server_puerto;
+
 char* coordinador_ip;
 int coordinador_puerto;
+int socket_coordinador;
+
 char* algoritmo_planificacion;
-int estimacion_inicial;
 char* claves_bloqueadas;
+int estimacion_inicial;
 int alfa_planificacion;
 
 int socket_esi;
-int socket_coordinador;
 
-void planificar();
-void crearServidorSencillo();
-void atenderESI();
-void atenderCoordinador();
+/* Funciones */
 void iniciarConsola();
+void atenderESI();
 void sigchld_handler(int s);
-int servidorConSelect(void);
+void crearServidorSencillo();
 void crearCliente(void);
+void atenderCoordinador();
+void inicializar();
 void setearValores(t_config * archivoConfig);
 void iniciarPlanificacion();
-void inicializar();
-t_ESIPlanificador* inicializarESI(char* ID,	int rafagas_ejecutadas);
-void aplicarSJF();
-void aplicarSJFConDesalojo();
+void planificar();
 void aplicarFIFO();
-void imprimir(t_list* self);
-void ejecutarEsi();
+void aplicarSJFConDesalojo();
+void aplicarSJF();
+t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi);
 bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
+t_ESIPlanificador* inicializarESI(char* ID,	int rafagas_ejecutadas);
+void ejecutarEsi();
+void imprimir(t_list* self);
+
+int servidorConSelect(void);  //Esta wea no se usa
+
+
 
 #endif /* PLANIFICADOR_H_ */
