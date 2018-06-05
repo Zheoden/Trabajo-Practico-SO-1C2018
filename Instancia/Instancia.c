@@ -245,13 +245,11 @@ void cargarDatos(char* unaClave, char* unValor) {
 	free(valor);
 }
 
-<<<<<<< HEAD
 bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada){
 	return unaEntrada->clave == otraEntrada->clave;
 }
 
 //funcion para probar el dump
-=======
 int ceilDivision(int lengthValue) {
 	double cantidadEntradas;
 	cantidadEntradas = (lengthValue + tamanio_entrada -1 )/ tamanio_entrada;
@@ -278,7 +276,6 @@ int getFirstIndex (int entradasValue){
 	}
 	return -1;
 }
->>>>>>> 776d96ad21e93399498ac60f3469a4d727c390b7
 
 void inicializarTabla(){
 	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+1);

@@ -30,18 +30,14 @@ int cantidad_de_entradas;
 char** tabla_entradas;
 t_list* entradas_administrativas;
 
-<<<<<<< HEAD
 void iniciarDump();
 void imprimirTabla();
 void dump();
 void cargarDatos(char* unaClave, char* unValor);
 void inicializarTabla();
 void verificarPuntoMontaje();
-=======
 
 /* Funciones */
-
->>>>>>> 776d96ad21e93399498ac60f3469a4d727c390b7
 void inicializar();
 void crearCliente(void);
 void setearValores(t_config * archivoConfig);
@@ -54,13 +50,9 @@ void dump();
 void cargarDatos(char* unaClave, char* unValor);
 int ceilDivision(int lengthValue);
 int getFirstIndex (int entradasValue);
-<<<<<<< HEAD
 bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada);
-=======
 void inicializarTabla();
 void imprimirTabla();
->>>>>>> 776d96ad21e93399498ac60f3469a4d727c390b7
-
 
 
 #endif /* INSTANCIA_H_ */
