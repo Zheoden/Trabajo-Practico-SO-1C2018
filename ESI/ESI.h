@@ -14,6 +14,8 @@
 #include <Funciones/serializacion.h>
 #include <dirent.h>
 
+/* Variables globales */
+
 char* planificador_ip;
 int planificador_puerto;
 
@@ -26,16 +28,19 @@ int socket_coordinador;
 FILE* fp;
 const char* filename;
 
-void abrirArchivo(char* path);
-void crearClientePlanif();
+/* Funciones*/
+
 void crearClienteCoor();
-void parsear();
+void crearClientePlanif();
 void atenderPlanificador();
 void atenderCoordinador();
 void setearValores(t_config * archivoConfig);
+void parsear();
 void matarESI();
-void foo();
 const char* get_filename(const char* path);
+void abrirArchivo(char* path);
+void foo();
+
 
 #endif /* CLIENTE_H_ */
 

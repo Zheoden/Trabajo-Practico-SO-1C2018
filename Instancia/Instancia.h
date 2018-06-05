@@ -12,6 +12,8 @@
 #include <dirent.h>
 
 
+/* Variables globales */
+
 char* client_ip;
 int client_puerto;
 int socket_coordinador;
@@ -27,20 +29,23 @@ int cantidad_de_entradas;
 char** tabla_entradas;
 t_list* entradas_administrativas;
 
-void iniciarDump();
-void imprimirTabla();
-void dump();
-void cargarDatos(char* unaClave, char* unValor);
-void inicializarTabla();
-void verificarPuntoMontaje();
+
+/* Funciones */
+
 void inicializar();
-void iniciarManejoDeEntradas();
-void manejarEntradas();
 void crearCliente(void);
 void setearValores(t_config * archivoConfig);
 bool handshakeInstanciaCoordinador();
+void iniciarManejoDeEntradas();
+void manejarEntradas();
+void verificarPuntoMontaje();
+void iniciarDump();
+void dump();
+void cargarDatos(char* unaClave, char* unValor);
 int ceilDivision(int lengthValue);
 int getFirstIndex (int entradasValue);
+void inicializarTabla();
+void imprimirTabla();
 
 
 

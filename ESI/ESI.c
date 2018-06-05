@@ -1,5 +1,6 @@
 #include "ESI.h"
 
+/* Conexiones */
 void crearClienteCoor() {
 	struct sockaddr_in direccionServidor;
 	direccionServidor.sin_family = AF_INET;
@@ -89,6 +90,8 @@ void atenderCoordinador(){
 	pthread_detach(unHilo);
 }
 
+
+/* Archivo configuración */
 void setearValores(t_config * archivoConfig) {
  	planificador_puerto = config_get_int_value(archivoConfig, "PLANIFICADOR_PUERTO");
  	planificador_ip = strdup(config_get_string_value(archivoConfig, "PLANIFICADOR_IP"));
@@ -98,6 +101,8 @@ void setearValores(t_config * archivoConfig) {
  	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
  }
 
+
+/* Operaciones ESI */
 void parsear(char* line) {
 	void* datos;
 	int tamanio;
@@ -153,6 +158,15 @@ void matarESI(){
 	exit(1);
 }
 
+
+/* Manejo de Archivos*/
+const char* get_filename(const char* path){
+
+	const char *file = strrchr(path,'/');
+	if(!file || file == path) return "";
+	return file +1;
+}
+
 void abrirArchivo(char* path){
 	fp = fopen(path, "r");
 	if (fp == NULL) {
@@ -165,6 +179,7 @@ void abrirArchivo(char* path){
 	filename = get_filename(path);
 }
 
+/* Función PRUEBA*/
 void foo(){
 	char * line = NULL;
 	size_t len = 0;
@@ -177,10 +192,4 @@ void foo(){
 		free(line);
 		log_info(logger, "Se libero la memoria de la linea actual.");
 	}
-}
-
-const char* get_filename(const char* path){
-	const char *file = strrchr(path,'/');
-	if(!file || file == path) return "";
-	return file +1;
 }
