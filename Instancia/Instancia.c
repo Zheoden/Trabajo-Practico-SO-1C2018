@@ -220,11 +220,14 @@ void cargarDatos(char* unaClave, char* unValor) {
 	nueva->tamanio = strlen(valor);
 	nueva->index = getFirstIndex(nueva->entradasOcupadas);
 
+	bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
+		return !strcmp(unaEntrada->clave, nueva->clave);
+	}
 
-	int indexClave = list_get_index(entradas_administrativas,nueva,(void*)comparadorDeClaves);
-
-	if((indexClave != list_size(entradas_administrativas) && (!list_is_empty(entradas_administrativas)) )){
-		t_AlmacenamientoEntradaAdministrativa* instanciaACargar = (t_AlmacenamientoEntradaAdministrativa*) list_remove(entradas_administrativas,indexClave);
+	t_AlmacenamientoEntradaAdministrativa*  instanciaACargar = (t_AlmacenamientoEntradaAdministrativa*)list_find(entradas_administrativas, (void*)buscarClave);
+	if( instanciaACargar != NULL ){
+		int indexClave = list_get_index(entradas_administrativas,nueva,(void*)comparadorDeClaves);
+		list_remove(entradas_administrativas,indexClave);
 		int j;
 		for (j = instanciaACargar->index ; j < ( instanciaACargar->index + nueva->entradasOcupadas); j++){
 			strcpy(tabla_entradas[j],"null");
@@ -249,7 +252,7 @@ void cargarDatos(char* unaClave, char* unValor) {
 }
 
 bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada){
-	return unaEntrada->clave == otraEntrada->clave;
+	return !strcmp(unaEntrada->clave, otraEntrada->clave);
 }
 
 //funcion para probar el dump
