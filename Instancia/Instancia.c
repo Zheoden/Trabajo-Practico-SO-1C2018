@@ -217,15 +217,18 @@ void cargarDatos(char* unaClave, char* unValor) {
 	nueva->clave = malloc(strlen(clave) + 1);
 	strcpy(nueva->clave, clave);
 	nueva->entradasOcupadas = ceilDivision(strlen(valor));
-	nueva->tamanio = strlen(valor);//nueva->tamanio = strlen(valor) + strlen(clave);
-
+	nueva->tamanio = strlen(valor);
 	nueva->index = getFirstIndex(nueva->entradasOcupadas);
 
+
 	int indexClave = list_get_index(entradas_administrativas,nueva,(void*)comparadorDeClaves);
-	t_AlmacenamientoEntradaAdministrativa* instanciaACargar = (t_AlmacenamientoEntradaAdministrativa*) list_remove(entradas_administrativas,indexClave);
-	int j;
-	for (j = indexClave ; j < nueva->entradasOcupadas+1; j++){
-		strcpy(tabla_entradas[j],"null");
+
+	if((indexClave != list_size(entradas_administrativas) && (!list_is_empty(entradas_administrativas)) )){
+		t_AlmacenamientoEntradaAdministrativa* instanciaACargar = (t_AlmacenamientoEntradaAdministrativa*) list_remove(entradas_administrativas,indexClave);
+		int j;
+		for (j = instanciaACargar->index ; j < ( instanciaACargar->index + nueva->entradasOcupadas); j++){
+			strcpy(tabla_entradas[j],"null");
+		}
 	}
 
 	list_add(entradas_administrativas, nueva);
