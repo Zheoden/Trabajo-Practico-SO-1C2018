@@ -258,7 +258,7 @@ void aplicarSJF() {
 	t_ESIPlanificador* esiAux = (t_ESIPlanificador*) list_remove(aux, 0);
 
 	bool comparator(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
-		return unESI->ID == otroESI->ID;
+		return !strcmp(unESI->ID, otroESI->ID);
 	}
 
 	int index = list_get_index(ESI_listos,esiAux,(void*)comparator);

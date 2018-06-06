@@ -14,12 +14,12 @@ int main(int argc, char ** argv){
 
 	/*Pruebas de SJF*/
 
-	t_ESIPlanificador* aux = inicializarESI("001",2);
+	t_ESIPlanificador* aux = inicializarESI("001",1);
 	t_ESIPlanificador* aux1 = inicializarESI("002",1);
-	t_ESIPlanificador* aux2 = inicializarESI("003",2);
+	t_ESIPlanificador* aux2 = inicializarESI("003",1);
 	t_ESIPlanificador* aux3 = inicializarESI("004",1);
-	t_ESIPlanificador* aux4 = inicializarESI("005",2);
-	t_ESIPlanificador* aux5 = inicializarESI("006",1);
+	t_ESIPlanificador* aux4 = inicializarESI("005",1);
+	t_ESIPlanificador* aux5 = inicializarESI("006",2);
 	t_ESIPlanificador* aux6 = inicializarESI("007",2);
 
 	list_add(ESI_listos,aux);
@@ -31,6 +31,10 @@ int main(int argc, char ** argv){
 	list_add(ESI_listos,aux6);
 
 	aplicarSJF();
+	aplicarSJFConDesalojo();
+	aplicarSJFConDesalojo();
+	aplicarSJFConDesalojo();
+	aplicarSJFConDesalojo();
 	aplicarSJFConDesalojo();
 	printf("LISTOS--------------------------------\n");
 	imprimir(ESI_listos);
