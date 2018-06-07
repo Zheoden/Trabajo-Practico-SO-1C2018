@@ -41,6 +41,8 @@ int alfa_planificacion;
 
 int socket_esi;
 
+char* ultimo_ID_Asignado;
+
 /* Semaforos */
 pthread_mutex_t siguiente_linea;
 
@@ -60,9 +62,11 @@ void aplicarSJFConDesalojo();
 void aplicarSJF();
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi);
 bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
-t_ESIPlanificador* inicializarESI(char* ID,	int rafagas_ejecutadas);
+t_ESIPlanificador* inicializarESI(char* ID,int socket);
 void ejecutarEsi();
 void imprimir(t_list* self);
+char* incrementarID(char *ID);
+void liberarClave(char* clave);
 
 int servidorConSelect(void);  //Esta wea no se usa
 

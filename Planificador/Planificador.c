@@ -45,7 +45,7 @@ void crearServidorSencillo() {
 		log_error(logger,"Bind: %s",strerror(errno));
 	}
 	log_info(logger,"El Servidor esta levantado esperando conexiones.");
-	if (listen(sockfd, 10) == -1) {
+	if (listen(sockfd, 10) == -1) {//revisar esto que solo acepta 10 conexiones
 		log_error(logger,"Listen: %s",strerror(errno));
 	}
 
@@ -73,13 +73,13 @@ void crearServidorSencillo() {
 			while (RecibirPaqueteServidor(socket_esi, PLANIFICADOR, &paquete) > 0) {
 				if (paquete.header.quienEnvia == ESI) {
 					switch(paquete.header.tipoMensaje){
-						case t_HANDSHAKE:
-							log_info(logger,"El proceso ESI es %s.", (char*)paquete.mensaje);
-							t_ESIPlanificador* nuevoEsi =  malloc(sizeof(t_ESIPlanificador));
-							nuevoEsi->ID = malloc(strlen(paquete.mensaje) + 1);
-							strcpy(nuevoEsi->ID, paquete.mensaje);
+						case t_HANDSHAKE:{
+							/*Inicializo un ESI nuevo*/
+							ultimo_ID_Asignado = incrementarID(ultimo_ID_Asignado);
+							t_ESIPlanificador* nuevoEsi = inicializarESI(ultimo_ID_Asignado,socket_esi);
 							list_add(ESI_listos, nuevoEsi);
 							log_info(logger,"Se agrego al ESI: %s, a la lista de Listos.", nuevoEsi->ID);
+						}
 							break;
 					}
 				}else{
@@ -149,17 +149,23 @@ void crearCliente(void) {
 		}
 		break;
 
+		case t_STORE:{
+			char* clave = malloc(strlen((char*)datos));
+			strcpy(clave,(char*)datos);
+			liberarClave(clave);
+			log_info(logger,"Se libero la clave: %s", clave);
+		}
+		break;
+
 		case t_ABORTARESI:{
-			bool buscarEsiPorID(t_ESIPlanificador* esi) {
-				return !strcmp(esi->ID, datos);
-			}
-			t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove_by_condition(ESI_ejecucion,(void*)buscarEsiPorID );
+			t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove(ESI_ejecucion,0 );
 			EnviarDatosTipo(socket_esi,PLANIFICADOR, NULL, 0, t_ABORTARESI);
 			//liberarrecursos()
 			list_add(ESI_finalizados, esiAAbortar);
 			log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
 		}
 		break;
+
 		}
 		pthread_mutex_lock(&siguiente_linea);
 	}
@@ -185,6 +191,8 @@ void inicializar(){
 	ESI_finalizados = list_create();
 	pthread_mutex_init(&siguiente_linea,NULL);
 	planificacion_activa=true;
+	ultimo_ID_Asignado = malloc(4);
+	strcpy(ultimo_ID_Asignado,"000");
 
 	log_info(logger,"Se inicio inicializaron las variables correctamente.");
 }
@@ -210,7 +218,6 @@ void setearValores(t_config * archivoConfig) {
 void iniciarPlanificacion(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para manejar la Planificación.");
-	planificacion_activa = true;
 	pthread_create(&hilo, NULL, (void *) planificar, NULL);
 	pthread_detach(hilo);
 }
@@ -218,21 +225,23 @@ void iniciarPlanificacion(){
 void planificar() {
 	while(1){
 		while (planificacion_activa) {
-			pthread_mutex_lock(&siguiente_linea);
-			if (!strcmp(algoritmo_planificacion, "FIFO")) {
-				aplicarFIFO();
-				ejecutarEsi();
+			if(!list_is_empty(ESI_listos)){
+				pthread_mutex_lock(&siguiente_linea);
+				if (!strcmp(algoritmo_planificacion, "FIFO")) {
+					aplicarFIFO();
+					ejecutarEsi();
 
-			} else if (!strcmp(algoritmo_planificacion, "SJF/SD")) {
-				aplicarSJF();
-				ejecutarEsi();
+				} else if (!strcmp(algoritmo_planificacion, "SJF/SD")) {
+					aplicarSJF();
+					ejecutarEsi();
 
-			} else if (!strcmp(algoritmo_planificacion, "SJF/CD")) {
-				aplicarSJFConDesalojo();
-				ejecutarEsi();
-			} else if (!strcmp(algoritmo_planificacion, "HRRN")) {
+				} else if (!strcmp(algoritmo_planificacion, "SJF/CD")) {
+					aplicarSJFConDesalojo();
+					ejecutarEsi();
+				} else if (!strcmp(algoritmo_planificacion, "HRRN")) {
 
 
+				}
 			}
 		}
 	}
@@ -265,7 +274,6 @@ void aplicarSJF() {
 
 	int index = list_get_index(ESI_listos,esiAux,(void*)comparator);
 	t_ESIPlanificador* esiAEjecutar = list_remove(ESI_listos,index);
-	esiAEjecutar->rafagas_ejecutadas++;//BORRAR DE ACA CUANDO SE CONECTE TODO
 	list_add(ESI_ejecucion, esiAEjecutar);
 
 }
@@ -289,11 +297,14 @@ void ejecutarEsi() {
 	}
 }
 
-t_ESIPlanificador* inicializarESI(char* ID,	int rafagas_ejecutadas){
+/*Funcion de Prueba*/
+t_ESIPlanificador* inicializarESI(char* ID,int socket){
 	t_ESIPlanificador*aux = malloc(sizeof(t_ESIPlanificador)+25);
 	aux->ID = malloc(4);
 	strcpy(aux->ID, ID);
-	aux->rafagas_ejecutadas = rafagas_ejecutadas;
+	aux->bloqueado=false;
+	aux->socket = socket;
+	aux->rafagas_ejecutadas = 0;
 	return aux;
 }
 
@@ -306,6 +317,64 @@ void imprimir(t_list* self){
 		printf("ID: %s\n", aux->ID);
 		printf("rafagas_ejecutadas: %d\n", aux->rafagas_ejecutadas);
 		printf("rafagas_estimadas: %f\n", aux->rafagas_estimadas);
+	}
+}
+/*Funcion que genera los IDs*/
+char* incrementarID(char *ID){
+	int i, begin, tail, len;
+	int neg = (*ID == '-');
+	char tgt = neg ? '0' : '9';
+
+	/* special case: "-1" */
+	if (!strcmp(ID, "-1")) {
+		ID[0] = '0', ID[1] = '\0';
+		return ID;
+	}
+
+	len = strlen(ID);
+	begin = (*ID == '-' || *ID == '+') ? 1 : 0;
+
+	/* find out how many digits need to be changed */
+	for (tail = len - 1; tail >= begin && ID[tail] == tgt; tail--);
+
+	if (tail < begin && !neg) {
+		/* special case: all 9s, string will grow */
+		if (!begin) ID = realloc(ID, len + 2);
+		ID[0] = '1';
+		for (i = 1; i <= len - begin; i++) ID[i] = '0';
+		ID[len + 1] = '\0';
+	} else if (tail == begin && neg && ID[1] == '1') {
+		/* special case: -1000..., so string will shrink */
+		for (i = 1; i < len - begin; i++) ID[i] = '9';
+		ID[len - 1] = '\0';
+	} else { /* normal case; change tail to all 0 or 9, change prev digit by 1*/
+		for (i = len - 1; i > tail; i--)
+			ID[i] = neg ? '9' : '0';
+		ID[tail] += neg ? -1 : 1;
+	}
+
+	return ID;
+}
+
+void liberarClave(char* clave){
+
+	void compararClave(t_ESIPlanificador* aux){
+		if(aux->bloqueado && (!strcmp(aux->razon_bloqueo, clave))){
+			aux->bloqueado=false;
+			strcpy(aux->razon_bloqueo,"");
+		}
+	}
+
+	list_iterate(ESI_bloqueados,(void*)compararClave);
+	int i;
+	for(i = 0 ; i < list_size(ESI_bloqueados) ; i++){
+		t_ESIPlanificador* elemento = (t_ESIPlanificador*) list_remove(ESI_bloqueados,i);
+		if( !elemento->bloqueado ){
+			list_add(ESI_listos,elemento);
+		}else{
+			list_add(ESI_bloqueados,elemento);
+		}
+
 	}
 }
 

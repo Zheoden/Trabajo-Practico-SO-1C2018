@@ -8,7 +8,7 @@ int main(int argc, char ** argv){
 	leerConfig(planificador_config_ruta,logger);
 	inicializar();
 	iniciarConsola();
-	iniciarPlanificacion();
+//	iniciarPlanificacion();
 //	atenderCoordinador();
 //	crearServidorSencillo();
 
@@ -19,8 +19,8 @@ int main(int argc, char ** argv){
 	t_ESIPlanificador* aux2 = inicializarESI("003",1);
 	t_ESIPlanificador* aux3 = inicializarESI("004",1);
 	t_ESIPlanificador* aux4 = inicializarESI("005",1);
-	t_ESIPlanificador* aux5 = inicializarESI("006",2);
-	t_ESIPlanificador* aux6 = inicializarESI("007",2);
+	t_ESIPlanificador* aux5 = inicializarESI("006",1);
+	t_ESIPlanificador* aux6 = inicializarESI("007",1);
 
 	list_add(ESI_listos,aux);
 	list_add(ESI_listos,aux1);
@@ -29,7 +29,7 @@ int main(int argc, char ** argv){
 	list_add(ESI_listos,aux4);
 	list_add(ESI_listos,aux5);
 	list_add(ESI_listos,aux6);
-
+/*
 	aplicarSJF();
 	aplicarSJFConDesalojo();
 	aplicarSJFConDesalojo();
@@ -37,12 +37,32 @@ int main(int argc, char ** argv){
 	aplicarSJFConDesalojo();
 	aplicarSJFConDesalojo();
 
+	usleep(5 * 1000000); //intervalo_de_dump segundos :D!
 	printf("LISTOS--------------------------------\n");
 	imprimir(ESI_listos);
+
+
 	printf("EJECUCION--------------------------------\n");
-	imprimir(ESI_ejecucion);
+	imprimir(ESI_ejecucion);*/
 
 	/*Fin de pruebas de SJF*/
+
+	t_ESIPlanificador* aux15 = malloc(sizeof(t_ESIPlanificador)+25);
+	aux15->ID = malloc(4);
+	strcpy(aux15->ID, "015");
+	aux15->bloqueado=true;
+	aux15->razon_bloqueo = malloc(10);
+	strcpy(aux15->razon_bloqueo,"claveTest");
+	aux15->rafagas_ejecutadas = 0;
+
+	list_add(ESI_bloqueados,aux15);
+	liberarClave("claveTestTest");
+
+	printf("LISTOS--------------------------------\n");
+	imprimir(ESI_listos);
+
+	printf("BLOQUEADOS--------------------------------\n");
+	imprimir(ESI_bloqueados);
 
 	for(;;);
 
