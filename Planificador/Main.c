@@ -36,6 +36,7 @@ int main(int argc, char ** argv){
 	aplicarSJFConDesalojo();
 	aplicarSJFConDesalojo();
 	aplicarSJFConDesalojo();
+
 	printf("LISTOS--------------------------------\n");
 	imprimir(ESI_listos);
 	printf("EJECUCION--------------------------------\n");

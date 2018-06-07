@@ -161,7 +161,7 @@ void crearCliente(void) {
 		}
 		break;
 		}
-
+		pthread_mutex_lock(&siguiente_linea);
 	}
 	if (paquete.mensaje != NULL) {
 		free(paquete.mensaje);
@@ -183,9 +183,10 @@ void inicializar(){
 	ESI_ejecucion = list_create();
 	ESI_bloqueados = list_create();
 	ESI_finalizados = list_create();
+	pthread_mutex_init(&siguiente_linea,NULL);
 	planificacion_activa=true;
 
-	log_info(logger,"Se inicio inicializaron las listas correctamente.");
+	log_info(logger,"Se inicio inicializaron las variables correctamente.");
 }
 
 /* Se setea el archivo de configuración */
@@ -217,9 +218,10 @@ void iniciarPlanificacion(){
 void planificar() {
 	while(1){
 		while (planificacion_activa) {
+			pthread_mutex_lock(&siguiente_linea);
 			if (!strcmp(algoritmo_planificacion, "FIFO")) {
-				//aplicarFIFO();
-				//ejecutarEsi();
+				aplicarFIFO();
+				ejecutarEsi();
 
 			} else if (!strcmp(algoritmo_planificacion, "SJF/SD")) {
 				aplicarSJF();

@@ -41,6 +41,9 @@ int alfa_planificacion;
 
 int socket_esi;
 
+/* Semaforos */
+pthread_mutex_t siguiente_linea;
+
 /* Funciones */
 void iniciarConsola();
 void atenderESI();
