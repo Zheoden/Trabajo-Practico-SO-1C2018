@@ -366,8 +366,9 @@ void liberarClave(char* clave){
 	}
 
 	list_iterate(ESI_bloqueados,(void*)compararClave);
+	int tamanioInicial = list_size(ESI_bloqueados);
 	int i;
-	for(i = 0 ; i < list_size(ESI_bloqueados) ; i++){
+	for(i = 0 ; i < tamanioInicial ; i++){
 		t_ESIPlanificador* elemento = (t_ESIPlanificador*) list_remove(ESI_bloqueados,i);
 		if( !elemento->bloqueado ){
 			list_add(ESI_listos,elemento);
