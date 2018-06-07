@@ -13,23 +13,6 @@ void crearClienteCoor() {
 	}
 
 	EnviarHandshake(socket_coordinador,ESI);
-
-	while(1){
-		char mensaje [1000];
-		scanf("%s", mensaje);
-		send(socket_coordinador, mensaje, strlen(mensaje), 0);
-
-
-     	char* buffer = malloc(30);
-     	int bytesRecibidos = recv(socket_coordinador,buffer, 25, 0);
-     	if (bytesRecibidos <= 0) {
-     		log_error(logger,"Se desconecto el socket: %d",socket_coordinador);
-     	}
-     	buffer[bytesRecibidos] = '\0';
-     	printf("me llegaron %d bytes con %s\n", bytesRecibidos, buffer);
-     	free(buffer);
-	}
-
 }
 
 void crearClientePlanif() {
@@ -115,7 +98,7 @@ void parsear(char* line) {
 			tamanio = strlen(parsed.argumentos.GET.clave)+1;
 			datos = malloc(tamanio);
 			strcpy(datos, parsed.argumentos.GET.clave);
-			//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);
+			EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_GET);
 			log_info(logger,"Para el script: %s se ejecuto el comando GET, para la clave %s",
 					filename,parsed.argumentos.GET.clave);
 			break;
@@ -124,7 +107,7 @@ void parsear(char* line) {
 			datos = malloc(tamanio);
 			strcpy(datos, parsed.argumentos.SET.clave);
 			strcpy(datos +(strlen(parsed.argumentos.SET.clave) + 1), parsed.argumentos.SET.valor);
-			//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
+			EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
 			log_info(logger, "Para el script: %s se ejecuto el comando SET, para la clave %s y el valor %s",
 					filename, parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
 			break;
@@ -132,23 +115,23 @@ void parsear(char* line) {
 			tamanio = strlen(parsed.argumentos.STORE.clave) + 1;
 			datos = malloc(tamanio);
 			strcpy(datos, parsed.argumentos.STORE.clave);
-			//EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);
+			EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio,t_STORE);
 			log_info(logger,"Para el script: %s se ejecuto el comando STORE, para la clave %s",
 					filename, parsed.argumentos.STORE.clave);
 			break;
 		default:
 			log_info(logger, "No pude interpretar <%s>\n", line);
 			log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
-			//matarESI();
+			EnviarDatosTipo(socket_planificador, ESI, NULL, 0, t_ABORTARESI);
+			matarESI();
 		}
 		destruir_operacion(parsed);
 	} else {
 		log_info(logger, "La linea <%s> no es valida\n", line);
 		log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
-		//matarESI();
+		EnviarDatosTipo(socket_planificador, ESI, NULL, 0, t_ABORTARESI);
+		matarESI();
 	}
-
-	printf("%s\n",(char*)datos);
 	free(datos);
 }
 
@@ -174,7 +157,6 @@ void abrirArchivo(char* path){
 		log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
 		perror("Error al abrir el archivo: ");
 		exit(1);
-		//matarESI();
 	}
 	filename = get_filename(path);
 }
