@@ -159,7 +159,7 @@ void coordinar(void* socket) {
 				datosEntradas += sizeof(int);
 				datosEntradas -= tamanioDatosEntradas;
 				log_info(logger,"Se le envio a la Instancia la informacion de las entradas con la que se va a trabajar");
-				EnviarDatosTipo(socketActual, COORDINADOR, datosEntradas,tamanioDatosEntradas, t_CONFIGURACIONINSTANCIA);
+				EnviarDatosTipo(socketActual, COORDINADOR, datosEntradas,tamanioDatosEntradas, t_HANDSHAKE);
 				free(datosEntradas);
 				log_info(logger,"Se libero la memoria utilizada para enviar los datos a la instancia");
 			}

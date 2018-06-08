@@ -17,24 +17,10 @@ void crearCliente(void) {
 		log_error(logger,"No se pudo conectar: %s",strerror(errno));
 	}
 	log_info(logger,"Se establecio conexion con el Coordinador correctamente");
+
+	EnviarHandshake(socket_coordinador,INSTANCIA);
+
 	iniciarManejoDeEntradas();
-	/*
-	while(1){
-		char mensaje [1000];
-		scanf("%s", mensaje);
-		send(socket_coordinador, mensaje, strlen(mensaje), 0);
-
-
-     	char* buffer = malloc(30);
-     	int bytesRecibidos = recv(socket_coordinador,buffer, 25, 0);
-     	if (bytesRecibidos <= 0) {
-     		log_error(logger,"Se desconecto el socket: %d",socket_coordinador);
-     	}
-     	buffer[bytesRecibidos] = '\0';
-     	printf("me llegaron %d bytes con %s\n", bytesRecibidos, buffer);
-     	free(buffer);
-	}*/
-
 }
 
 /* Se setean los valores en el archivo de configuración */
@@ -50,12 +36,6 @@ void setearValores(t_config * archivoConfig) {
 	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Reemplazo: %s",algoritmo_de_reemplazo);
  }
 
-/* Envío de datos con Coordinador -- HANDSHAKE */
-bool handshakeInstanciaCoordinador(){
-	EnviarDatosTipo(socket_coordinador, INSTANCIA,(void*)cantidad_de_entradas, sizeof(cantidad_de_entradas),t_HANDSHAKE);
-	EnviarDatosTipo(socket_coordinador, INSTANCIA,(void*)tamanio_entrada, sizeof(tamanio_entrada),t_HANDSHAKE);
-	return true;
-}
 
 /* Creación de hilo para el manejo de entradas */
 void iniciarManejoDeEntradas(){
@@ -76,18 +56,23 @@ void manejarEntradas() {
 			tamanio_entrada = *((int*) datos);
 			datos += sizeof(int);
 			cantidad_de_entradas = *((int*) datos);
-
 			inicializarTabla();
-
-			handshakeInstanciaCoordinador();
 			log_info(logger,"Se envio un Handshake al Coordiandor");
 		}
-			break;
+		break;
+		case t_SOLICITUDNOMBRE: {
+			int tamanioNombre = strlen(nombre_de_la_instancia);
+			void *nombre = malloc(tamanioNombre);
+			strcpy(nombre,nombre_de_la_instancia);
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, nombre, tamanioNombre, t_IDENTIFICACIONINSTANCIA);
+			log_info(logger,"Se recibio una solicitud de Nombre.");
+		}
+		break;
 		case t_STORE: {
 			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.");
 			log_info(logger,"Se proceso correctamente el STORE.");
 		}
-			break;
+		break;
 		case t_SET: {
 			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
 			char*clave = malloc(strlen(datos) + 1);
@@ -96,12 +81,12 @@ void manejarEntradas() {
 			char* valor = malloc(strlen(datos) + 1);
 			strcpy(valor, datos);
 			cargarDatos(clave,valor);
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_SET);
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASET);
 			log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
 			free(clave);
 			free(valor);
 		}
-			break;
+		break;
 
 		}
 		if (paquete.mensaje != NULL) {
@@ -110,7 +95,7 @@ void manejarEntradas() {
 		}
 
 	}
-
+	close(socket_coordinador);//Cierro el socket porque dejo de recibir info
 }
 
 /* Verificar punto de montaje */
@@ -118,16 +103,13 @@ void verificarPuntoMontaje(){
 
 	DIR* directorio_de_montaje = opendir(punto_de_montaje);
 	if (ENOENT == errno){
-		//el directorio no existe
+		/* Directorio No Existe. */
 		log_info(logger,"No existe el punto de montaje, se va a proceder a crearlo.");
 		mkdir(punto_de_montaje,0777);
 		log_info(logger,"El punto de montaje se creo exitosamente.");
 	}
 	if (directorio_de_montaje != NULL){
-		/* Directory exists. */
-		/* El directorio existe. Hay que recorrer todos sus archivos y por cada uno de ellos
-		 *  verificar el nombre del archivo(clave) y lo que haya dentro es el value(valor)
-		 * Despues hay que añadirlo a la tabla de entradas y mandarle un mensaje a COORDINADOR con las entradas que tiene */
+		/* Directorio Existe. */
 		struct dirent *ent;
 		while( (ent = readdir(directorio_de_montaje)) != NULL ){
 			if( (strncmp(ent->d_name, ".", 1)) ){
@@ -172,7 +154,7 @@ void iniciarDump(){
 void dump(){
 	while(1){
 		usleep(intervalo_de_dump * 1000000); //intervalo_de_dump segundos :D!
-		imprimirTabla();
+		//imprimirTabla(); //Esto no se necesita para el TP es solo para Debug
 		int i,j;
 		//Recoro las entradas para saber cuales tengo
 		for (i=0;  i< list_size(entradas_administrativas); i++) {
@@ -194,25 +176,26 @@ void dump(){
 					tamanioPegado+=tamanio_entrada;
 				}
 			}
-
 			FILE* file_a_crear = fopen(directorio_actual,"w+");
 			fwrite(valor,actual->tamanio,sizeof(char),file_a_crear);
 
 			free(valor);
 			fclose(file_a_crear);
 		}
-		printf("%s\n",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		//printf("%s\n",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");//Esto no se necesita para el TP es solo para Debug
 	}
 }
 
 //funciones para probar el dump
 void cargarDatos(char* unaClave, char* unValor) {
 
+	//Guardo los valores que recibo por parametro en variables locales
 	char*clave =malloc(strlen(unaClave) + 1);
 	strcpy(clave, unaClave);
 	char* valor = malloc(strlen(unValor) + 1);
 	strcpy(valor, unValor);
 
+	//Inicializo una nueva posicion para la tabla administrativa
 	t_AlmacenamientoEntradaAdministrativa* nueva = malloc(sizeof(t_AlmacenamientoEntradaAdministrativa));
 	nueva->clave = malloc(strlen(clave) + 1);
 	strcpy(nueva->clave, clave);
@@ -220,20 +203,25 @@ void cargarDatos(char* unaClave, char* unValor) {
 	nueva->tamanio = strlen(valor);
 	nueva->index = getFirstIndex(nueva->entradasOcupadas);
 
+	//Funcion Auxiliar
 	bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
 		return !strcmp(unaEntrada->clave, nueva->clave);
 	}
 
-	t_AlmacenamientoEntradaAdministrativa*  instanciaACargar = (t_AlmacenamientoEntradaAdministrativa*)list_find(entradas_administrativas, (void*)buscarClave);
-	if( instanciaACargar != NULL ){
+	//Verifico si la clave ya existe en la tabla, si existe limpio su valor y la borro de la tabla
+	t_AlmacenamientoEntradaAdministrativa*  instanciaAReemplazar = (t_AlmacenamientoEntradaAdministrativa*)list_find(entradas_administrativas, (void*)buscarClave);
+	if( instanciaAReemplazar != NULL ){
 		int indexClave = list_get_index(entradas_administrativas,nueva,(void*)comparadorDeClaves);
 		list_remove(entradas_administrativas,indexClave);
 		int j;
-		for (j = instanciaACargar->index ; j < ( instanciaACargar->index + nueva->entradasOcupadas); j++){
+		for (j = instanciaAReemplazar->index ; j < ( instanciaAReemplazar->index + instanciaAReemplazar->entradasOcupadas); j++){
 			strcpy(tabla_entradas[j],"null");
 		}
 	}
 
+	//Busco el index ahora, que si ya existia, libere la posicion que ocupaba
+	nueva->index = getFirstIndex(nueva->entradasOcupadas);
+	//Agrego la clave con su valor
 	list_add(entradas_administrativas, nueva);
 	log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
 	int i;
