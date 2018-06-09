@@ -30,7 +30,7 @@ void servidor() {
 		if (bind(sockfd, (struct sockaddr *) &my_addr, sizeof(struct sockaddr)) == -1) {
 			log_error(logger,"Bind: %s",strerror(errno));
 		}
-		printf("Servidor levantado! %s\n","gordi");
+		printf("Servidor levantado! \n");
 		log_info(logger,"El Servidor esta levantado esperando conexiones.");
 		if (listen(sockfd, 10) == -1) {//revisar esto que solo acepta 10 conexiones
 			log_error(logger,"Listen: %s",strerror(errno));
@@ -91,10 +91,11 @@ void inicializar(){
 /* Operaciones COORDINADOR */
 void coordinar(void* socket) {
 	int socketActual = *(int*) socket;
+	printf("Se va a proceder a Coordinar el socket: %d\n", socketActual);
 	log_info(logger,"Se va a proceder a Coordinar el socket: %d", socketActual);
 	Paquete paquete;
 	void* datos;
-	while (RecibirPaqueteServidor(socketFD, COORDINADOR ,&paquete) > 0) {
+	while (RecibirPaqueteServidor(socketActual, COORDINADOR ,&paquete) > 0) {
 		switch (paquete.header.quienEnvia) {
 		case INSTANCIA:{
 			log_info(logger,"Llego un mensaje de una Instancia");
@@ -102,7 +103,7 @@ void coordinar(void* socket) {
 			case t_HANDSHAKE: {
 				log_info(logger,"Se recibio un Handshake de una Instancia");
 				//Evaluar si es mejor que mande directamente el nombre en el handshake o no
-				EnviarDatosTipo(socketFD, COORDINADOR, (void*)NULL, 0, t_SOLICITUDNOMBRE);
+				EnviarDatosTipo(socketActual, COORDINADOR, (void*)NULL, 0, t_SOLICITUDNOMBRE);
 				log_info(logger,"Se le envio a la Instancia una solicitud de Nombre");
 				int tamanioDatosEntradas = (sizeof(int) * 2);
 				void *datosEntradas = malloc(tamanioDatosEntradas);
@@ -112,13 +113,12 @@ void coordinar(void* socket) {
 				datosEntradas += sizeof(int);
 				datosEntradas -= tamanioDatosEntradas;
 				log_info(logger,"Se le envio a la Instancia la informacion de las entradas con la que se va a trabajar");
-				EnviarDatosTipo(socketFD, COORDINADOR, datosEntradas,tamanioDatosEntradas, t_CONFIGURACIONINSTANCIA);
-			//	free(datosEntradas);f
+				EnviarDatosTipo(socketActual, COORDINADOR, datosEntradas,tamanioDatosEntradas, t_CONFIGURACIONINSTANCIA);
+				free(datosEntradas);
 				log_info(logger,"Se libero la memoria utilizada para enviar los datos a la instancia");
 			}
 			break;
 			case t_IDENTIFICACIONINSTANCIA: {
-				printf("Se recibio una identificacion de una Instancia\n");
 				char *nombreInstancia = malloc(paquete.header.tamanioMensaje);
 				strcpy(nombreInstancia, (char*) paquete.mensaje);
 				t_Instancia* instancia = malloc(sizeof(t_Instancia));
@@ -128,7 +128,6 @@ void coordinar(void* socket) {
 				instancia->claves = list_create();
 				strcpy(instancia->nombre, nombreInstancia);
 				list_add(instancias, instancia);
-				printf("El nombre de la instancia es: %s\n", instancia->nombre);
 				log_info(logger,"Se agrego la Instancia: %s, a la lista de Instancias.", instancia->nombre);
 			}
 			break;
@@ -141,7 +140,6 @@ void coordinar(void* socket) {
 				datos = paquete.mensaje;
 				char*clave = malloc(strlen(datos) + 1);
 				strcpy(clave, datos);
-				printf("Clave: %s\n",clave);
 
 				t_Instancia* aux = ((t_Instancia*) list_find(instancias,(void*) tiene_socket));
 				list_add(aux->claves, clave);
@@ -151,7 +149,7 @@ void coordinar(void* socket) {
 			break;
 			case t_RESPUESTASTORE: {
 				printf("Se recibio una respuesta store de una Instancia\n");
-				EnviarDatosTipo(socket_planificador, COORDINADOR, NULL,0, t_STORE);
+				EnviarDatosTipo(socket_planificador, COORDINADOR, datos , strlen(datos)+1, t_STORE);
 			}
 			break;
 
