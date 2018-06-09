@@ -7,7 +7,7 @@ int main() {
 	char* instancia_config_ruta = strdup("/home/utnso/Proyectos/tp-2018-1c-PC-citos/Instancia/Instancia.cfg");
 	leerConfig(instancia_config_ruta,logger);
 	inicializar();
-	verificarPuntoMontaje();
+//	verificarPuntoMontaje();
 //	iniciarDump();
 	crearCliente();
 	//////////////////////////////////////////

@@ -8,7 +8,7 @@ void inicializar(){
 /* Conexión con el Coordinador */
 void crearCliente(void) {
 	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
-	printf("Me conecté al Coordinador %s \n", "Gordi");
+	printf("Me conecté al Coordinador\n");
 	EnviarHandshake(socket_coordinador,INSTANCIA);
 	//iniciarManejoDeEntradas();
 	manejarEntradas();
@@ -50,6 +50,7 @@ void manejarEntradas() {
 			cantidad_de_entradas = *((int*) datos);
 			printf("Tamanio: %d y cantidad: %d\n", tamanio_entrada,cantidad_de_entradas);
 			inicializarTabla();
+			verificarPuntoMontaje();
 			log_info(logger,"Se envio un Handshake al Coordiandor");
 		}
 		break;
@@ -65,6 +66,7 @@ void manejarEntradas() {
 		case t_STORE: {
 			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
 
+			printf("Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
 			int aux = strlen(datos) + 1;
 			char*clave = malloc(aux);
 			strcpy(clave, datos);
@@ -81,8 +83,7 @@ void manejarEntradas() {
 			liberarMemoria(instanciaAReemplazar);
 
 			log_info(logger,"Se proceso correctamente el STORE.");
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, aux, t_RESPUESTASTORE);
-			printf("Clave STORE: %s\n",clave);
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, datos, aux, t_RESPUESTASTORE);
 			free(clave);
 		}
 		break;
@@ -91,12 +92,9 @@ void manejarEntradas() {
 			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
-			printf("Clave: %s\n",clave);
 			char* valor = malloc(strlen(datos) + 1);
 			datos += strlen(datos) + 1;
 			strcpy(valor, datos);
-			printf("Valor: %s\n",valor);
-
 
 			cargarDatos(clave,valor);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASET);
