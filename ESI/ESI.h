@@ -12,6 +12,7 @@
 #include <Funciones/logs.h>
 #include <Funciones/configs.h>
 #include <Funciones/serializacion.h>
+#include <Funciones/conexiones.h>
 #include <dirent.h>
 
 /* Variables globales */

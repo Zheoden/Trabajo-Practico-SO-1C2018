@@ -2,32 +2,14 @@
 
 /* Conexiones */
 void crearClienteCoor() {
-	struct sockaddr_in direccionServidor;
-	direccionServidor.sin_family = AF_INET;
-	direccionServidor.sin_addr.s_addr = inet_addr(coordinador_ip);
-	direccionServidor.sin_port = htons(coordinador_puerto);
-
-	socket_coordinador = socket(AF_INET, SOCK_STREAM, 0);
-	if (connect(socket_coordinador,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
-		log_error(logger,"No se pudo conectar: %s",strerror(errno));
-	}
-
+	ConectarAServidor(coordinador_puerto,coordinador_ip);
 	EnviarHandshake(socket_coordinador,ESI);
 }
 
 void crearClientePlanif() {
-	struct sockaddr_in direccionServidor;
-	direccionServidor.sin_family = AF_INET;
-	direccionServidor.sin_addr.s_addr = inet_addr(planificador_ip);
-	direccionServidor.sin_port = htons(planificador_puerto);
 
-	socket_planificador = socket(AF_INET, SOCK_STREAM, 0);
-	if (connect(socket_planificador,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
-		log_error(logger,"No se pudo conectar: %s",strerror(errno));
-	}
-
+	ConectarAServidor(planificador_puerto,planificador_ip);
 	EnviarHandshake(socket_planificador,ESI);
-
 
 	char * line = NULL;
 	size_t len = 0;
