@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 
 
+
 //////////////////////////////////////////
 //           Tipos de Mensajes          //
 //////////////////////////////////////////
@@ -36,11 +37,6 @@ typedef enum proceso {
 	PLANIFICADOR,
 	INSTANCIA
 } proceso;
-
-typedef struct {
-	char* nombre;
-	int tamanio;
-} nombreProceso;
 
 //////////////////////////////////////////
 //           Comunicacion Base          //
@@ -102,23 +98,19 @@ typedef struct {
 //              Funciones               //
 //////////////////////////////////////////
 
-nombreProceso getNombreDelProceso(proceso proceso);
+char* getNombreDelProceso(proceso proceso);
 
 bool EnviarHandshake(int socketFD, proceso quienEnvia);
 
-bool EnviarDatos(int socketFD, proceso quienEnvia, void* datos, int tamDatos);
-
 bool EnviarDatosTipo(int socketFD, proceso quienEnvia, void* datos, int tamDatos, t_protocolo tipoMensaje);
 
-bool EnviarMensaje(int socketFD, char* msg, proceso quienEnvia);
-
 bool EnviarPaquete(int socketCliente, Paquete* paquete);
-
-bool RecibirHandshake(int socketFD, proceso quienEnvia);
 
 int RecibirDatos(void* paquete, int socketFD, uint32_t cantARecibir);
 
 int RecibirPaqueteServidor(int socketFD, proceso quienEnvia, Paquete* paquete); //Responde al recibir un Handshake
 
 int RecibirPaqueteCliente(int socketFD, proceso quienEnvia, Paquete* paquete); //No responde los Handshakes
-#endif /* SOCKETS_H_ */
+
+
+#endif /* SERIALIZACION_H_ */
