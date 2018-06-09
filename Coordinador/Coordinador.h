@@ -18,12 +18,14 @@ t_list* instancias;
 t_list* lista_ESIs;
 t_list* todas_las_claves;
 
+t_list* hilos;
+
 /* Variables globales */
 char* server_ip;
 int server_puerto;
 
 int socket_planificador;
-int socket_ESI;
+int socketFD;
 
 char* algoritmo_de_distribucion;
 int cantidad_entradas;
@@ -33,7 +35,7 @@ int retardo;
 /* Funciones */
 
 void sigchld_handler(int s);
-void servidorConSelect(void);
+void servidor();
 void setearValores(t_config * archivoConfig);
 void inicializar();
 void coordinar(void* socket);
