@@ -55,6 +55,7 @@ bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_Alm
 void inicializarTabla();
 void imprimirTabla();
 void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store);
+void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar);
 
 
 #endif /* INSTANCIA_H_ */

@@ -10,7 +10,8 @@ void crearCliente(void) {
 	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
 	printf("Me conecté al Coordinador %s \n", "Gordi");
 	EnviarHandshake(socket_coordinador,INSTANCIA);
-	iniciarManejoDeEntradas();
+	//iniciarManejoDeEntradas();
+	manejarEntradas();
 }
 
 /* Se setean los valores en el archivo de configuración */
@@ -40,36 +41,61 @@ void manejarEntradas() {
 	Paquete paquete;
 	void* datos;
 	while (RecibirPaqueteCliente(socket_coordinador, INSTANCIA, &paquete) > 0) {
+		datos = malloc(paquete.header.tamanioMensaje);
 		datos = paquete.mensaje;
 		switch (paquete.header.tipoMensaje) {
-		case t_HANDSHAKE: {
-			tamanio_entrada = *((int*) datos);
+		case t_CONFIGURACIONINSTANCIA: {
+			tamanio_entrada = *((int*) paquete.mensaje);
 			datos += sizeof(int);
 			cantidad_de_entradas = *((int*) datos);
+			printf("Tamanio: %d y cantidad: %d\n", tamanio_entrada,cantidad_de_entradas);
 			inicializarTabla();
 			log_info(logger,"Se envio un Handshake al Coordiandor");
 		}
 		break;
 		case t_SOLICITUDNOMBRE: {
-			int tamanioNombre = strlen(nombre_de_la_instancia);
+			int tamanioNombre = strlen(nombre_de_la_instancia)+1;
 			void *nombre = malloc(tamanioNombre);
 			strcpy(nombre,nombre_de_la_instancia);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, nombre, tamanioNombre, t_IDENTIFICACIONINSTANCIA);
 			log_info(logger,"Se recibio una solicitud de Nombre.");
+			free(nombre);
 		}
 		break;
 		case t_STORE: {
-			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.");
+			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
+
+			char*clave = malloc(strlen(datos) + 1);
+			strcpy(clave, datos);
+			printf("Clave: %s\n",clave);
+
+			//Funcion Auxiliar
+			bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
+				return !strcmp(unaEntrada->clave, clave);
+			}
+
+			//Verifico si la clave ya existe en la tabla, si existe limpio su valor y la borro de la tabla
+			t_AlmacenamientoEntradaAdministrativa*  instanciaAReemplazar = (t_AlmacenamientoEntradaAdministrativa*)list_find(entradas_administrativas, (void*)buscarClave);
+			guardarAArchivo(instanciaAReemplazar);
+			liberarMemoria(instanciaAReemplazar);
+
 			log_info(logger,"Se proceso correctamente el STORE.");
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASTORE);
+			free(clave);
 		}
 		break;
 		case t_SET: {
+			printf("Se recibio un SET del Coordinador, se va a pasar a procesar.\n");
 			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
-			datos += strlen(datos) + 1;
+			printf("Clave: %s\n",clave);
 			char* valor = malloc(strlen(datos) + 1);
+			datos += strlen(datos) + 1;
 			strcpy(valor, datos);
+			printf("Valor: %s\n",valor);
+
+
 			cargarDatos(clave,valor);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASET);
 			log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
@@ -180,14 +206,7 @@ void cargarDatos(char* unaClave, char* unValor) {
 
 	//Verifico si la clave ya existe en la tabla, si existe limpio su valor y la borro de la tabla
 	t_AlmacenamientoEntradaAdministrativa*  instanciaAReemplazar = (t_AlmacenamientoEntradaAdministrativa*)list_find(entradas_administrativas, (void*)buscarClave);
-	if( instanciaAReemplazar != NULL ){
-		int indexClave = list_get_index(entradas_administrativas,nueva,(void*)comparadorDeClaves);
-		list_remove(entradas_administrativas,indexClave);
-		int j;
-		for (j = instanciaAReemplazar->index ; j < ( instanciaAReemplazar->index + instanciaAReemplazar->entradasOcupadas); j++){
-			strcpy(tabla_entradas[j],"null");
-		}
-	}
+	liberarMemoria(instanciaAReemplazar);
 
 	//Busco el index ahora, que si ya existia, libere la posicion que ocupaba
 	nueva->index = getFirstIndex(nueva->entradasOcupadas);
@@ -296,10 +315,18 @@ void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store){
 	FILE* file_a_crear = fopen(directorio_actual,"w+");
 	fwrite(valor,clave_a_store->tamanio,sizeof(char),file_a_crear);
 
-	free(valor);
+
+	//free(valor);
 	fclose(file_a_crear);
 }
 
-void store(){}
-
-
+void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar){
+	if( clave_a_liberar != NULL ){
+		int indexClave = list_get_index(entradas_administrativas,clave_a_liberar,(void*)comparadorDeClaves);
+		list_remove(entradas_administrativas,indexClave);
+		int j;
+		for (j = clave_a_liberar->index ; j < ( clave_a_liberar->index + clave_a_liberar->entradasOcupadas); j++){
+			strcpy(tabla_entradas[j],"null");
+		}
+	}
+}
