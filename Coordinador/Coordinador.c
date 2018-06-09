@@ -150,7 +150,7 @@ void coordinar(void* socket) {
 			}
 			break;
 			case t_RESPUESTASTORE: {
-				printf("Se recibio una respuesta store de una Instancia %s\n","y... probemos");
+				printf("Se recibio una respuesta store de una Instancia\n");
 				EnviarDatosTipo(socket_planificador, COORDINADOR, NULL,0, t_STORE);
 			}
 			break;
@@ -171,19 +171,16 @@ void coordinar(void* socket) {
 					printf("Se recibio un SET de un ESI\n");
 					usleep(retardo * 1000000);
 					t_ESICoordinador* nuevo = malloc(sizeof(t_ESICoordinador));
-					printf("Algo: %s\n","Algo");
 
 					datos = paquete.mensaje;
 					nuevo->clave = malloc(strlen(datos) + 1);
 					strcpy(nuevo->clave, datos);
 
-					printf("Clave: %s\n",nuevo->clave);
 
 					nuevo->valor = malloc(strlen(datos) + 1);
 					datos += strlen(datos) + 1;
 					strcpy(nuevo->valor, datos);
 
-					printf("Valor: %s\n",nuevo->valor);
 
 					bool verificarExistenciaEnListaDeClaves(char*e) {
 						return !strcmp(e, nuevo->clave);

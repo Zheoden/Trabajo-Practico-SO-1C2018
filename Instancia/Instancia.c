@@ -65,7 +65,6 @@ void manejarEntradas() {
 		case t_STORE: {
 			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
 
-
 			int aux = strlen(datos) + 1;
 			char*clave = malloc(aux);
 			strcpy(clave, datos);
