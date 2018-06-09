@@ -19,7 +19,7 @@ void crearClientePlanif() {
 	while (RecibirPaqueteCliente(socket_planificador, ESI, &paquete) > 0) {
 		switch (paquete.header.tipoMensaje) {
 		case t_SIGUIENTELINEA: {
-			printf("Recibi un siguiente linea %s\n","Wachin");
+			printf("Recibi un siguiente linea \n");
 			if ((read = getline(&line, &len, fp)) != EOF) {
 				parsear(line);
 			}else{
