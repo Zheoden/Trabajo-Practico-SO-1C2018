@@ -4,18 +4,21 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Funciones/conexiones.c \
 ../Funciones/configs.c \
 ../Funciones/lista.c \
 ../Funciones/logs.c \
 ../Funciones/serializacion.c 
 
 OBJS += \
+./Funciones/conexiones.o \
 ./Funciones/configs.o \
 ./Funciones/lista.o \
 ./Funciones/logs.o \
 ./Funciones/serializacion.o 
 
 C_DEPS += \
+./Funciones/conexiones.d \
 ./Funciones/configs.d \
 ./Funciones/lista.d \
 ./Funciones/logs.d \
