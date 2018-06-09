@@ -8,7 +8,7 @@ void crearClienteCoor() {
 
 void crearClientePlanif() {
 
-	ConectarAServidor(planificador_puerto,planificador_ip);
+	socket_planificador = ConectarAServidor(planificador_puerto,planificador_ip);
 	EnviarHandshake(socket_planificador,ESI);
 
 	char * line = NULL;

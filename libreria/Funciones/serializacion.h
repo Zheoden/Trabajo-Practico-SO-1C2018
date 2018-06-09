@@ -57,6 +57,13 @@ typedef struct {
 //          Estructuras Utiles          //
 //////////////////////////////////////////
 
+
+typedef struct {
+	pthread_t hilo;
+	int socket;
+} t_prueba_hilo;
+
+
 typedef struct {
 	char* clave;
 }__attribute__((packed)) t_PlanificadorCoordinador;

@@ -25,6 +25,7 @@ t_list* ESI_listos;
 t_list* ESI_ejecucion;
 t_list* ESI_bloqueados;
 t_list* ESI_finalizados;
+t_list* hilos;
 
 /* Variables globales */
 char* server_ip;
@@ -50,7 +51,7 @@ pthread_mutex_t siguiente_linea;
 void iniciarConsola();
 void atenderESI();
 void sigchld_handler(int s);
-void crearServidorSencillo();
+void crearServidor();
 void crearCliente(void);
 void atenderCoordinador();
 void inicializar();
@@ -68,8 +69,8 @@ void imprimir(t_list* self);
 char* incrementarID(char *ID);
 void liberarClave(char* clave);
 
-int servidorConSelect(void);  //Esta wea no se usa
+void crearServidor();  //Esta wea no se usa
 
-void test_handshake();
+void accion(void* socket);
 
 #endif /* PLANIFICADOR_H_ */

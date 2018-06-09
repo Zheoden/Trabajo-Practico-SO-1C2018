@@ -10,7 +10,7 @@ int main(int argc, char ** argv){
 //	iniciarConsola();
 	iniciarPlanificacion();
 //	atenderCoordinador();
-	crearServidorSencillo();
+	crearServidor();
 	planificar();
 	/*Pruebas de SJF*/
 /*

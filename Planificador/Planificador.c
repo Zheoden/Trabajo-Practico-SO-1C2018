@@ -13,7 +13,7 @@ void iniciarConsola() {
 void atenderESI(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para manejar la comunicación con el ESI.");
-	pthread_create(&hilo, NULL, (void *) crearServidorSencillo, NULL);
+	pthread_create(&hilo, NULL, (void *) crearServidor, NULL);
 	pthread_detach(hilo);
 }
 
@@ -21,7 +21,7 @@ void sigchld_handler(int s){
      while(wait(NULL) > 0);
  }
 
-void crearServidorSencillo() {
+void crearServidor() {
 	int sockfd; // Escuchar sobre sock_fd, nuevas conexiones sobre new_fd
 	struct sockaddr_in my_addr;    // información sobre mi dirección
 	struct sockaddr_in their_addr; // información sobre la dirección del cliente
@@ -66,41 +66,43 @@ void crearServidorSencillo() {
 		}
 		log_info(logger,"Se recibio una conexion de: %s",inet_ntoa(their_addr.sin_addr));
 
-		if (!fork()) { // Este es el proceso hijo
-			close(sockfd); // El hijo no necesita este descriptor
-			log_info(logger,"Se cerró el socket %d.",sockfd);
-			Paquete paquete;
+		t_prueba_hilo* itemNuevo = malloc(sizeof(t_prueba_hilo));
+		itemNuevo->socket = socket_esi;
+		pthread_create(&(itemNuevo->hilo), NULL, (void*)accion, &socket_esi);
+		list_add(hilos, itemNuevo);
 
-			while (RecibirPaqueteServidor(socket_esi, ESI, &paquete) > 0) {
-				if (paquete.header.quienEnvia == ESI) {
-					switch(paquete.header.tipoMensaje){
-						case t_HANDSHAKE:{
-							printf("Recibi un Handshake %s\n","Del ESI");
-							/*Inicializo un ESI nuevo*/
-							ultimo_ID_Asignado = incrementarID(ultimo_ID_Asignado);
-							t_ESIPlanificador* nuevoEsi = inicializarESI(ultimo_ID_Asignado,socket_esi);
-							list_add(ESI_listos, nuevoEsi);
-							log_info(logger,"Se agrego al ESI: %s, a la lista de Listos.", nuevoEsi->ID);
-							printf("LISTOS--------------------------------\n");
-							imprimir(ESI_listos);
-						}
-							break;
-					}
-				}else{
-					log_error(logger,"No es ningún proceso ESI.");
-				}
-				if (paquete.mensaje != NULL){
-					free(paquete.mensaje);
-					log_info(logger,"Se libero la memoria del paquete.");
-				}
-			}
-			close(socket_esi);
-			log_info(logger,"Se cerró el socket %d.",socket_esi);
-		}
-		close(socket_esi);  // El proceso padre no lo necesita
-		log_info(logger,"Se cerró el socket %d.",socket_esi);
 	}
+	close(socket_esi);  // El proceso padre no lo necesita
+	log_info(logger,"Se cerró el socket %d.",socket_esi);
+}
 
+void accion(void* socket){
+
+	Paquete paquete;
+
+	while (RecibirPaqueteServidor(socket_esi, ESI, &paquete) > 0) {
+		if (paquete.header.quienEnvia == ESI) {
+			switch(paquete.header.tipoMensaje){
+				case t_HANDSHAKE:{
+					printf("Recibi un Handshake %s\n","Del ESI");
+					/*Inicializo un ESI nuevo*/
+					ultimo_ID_Asignado = incrementarID(ultimo_ID_Asignado);
+					t_ESIPlanificador* nuevoEsi = inicializarESI(ultimo_ID_Asignado,socket_esi);
+					list_add(ESI_listos, nuevoEsi);
+					log_info(logger,"Se agrego al ESI: %s, a la lista de Listos.", nuevoEsi->ID);
+					printf("LISTOS--------------------------------\n");
+					imprimir(ESI_listos);
+				}
+					break;
+			}
+		}else{
+			log_error(logger,"No es ningún proceso ESI.");
+		}
+		if (paquete.mensaje != NULL){
+			free(paquete.mensaje);
+			log_info(logger,"Se libero la memoria del paquete.");
+		}
+	}
 }
 
 void crearCliente(void) {
@@ -193,6 +195,7 @@ void inicializar(){
 	ESI_ejecucion = list_create();
 	ESI_bloqueados = list_create();
 	ESI_finalizados = list_create();
+	hilos = list_create();
 	pthread_mutex_init(&siguiente_linea,NULL);
 	planificacion_activa=true;
 	ultimo_ID_Asignado = malloc(4);
@@ -229,9 +232,8 @@ void iniciarPlanificacion(){
 void planificar() {
 	while(1){
  		while (planificacion_activa) {
- 			usleep(10 * 1000000);
 			if(!list_is_empty(ESI_listos)){
-				pthread_mutex_lock(&siguiente_linea);
+//				pthread_mutex_lock(&siguiente_linea);
 				printf("Estoy planificando %s\n","Wachin");
 				if (!strcmp(algoritmo_planificacion, "FIFO")) {
 					aplicarFIFO();
