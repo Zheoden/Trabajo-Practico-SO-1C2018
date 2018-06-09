@@ -7,7 +7,7 @@ int main(int argc, char ** argv) {
 	char* instancia_config_ruta = strdup("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/ESI.cfg");
 	leerConfig(instancia_config_ruta,logger);
 	abrirArchivo("/home/utnso/Proyectos/tp-2018-1c-PC-citos/ESI/Esis/ESI_1");
-	//atenderCoordinador();
+	atenderCoordinador();
 	crearClientePlanif();
 	for(;;);
 	return EXIT_SUCCESS;

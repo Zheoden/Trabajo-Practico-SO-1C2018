@@ -2,7 +2,7 @@
 
 /* Conexiones */
 void crearClienteCoor() {
-	ConectarAServidor(coordinador_puerto,coordinador_ip);
+	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
 	EnviarHandshake(socket_coordinador,ESI);
 }
 
@@ -23,14 +23,17 @@ void crearClientePlanif() {
 			if ((read = getline(&line, &len, fp)) != EOF) {
 				parsear(line);
 			}else{
+				EnviarDatosTipo(socket_planificador, ESI, NULL, 0, t_ABORTARESI);
 				if (line) {
 					free(line);
 					log_info(logger, "Se libero la memoria de la linea actual.");
 				}
+				matarESI();
 			}
 		}
 		break;
 		case t_ABORTARESI: {
+			printf("me llego %s\n","un abortar esi");
 			matarESI();
 		}
 		break;
