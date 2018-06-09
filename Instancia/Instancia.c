@@ -7,26 +7,16 @@ void inicializar(){
 
 /* Conexión con el Coordinador */
 void crearCliente(void) {
-	struct sockaddr_in direccionServidor;
-	direccionServidor.sin_family = AF_INET;
-	direccionServidor.sin_addr.s_addr = inet_addr(client_ip);
-	direccionServidor.sin_port = htons(client_puerto);
-
-	socket_coordinador = socket(AF_INET, SOCK_STREAM, 0);
-	if (connect(socket_coordinador,(void*) &direccionServidor,sizeof(direccionServidor))!=0){
-		log_error(logger,"No se pudo conectar: %s",strerror(errno));
-	}
-	log_info(logger,"Se establecio conexion con el Coordinador correctamente");
-
+	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
+	printf("Me conecté al Coordinador %s \n", "Gordi");
 	EnviarHandshake(socket_coordinador,INSTANCIA);
-
 	iniciarManejoDeEntradas();
 }
 
 /* Se setean los valores en el archivo de configuración */
 void setearValores(t_config * archivoConfig) {
- 	client_puerto = config_get_int_value(archivoConfig, "CLIENT_PUERTO");
- 	client_ip = strdup(config_get_string_value(archivoConfig, "CLIENT_IP"));
+ 	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
+ 	coordinador_ip = strdup(config_get_string_value(archivoConfig, "COORDINADOR_IP"));
 	algoritmo_de_reemplazo = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_REEMPLAZO"));
 	punto_de_montaje = strdup(config_get_string_value(archivoConfig, "PUNTO_DE_MONTAJE"));
 	nombre_de_la_instancia = strdup(config_get_string_value(archivoConfig, "NOMBRE_DE_LA_INSTANCIA"));

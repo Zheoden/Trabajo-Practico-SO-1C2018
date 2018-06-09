@@ -30,6 +30,7 @@ void servidor() {
 		if (bind(sockfd, (struct sockaddr *) &my_addr, sizeof(struct sockaddr)) == -1) {
 			log_error(logger,"Bind: %s",strerror(errno));
 		}
+		printf("Servidor levantado! %s\n","gordi");
 		log_info(logger,"El Servidor esta levantado esperando conexiones.");
 		if (listen(sockfd, 10) == -1) {//revisar esto que solo acepta 10 conexiones
 			log_error(logger,"Listen: %s",strerror(errno));
@@ -49,6 +50,7 @@ void servidor() {
 				log_error(logger,"Accept: %s",strerror(errno));
 				continue;
 			}
+
 			log_info(logger,"Se recibio una conexion de: %s",inet_ntoa(their_addr.sin_addr));
 
 			t_prueba_hilo* itemNuevo = malloc(sizeof(t_prueba_hilo));
@@ -92,30 +94,32 @@ void coordinar(void* socket) {
 	log_info(logger,"Se va a proceder a Coordinar el socket: %d", socketActual);
 	Paquete paquete;
 	void* datos;
-	while (RecibirPaqueteServidor(socketActual, COORDINADOR,&paquete) > 0) {
+	while (RecibirPaqueteServidor(socketFD, COORDINADOR ,&paquete) > 0) {
 		switch (paquete.header.quienEnvia) {
 		case INSTANCIA:
-			//log_info(logger,"Llego un mensaje de una Instancia");
+			log_info(logger,"Llego un mensaje de una Instancia");
 			switch (paquete.header.tipoMensaje) {
 			case t_HANDSHAKE: {
+				printf("Gay %s\n", "GAY");
 				log_info(logger,"Se recibio un Handshake de una Instancia");
 				//Evaluar si es mejor que mande directamente el nombre en el handshake o no
-				EnviarDatosTipo(socketActual, COORDINADOR, (void*)NULL, 0, t_SOLICITUDNOMBRE);
+				EnviarDatosTipo(socketFD, COORDINADOR, (void*)NULL, 0, t_SOLICITUDNOMBRE);
 				log_info(logger,"Se le envio a la Instancia una solicitud de Nombre");
-				int tamanioDatosEntradas = sizeof(int) * 2;
+				int tamanioDatosEntradas = (sizeof(int) * 2) + 2;
 				void *datosEntradas = malloc(tamanioDatosEntradas);
-				*((int*) datosEntradas) = tamanio_entradas;
-				datosEntradas += sizeof(int);
-				*((int*) datosEntradas) = cantidad_entradas;
-				datosEntradas += sizeof(int);
+				*(int*) datosEntradas = tamanio_entradas;
+				datosEntradas += sizeof(int) +1;
+				*(int*) datosEntradas = cantidad_entradas;
+				datosEntradas += sizeof(int) +1;
 				datosEntradas -= tamanioDatosEntradas;
 				log_info(logger,"Se le envio a la Instancia la informacion de las entradas con la que se va a trabajar");
-				EnviarDatosTipo(socketActual, COORDINADOR, datosEntradas,tamanioDatosEntradas, t_HANDSHAKE);
-				free(datosEntradas);
+				EnviarDatosTipo(socketFD, COORDINADOR, datosEntradas,tamanioDatosEntradas, t_HANDSHAKE);
+			//	free(datosEntradas);f
 				log_info(logger,"Se libero la memoria utilizada para enviar los datos a la instancia");
 			}
 			break;
 			case t_IDENTIFICACIONINSTANCIA: {
+				printf("Gay %s\n", "GAY!!!!!");
 				char *nombreInstancia = malloc(paquete.header.tamanioMensaje);
 				strcpy(nombreInstancia, (char*) paquete.mensaje);
 				t_Instancia* instancia = malloc(sizeof(t_Instancia));
@@ -254,8 +258,9 @@ void coordinar(void* socket) {
 					break;
 					}
 		}
-		if (paquete.mensaje != NULL)
+		if (paquete.mensaje != NULL){
 			free(paquete.mensaje);
+		}
 	}
 	close(socketActual);
 	sacar_instancia(socketActual);

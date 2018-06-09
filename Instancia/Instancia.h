@@ -10,13 +10,14 @@
 #include <Funciones/logs.h>
 #include <Funciones/serializacion.h>
 #include <Funciones/lista.h>
+#include <Funciones/conexiones.h>
 #include <dirent.h>
 
 
 /* Variables globales */
 
-char* client_ip;
-int client_puerto;
+char* coordinador_ip;
+int coordinador_puerto;
 int socket_coordinador;
 
 char* algoritmo_de_reemplazo;

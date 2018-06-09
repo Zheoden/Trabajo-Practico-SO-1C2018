@@ -7,7 +7,7 @@ int main() {
 	char* instancia_config_ruta = strdup("/home/utnso/Proyectos/tp-2018-1c-PC-citos/Instancia/Instancia.cfg");
 	leerConfig(instancia_config_ruta,logger);
 	inicializar();
-	//crearCliente();
+	crearCliente();
 	//////////////////////////////////////////
 	//Llamado a funciones de Prueba para Dump/
 	//////////////////////////////////////////
@@ -30,7 +30,7 @@ int main() {
 	//////////////////////////////////////////
 
 
-
+/*
 
 
 	/////////////////////////////////////////////
@@ -56,7 +56,7 @@ int main() {
 	//////////////////////////////////////////
 	//            Fin de Pruebas            //
 	//////////////////////////////////////////
-
+*/
 	for(;;);
 	return EXIT_SUCCESS;
 }
