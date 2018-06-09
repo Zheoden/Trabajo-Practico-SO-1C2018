@@ -160,27 +160,7 @@ void dump(){
 		for (i=0;  i< list_size(entradas_administrativas); i++) {
 			//Agarro las entradas de a 1
 			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas, i);
-			char* directorio_actual = malloc(strlen(punto_de_montaje) + strlen(actual->clave) + 2);
-			strcpy(directorio_actual, punto_de_montaje);
-			strcpy(directorio_actual+strlen(punto_de_montaje),actual->clave);
-
-			//hago un malloc para el valor que voy a sacar de la tabla de entrada
-			char* valor=malloc(actual->tamanio);
-			int tamanioPegado=0; //Variable auxiliar para cuando el nodo ocupa mas de 2 entradas
-
-			for (j = actual->index; j < (actual->index + actual->entradasOcupadas);j++) {
-				if((actual->index + actual->entradasOcupadas) -1 == j){
-					strcpy(valor+tamanioPegado, tabla_entradas[j]);
-				}else{
-					strcpy(valor+tamanioPegado, tabla_entradas[j]);
-					tamanioPegado+=tamanio_entrada;
-				}
-			}
-			FILE* file_a_crear = fopen(directorio_actual,"w+");
-			fwrite(valor,actual->tamanio,sizeof(char),file_a_crear);
-
-			free(valor);
-			fclose(file_a_crear);
+			guardarAArchivo(actual);
 		}
 		//printf("%s\n",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");//Esto no se necesita para el TP es solo para Debug
 	}
@@ -304,3 +284,32 @@ void imprimirTabla(){
 		printf("%s\n","------------------");
 	}
 }
+
+void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store){
+
+	char* directorio_actual = malloc(strlen(punto_de_montaje) + strlen(clave_a_store->clave) + 2);
+	strcpy(directorio_actual, punto_de_montaje);
+	strcpy(directorio_actual+strlen(punto_de_montaje),clave_a_store->clave);
+
+	char* valor=malloc(clave_a_store->tamanio);
+	int tamanioPegado=0; //Variable auxiliar para cuando el nodo ocupa mas de 2 entradas
+
+	int i;
+	for (i = clave_a_store->index; i < (clave_a_store->index + clave_a_store->entradasOcupadas);i++) {
+		if((clave_a_store->index + clave_a_store->entradasOcupadas) -1 == i){
+			strcpy(valor+tamanioPegado, tabla_entradas[i]);
+		}else{
+			strcpy(valor+tamanioPegado, tabla_entradas[i]);
+			tamanioPegado+=tamanio_entrada;
+		}
+	}
+	FILE* file_a_crear = fopen(directorio_actual,"w+");
+	fwrite(valor,clave_a_store->tamanio,sizeof(char),file_a_crear);
+
+	free(valor);
+	fclose(file_a_crear);
+}
+
+void store(){}
+
+

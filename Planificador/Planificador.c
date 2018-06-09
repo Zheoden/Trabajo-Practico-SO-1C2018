@@ -1,5 +1,6 @@
 #include "Planificador.h"
 
+
 /* Se inicia la consola del PLANIFICADOR */
 void iniciarConsola() {
 	pthread_t hilo;
@@ -64,21 +65,24 @@ void crearServidorSencillo() {
 			continue;
 		}
 		log_info(logger,"Se recibio una conexion de: %s",inet_ntoa(their_addr.sin_addr));
-		EnviarHandshake(socket_esi,PLANIFICADOR);
+
 		if (!fork()) { // Este es el proceso hijo
 			close(sockfd); // El hijo no necesita este descriptor
 			log_info(logger,"Se cerró el socket %d.",sockfd);
 			Paquete paquete;
 
-			while (RecibirPaqueteServidor(socket_esi, PLANIFICADOR, &paquete) > 0) {
+			while (RecibirPaqueteServidor(socket_esi, ESI, &paquete) > 0) {
 				if (paquete.header.quienEnvia == ESI) {
 					switch(paquete.header.tipoMensaje){
 						case t_HANDSHAKE:{
+							printf("Recibi un Handshake %s\n","Del ESI");
 							/*Inicializo un ESI nuevo*/
 							ultimo_ID_Asignado = incrementarID(ultimo_ID_Asignado);
 							t_ESIPlanificador* nuevoEsi = inicializarESI(ultimo_ID_Asignado,socket_esi);
 							list_add(ESI_listos, nuevoEsi);
 							log_info(logger,"Se agrego al ESI: %s, a la lista de Listos.", nuevoEsi->ID);
+							printf("LISTOS--------------------------------\n");
+							imprimir(ESI_listos);
 						}
 							break;
 					}
@@ -224,9 +228,11 @@ void iniciarPlanificacion(){
 
 void planificar() {
 	while(1){
-		while (planificacion_activa) {
+ 		while (planificacion_activa) {
+ 			usleep(10 * 1000000);
 			if(!list_is_empty(ESI_listos)){
 				pthread_mutex_lock(&siguiente_linea);
+				printf("Estoy planificando %s\n","Wachin");
 				if (!strcmp(algoritmo_planificacion, "FIFO")) {
 					aplicarFIFO();
 					ejecutarEsi();

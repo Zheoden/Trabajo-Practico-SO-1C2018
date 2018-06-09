@@ -70,6 +70,6 @@ void liberarClave(char* clave);
 
 int servidorConSelect(void);  //Esta wea no se usa
 
-
+void test_handshake();
 
 #endif /* PLANIFICADOR_H_ */

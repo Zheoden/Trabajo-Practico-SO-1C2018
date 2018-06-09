@@ -53,6 +53,7 @@ int getFirstIndex (int entradasValue);
 bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada);
 void inicializarTabla();
 void imprimirTabla();
+void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store);
 
 
 #endif /* INSTANCIA_H_ */

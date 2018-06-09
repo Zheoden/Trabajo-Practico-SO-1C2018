@@ -7,13 +7,13 @@ int main(int argc, char ** argv){
 	char* planificador_config_ruta = strdup("/home/utnso/Proyectos/tp-2018-1c-PC-citos/Planificador/Planificador.cfg");
 	leerConfig(planificador_config_ruta,logger);
 	inicializar();
-	iniciarConsola();
-//	iniciarPlanificacion();
+//	iniciarConsola();
+	iniciarPlanificacion();
 //	atenderCoordinador();
-//	crearServidorSencillo();
-
+	crearServidorSencillo();
+	planificar();
 	/*Pruebas de SJF*/
-
+/*
 	t_ESIPlanificador* aux = inicializarESI("001",1);
 	t_ESIPlanificador* aux1 = inicializarESI("002",1);
 	t_ESIPlanificador* aux2 = inicializarESI("003",1);
@@ -46,7 +46,7 @@ int main(int argc, char ** argv){
 	imprimir(ESI_ejecucion);*/
 
 	/*Fin de pruebas de SJF*/
-
+/*
 	t_ESIPlanificador* aux15 = malloc(sizeof(t_ESIPlanificador)+25);
 	aux15->ID = malloc(4);
 	strcpy(aux15->ID, "015");
@@ -62,7 +62,7 @@ int main(int argc, char ** argv){
 	imprimir(ESI_listos);
 
 	printf("BLOQUEADOS--------------------------------\n");
-	imprimir(ESI_bloqueados);
+	imprimir(ESI_bloqueados);*/
 
 	for(;;);
 

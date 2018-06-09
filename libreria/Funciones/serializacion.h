@@ -121,5 +121,4 @@ int RecibirDatos(void* paquete, int socketFD, uint32_t cantARecibir);
 int RecibirPaqueteServidor(int socketFD, proceso quienEnvia, Paquete* paquete); //Responde al recibir un Handshake
 
 int RecibirPaqueteCliente(int socketFD, proceso quienEnvia, Paquete* paquete); //No responde los Handshakes
-
 #endif /* SOCKETS_H_ */

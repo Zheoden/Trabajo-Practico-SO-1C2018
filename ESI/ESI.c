@@ -37,6 +37,7 @@ void crearClientePlanif() {
 	while (RecibirPaqueteCliente(socket_planificador, ESI, &paquete) > 0) {
 		switch (paquete.header.tipoMensaje) {
 		case t_SIGUIENTELINEA: {
+			printf("Recibi un siguiente linea %s\n","Wachin");
 			if ((read = getline(&line, &len, fp)) != EOF) {
 				parsear(line);
 			}else{
@@ -52,7 +53,7 @@ void crearClientePlanif() {
 		}
 		break;
 		case t_HANDSHAKE: {
-			//revisar handshake
+			printf("Recibi un Handshake de %s\n","Planificador");
 		}
 		break;
 		}
