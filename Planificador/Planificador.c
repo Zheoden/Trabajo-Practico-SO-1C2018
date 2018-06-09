@@ -380,11 +380,12 @@ char* incrementarID(char *ID){
 
 void liberarClave(char* clave){
 
-	bool buscarClave(char* aux){
-		return (!strcmp(aux, clave));
+	int buscarClave(char* aux){
+		return !strcmp(aux, clave);
 	}
 
-	list_remove_by_condition(ESI_clavesBloqueadas, (void *) buscarClave);
+//	list_remove_by_condition(ESI_clavesBloqueadas,(void*)buscarClave);
+	list_remove(ESI_clavesBloqueadas,0);
 
 	void compararClave(t_ESIPlanificador* aux){
 		if(aux->bloqueado && (!strcmp(aux->razon_bloqueo, clave))){

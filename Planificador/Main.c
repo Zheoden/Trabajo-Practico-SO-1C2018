@@ -10,8 +10,8 @@ int main(int argc, char ** argv){
 	iniciarConsola();
 	atenderESI();
 	atenderCoordinador();
-	planificar();
-//	iniciarPlanificacion();
+	iniciarPlanificacion();
+//	planificar();
 //	crearCliente();
 	/*Pruebas de SJF*/
 /*
@@ -55,15 +55,30 @@ int main(int argc, char ** argv){
 	aux15->razon_bloqueo = malloc(10);
 	strcpy(aux15->razon_bloqueo,"claveTest");
 	aux15->rafagas_ejecutadas = 0;
+	aux15->rafagas_estimadas = 0;
 
 	list_add(ESI_bloqueados,aux15);
-	liberarClave("claveTestTest");
+
+
+	list_add(ESI_clavesBloqueadas, "claveTest");
+	list_add(ESI_clavesBloqueadas, "claveTestTest1");
+	list_add(ESI_clavesBloqueadas, "claveTestTest2");
+
+
+	printf("BLOQUEADOS--------------------------------\n");
+	imprimir(ESI_bloqueados);
+
+	printf("CLAVES BLOQUEADAS--------------------------------\n");
+	printf("Clave 1: %s, Clave 2: %s, Clave 3: %s\n", (char*)list_get(ESI_clavesBloqueadas,0),(char*)list_get(ESI_clavesBloqueadas,1),(char*)list_get(ESI_clavesBloqueadas,2));
+
+	liberarClave("claveTest");
 
 	printf("LISTOS--------------------------------\n");
 	imprimir(ESI_listos);
 
-	printf("BLOQUEADOS--------------------------------\n");
-	imprimir(ESI_bloqueados);*/
+
+	printf("CLAVES BLOQUEADAS--------------------------------\n");
+	printf("Clave 1: %s, Clave 2: %s\n", (char*)list_get(ESI_clavesBloqueadas,0),(char*)list_get(ESI_clavesBloqueadas,1));*/
 
 	for(;;);
 
