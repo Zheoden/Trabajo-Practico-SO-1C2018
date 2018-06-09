@@ -9,10 +9,10 @@ int main(int argc, char ** argv){
 	inicializar();
 	iniciarConsola();
 	atenderESI();
-//	atenderCoordinador();
-//	planificar();
-	iniciarPlanificacion();
-	crearCliente();
+	atenderCoordinador();
+	planificar();
+//	iniciarPlanificacion();
+//	crearCliente();
 	/*Pruebas de SJF*/
 /*
 	t_ESIPlanificador* aux = inicializarESI("001",1);

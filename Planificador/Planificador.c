@@ -129,7 +129,6 @@ void crearCliente() {
 		switch (paquete.header.tipoMensaje) {
 		case t_GET: {
 			printf("me llego %s\n","un get");
-			printf("me llego %s\n", paquete.mensaje);
 			//Se fija si la clave que recibio está en la lista de claves bloqueadas
 
 			bool vericarClavesBloqueadas(t_PlanificadorCoordinador* esi) {
@@ -147,7 +146,6 @@ void crearCliente() {
 			}
 			else {
 				//Sino, agrega la clave a claves bloqueadas
-				//primero recibe ID despues CLAVE
 				t_PlanificadorCoordinador* claveABloquear = malloc(sizeof(t_PlanificadorCoordinador));
 				claveABloquear->clave = malloc(strlen(paquete.mensaje) + 1);
 				strcpy(claveABloquear->clave, paquete.mensaje);
@@ -160,8 +158,8 @@ void crearCliente() {
 
 		case t_STORE:{
 			printf("me llego %s\n","un store");
-			char* clave = malloc(strlen((char*)datos));
-			strcpy(clave,(char*)datos);
+			char* clave = malloc(strlen(datos)+1);
+			strcpy(clave, datos);
 			liberarClave(clave);
 			log_info(logger,"Se libero la clave: %s", clave);
 		}
@@ -381,6 +379,12 @@ char* incrementarID(char *ID){
 }
 
 void liberarClave(char* clave){
+
+	bool buscarClave(char* aux){
+		return (!strcmp(aux, clave));
+	}
+
+	list_remove_by_condition(ESI_clavesBloqueadas, (void *) buscarClave);
 
 	void compararClave(t_ESIPlanificador* aux){
 		if(aux->bloqueado && (!strcmp(aux->razon_bloqueo, clave))){
