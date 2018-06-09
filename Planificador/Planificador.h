@@ -13,6 +13,7 @@
 #include <Funciones/lista.h>
 #include <Funciones/logs.h>
 #include <Funciones/serializacion.h>
+#include <Funciones/conexiones.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <commons/collections/dictionary.h>
@@ -52,7 +53,7 @@ void iniciarConsola();
 void atenderESI();
 void sigchld_handler(int s);
 void crearServidor();
-void crearCliente(void);
+void crearCliente();
 void atenderCoordinador();
 void inicializar();
 void setearValores(t_config * archivoConfig);

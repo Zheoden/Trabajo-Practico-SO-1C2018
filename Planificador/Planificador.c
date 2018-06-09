@@ -77,23 +77,31 @@ void crearServidor() {
 }
 
 void accion(void* socket){
-
+	int socket_actual = *(int*) socket;
 	Paquete paquete;
 
-	while (RecibirPaqueteServidor(socket_esi, ESI, &paquete) > 0) {
+	while (RecibirPaqueteServidor(socket_actual, PLANIFICADOR, &paquete) > 0) {
 		if (paquete.header.quienEnvia == ESI) {
 			switch(paquete.header.tipoMensaje){
 				case t_HANDSHAKE:{
 					printf("Recibi un Handshake %s\n","Del ESI");
 					/*Inicializo un ESI nuevo*/
 					ultimo_ID_Asignado = incrementarID(ultimo_ID_Asignado);
-					t_ESIPlanificador* nuevoEsi = inicializarESI(ultimo_ID_Asignado,socket_esi);
+					t_ESIPlanificador* nuevoEsi = inicializarESI(ultimo_ID_Asignado,socket_actual);
 					list_add(ESI_listos, nuevoEsi);
 					log_info(logger,"Se agrego al ESI: %s, a la lista de Listos.", nuevoEsi->ID);
 					printf("LISTOS--------------------------------\n");
 					imprimir(ESI_listos);
 				}
 					break;
+				case t_ABORTARESI:{
+					printf("Creo que sufri un %s\n","Aborto");
+					t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove(ESI_ejecucion,0 );
+					//liberarrecursos()
+					list_add(ESI_finalizados, esiAAbortar);
+					log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
+				}
+				break;
 			}
 		}else{
 			log_error(logger,"No es ningún proceso ESI.");
@@ -105,19 +113,11 @@ void accion(void* socket){
 	}
 }
 
-void crearCliente(void) {
+void crearCliente() {
 	Paquete paquete;
 	void* datos;
-	struct sockaddr_in direccionServidor;
-	direccionServidor.sin_family = AF_INET;
-	direccionServidor.sin_addr.s_addr = inet_addr(coordinador_ip);
-	direccionServidor.sin_port = htons(coordinador_puerto);
 
-	socket_coordinador = socket(AF_INET, SOCK_STREAM, 0);
-	if (connect(socket_coordinador, (void*) &direccionServidor,
-			sizeof(direccionServidor)) != 0) {
-		log_error(logger,"No se pudo conectar: %s",strerror(errno));
-	}
+	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
 
 	log_info(logger,"Se establecio conexion con el Coordinador correctamente");
 	EnviarHandshake(socket_coordinador, PLANIFICADOR);
@@ -128,6 +128,8 @@ void crearCliente(void) {
 		datos = paquete.mensaje;
 		switch (paquete.header.tipoMensaje) {
 		case t_GET: {
+			printf("me llego %s\n","un get");
+			printf("me llego %s\n", paquete.mensaje);
 			//Se fija si la clave que recibio está en la lista de claves bloqueadas
 
 			bool vericarClavesBloqueadas(t_PlanificadorCoordinador* esi) {
@@ -139,7 +141,7 @@ void crearCliente(void) {
 				bool buscarEsiPorID(t_ESIPlanificador* esi) {
 					return !strcmp(esi->ID, paquete.mensaje + strlen(paquete.mensaje)+1);
 				}
-				t_ESIPlanificador* esiABloquear = (t_ESIPlanificador*) list_remove_by_condition(ESI_ejecucion,(void*)buscarEsiPorID );
+				t_ESIPlanificador* esiABloquear = (t_ESIPlanificador*) list_remove(ESI_ejecucion, 0);
 				list_add(ESI_bloqueados, esiABloquear);
 				log_info(logger,"Se bloqueo correctamente el ESI: %s, y se agrego a la lista de Bloqueados.",esiABloquear->ID);
 			}
@@ -147,7 +149,8 @@ void crearCliente(void) {
 				//Sino, agrega la clave a claves bloqueadas
 				//primero recibe ID despues CLAVE
 				t_PlanificadorCoordinador* claveABloquear = malloc(sizeof(t_PlanificadorCoordinador));
-				strcpy(claveABloquear->clave, paquete.mensaje+ strlen(paquete.mensaje) + 1);
+				claveABloquear->clave = malloc(strlen(paquete.mensaje) + 1);
+				strcpy(claveABloquear->clave, paquete.mensaje);
 				list_add(ESI_clavesBloqueadas, claveABloquear);
 				log_info(logger,"Se bloqueo correctamente la clave: %s, y se agrego a la lista de claves Bloqueadas.",claveABloquear->clave);
 			}
@@ -156,6 +159,7 @@ void crearCliente(void) {
 		break;
 
 		case t_STORE:{
+			printf("me llego %s\n","un store");
 			char* clave = malloc(strlen((char*)datos));
 			strcpy(clave,(char*)datos);
 			liberarClave(clave);
@@ -163,9 +167,17 @@ void crearCliente(void) {
 		}
 		break;
 
+		case t_SET:{
+			printf("me llego %s\n","un set correcto");
+		}
+		break;
+
+
 		case t_ABORTARESI:{
+			printf("me llego %s\n","un abortar esi");
 			t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove(ESI_ejecucion,0 );
 			EnviarDatosTipo(socket_esi,PLANIFICADOR, NULL, 0, t_ABORTARESI);
+
 			//liberarrecursos()
 			list_add(ESI_finalizados, esiAAbortar);
 			log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
@@ -173,7 +185,7 @@ void crearCliente(void) {
 		break;
 
 		}
-		pthread_mutex_lock(&siguiente_linea);
+		pthread_mutex_unlock(&siguiente_linea);
 	}
 	if (paquete.mensaje != NULL) {
 		free(paquete.mensaje);
@@ -231,14 +243,15 @@ void iniciarPlanificacion(){
 
 void planificar() {
 	while(1){
- 		while (planificacion_activa) {
-			if(!list_is_empty(ESI_listos)){
-//				pthread_mutex_lock(&siguiente_linea);
-				printf("Estoy planificando %s\n","Wachin");
+		while (planificacion_activa) {
+			if( !list_is_empty(ESI_listos) || !list_is_empty(ESI_ejecucion) ){
+				if(list_is_empty(ESI_ejecucion) && !list_is_empty(ESI_listos)){
+					pthread_mutex_unlock(&siguiente_linea);
+				}
+				pthread_mutex_lock(&siguiente_linea);
 				if (!strcmp(algoritmo_planificacion, "FIFO")) {
 					aplicarFIFO();
 					ejecutarEsi();
-
 				} else if (!strcmp(algoritmo_planificacion, "SJF/SD")) {
 					aplicarSJF();
 					ejecutarEsi();
@@ -257,8 +270,10 @@ void planificar() {
 
 /* Algoritmos de planificación */
 void aplicarFIFO(){
-	t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
-	list_add(ESI_ejecucion, esiAEjecutar);
+	if (list_is_empty(ESI_ejecucion) && (!list_is_empty(ESI_listos)) ) {
+		t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
+		list_add(ESI_ejecucion, esiAEjecutar);
+	}
 }
 
 void aplicarSJFConDesalojo(){
@@ -313,6 +328,7 @@ t_ESIPlanificador* inicializarESI(char* ID,int socket){
 	aux->bloqueado=false;
 	aux->socket = socket;
 	aux->rafagas_ejecutadas = 0;
+	aux->rafagas_estimadas = 0;
 	return aux;
 }
 

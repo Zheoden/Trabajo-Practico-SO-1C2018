@@ -7,11 +7,12 @@ int main(int argc, char ** argv){
 	char* planificador_config_ruta = strdup("/home/utnso/Proyectos/tp-2018-1c-PC-citos/Planificador/Planificador.cfg");
 	leerConfig(planificador_config_ruta,logger);
 	inicializar();
-//	iniciarConsola();
-	iniciarPlanificacion();
+	iniciarConsola();
+	atenderESI();
 //	atenderCoordinador();
-	crearServidor();
-	planificar();
+//	planificar();
+	iniciarPlanificacion();
+	crearCliente();
 	/*Pruebas de SJF*/
 /*
 	t_ESIPlanificador* aux = inicializarESI("001",1);
