@@ -96,7 +96,7 @@ void coordinar(void* socket) {
 	void* datos;
 	while (RecibirPaqueteServidor(socketFD, COORDINADOR ,&paquete) > 0) {
 		switch (paquete.header.quienEnvia) {
-		case INSTANCIA:
+		case INSTANCIA:{
 			log_info(logger,"Llego un mensaje de una Instancia");
 			switch (paquete.header.tipoMensaje) {
 			case t_HANDSHAKE: {
@@ -155,6 +155,8 @@ void coordinar(void* socket) {
 			}
 			break;
 
+			}
+			break;
 			}
 			break;
 			case ESI:

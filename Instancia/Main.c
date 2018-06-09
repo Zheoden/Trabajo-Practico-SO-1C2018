@@ -8,7 +8,7 @@ int main() {
 	leerConfig(instancia_config_ruta,logger);
 	inicializar();
 	verificarPuntoMontaje();
-	iniciarDump();
+//	iniciarDump();
 	crearCliente();
 	//////////////////////////////////////////
 	//Llamado a funciones de Prueba para Dump/

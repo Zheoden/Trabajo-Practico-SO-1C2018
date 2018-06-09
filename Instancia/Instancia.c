@@ -65,9 +65,11 @@ void manejarEntradas() {
 		case t_STORE: {
 			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
 
-			char*clave = malloc(strlen(datos) + 1);
+
+			int aux = strlen(datos) + 1;
+			char*clave = malloc(aux);
 			strcpy(clave, datos);
-			printf("Clave: %s\n",clave);
+
 
 			//Funcion Auxiliar
 			bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
@@ -80,7 +82,8 @@ void manejarEntradas() {
 			liberarMemoria(instanciaAReemplazar);
 
 			log_info(logger,"Se proceso correctamente el STORE.");
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASTORE);
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, aux, t_RESPUESTASTORE);
+			printf("Clave STORE: %s\n",clave);
 			free(clave);
 		}
 		break;
