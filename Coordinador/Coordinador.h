@@ -42,5 +42,8 @@ void coordinar(void* socket);
 int obtenerProximaInstancia();
 void sacar_instancia(int socket);
 
+void coordinarInstancia(int socket, Paquete paquete, void* datos);
+void coordinarESI(int socket, Paquete paquete, void* datos);
+void coordinarPlanificador(int socket, Paquete paquete, void* datos);
 
 #endif /* COORDINADOR_H_ */

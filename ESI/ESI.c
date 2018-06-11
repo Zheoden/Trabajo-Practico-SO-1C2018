@@ -127,7 +127,6 @@ void matarESI(){
 
 /* Manejo de Archivos*/
 
-
 void abrirArchivo(char* path){
 	fp = fopen(path, "r");
 	if (fp == NULL) {
