@@ -32,7 +32,8 @@ int socketFD;
 char* algoritmo_de_distribucion;
 int cantidad_entradas;
 int tamanio_entradas;
-int retardo;
+int retardo_real;
+float retardo;
 
 /* Funciones */
 

@@ -72,8 +72,8 @@ void setearValores(t_config * archivoConfig) {
 	algoritmo_de_distribucion = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_DISTRIBUCION"));
 	cantidad_entradas = config_get_int_value(archivoConfig, "CANTIDAD_DE_ENTRADAS");
 	tamanio_entradas = config_get_int_value(archivoConfig, "TAMAÑO_DE_ENTRADAS");
-	retardo = config_get_int_value(archivoConfig, "RETARDO");
-	retardo = retardo / 1000; // Para pasar de mili segundos a segundos
+	retardo_real = config_get_int_value(archivoConfig, "RETARDO");
+	retardo = retardo_real / 1000; // Para pasar de mili segundos a segundos
 
 	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
 	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Distribución: %s",algoritmo_de_distribucion);
