@@ -1,6 +1,39 @@
 #include "Planificador.h"
 
 
+/* Se crean las listas de ESIS listos, ejecución, bloqueados, finalizados y claves bloqueadas */
+void inicializar(){
+	ESI_clavesBloqueadas = list_create();
+    ESI_listos = list_create();
+	ESI_ejecucion = list_create();
+	ESI_bloqueados = list_create();
+	ESI_finalizados = list_create();
+	hilos = list_create();
+	pthread_mutex_init(&siguiente_linea,NULL);
+	planificacion_activa=true;
+	ultimo_ID_Asignado = malloc(4);
+	strcpy(ultimo_ID_Asignado,"000");
+
+	log_info(logger,"Se inicio inicializaron las variables correctamente.");
+}
+
+/* Se setea el archivo de configuración */
+void setearValores(t_config * archivoConfig) {
+ 	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
+ 	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
+ 	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
+ 	coordinador_ip = strdup(config_get_string_value(archivoConfig, "COORDINADOR_IP"));
+ 	alfa_planificacion = config_get_int_value(archivoConfig, "ALFA_PLANIFICACION");
+ 	alfa_planificacion = alfa_planificacion/100;
+ 	algoritmo_planificacion = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_PLANIFICACION"));
+ 	estimacion_inicial = config_get_int_value(archivoConfig, "ESTIMACION_INICIAL");
+ 	claves_bloqueadas = config_get_array_value(archivoConfig, "CLAVES_BLOQUEADAS");
+
+ 	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
+ 	log_info(logger,"Se inicio el Planificador con el siguiente Algoritmo de Planificación: %s",algoritmo_planificacion);
+
+ }
+
 /* Se inicia la consola del PLANIFICADOR */
 void iniciarConsola() {
 	pthread_t hilo;
@@ -9,7 +42,7 @@ void iniciarConsola() {
 	pthread_detach(hilo);
 }
 
-/* Conexiones */
+/* Hilos */
 void atenderESI(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para manejar la comunicación con el ESI.");
@@ -17,6 +50,21 @@ void atenderESI(){
 	pthread_detach(hilo);
 }
 
+void atenderCoordinador(){
+	pthread_t unHilo;
+	log_info(logger,"Se inicio un hilo para manejar la comunicacion con el Coordinador.");
+	pthread_create(&unHilo, NULL, (void *) crearCliente,NULL);
+	pthread_detach(unHilo);
+}
+
+void iniciarPlanificacion(){
+	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para manejar la Planificación.");
+	pthread_create(&hilo, NULL, (void *) planificar, NULL);
+	pthread_detach(hilo);
+}
+
+/* Conexiones */
 void sigchld_handler(int s){
      while(wait(NULL) > 0);
  }
@@ -191,54 +239,6 @@ void crearCliente() {
 	}
 }
 
-void atenderCoordinador(){
-	pthread_t unHilo;
-	log_info(logger,"Se inicio un hilo para manejar la comunicacion con el Coordinador.");
-	pthread_create(&unHilo, NULL, (void *) crearCliente,NULL);
-	pthread_detach(unHilo);
-}
-
-/* Se crean las listas de ESIS listos, ejecución, bloqueados, finalizados y claves bloqueadas */
-void inicializar(){
-	ESI_clavesBloqueadas = list_create();
-    ESI_listos = list_create();
-	ESI_ejecucion = list_create();
-	ESI_bloqueados = list_create();
-	ESI_finalizados = list_create();
-	hilos = list_create();
-	pthread_mutex_init(&siguiente_linea,NULL);
-	planificacion_activa=true;
-	ultimo_ID_Asignado = malloc(4);
-	strcpy(ultimo_ID_Asignado,"000");
-
-	log_info(logger,"Se inicio inicializaron las variables correctamente.");
-}
-
-/* Se setea el archivo de configuración */
-void setearValores(t_config * archivoConfig) {
- 	server_puerto = config_get_int_value(archivoConfig, "SERVER_PUERTO");
- 	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
- 	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
- 	coordinador_ip = strdup(config_get_string_value(archivoConfig, "COORDINADOR_IP"));
- 	alfa_planificacion = config_get_int_value(archivoConfig, "ALFA_PLANIFICACION");
- 	alfa_planificacion = alfa_planificacion/100;
- 	algoritmo_planificacion = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_PLANIFICACION"));
- 	estimacion_inicial = config_get_int_value(archivoConfig, "ESTIMACION_INICIAL");
- 	claves_bloqueadas = config_get_array_value(archivoConfig, "CLAVES_BLOQUEADAS");
-
- 	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
- 	log_info(logger,"Se inicio el Planificador con el siguiente Algoritmo de Planificación: %s",algoritmo_planificacion);
-
- }
-
-/* Creación de hilo para realizar la planificación */
-void iniciarPlanificacion(){
-	pthread_t hilo;
-	log_info(logger,"Se inicio un hilo para manejar la Planificación.");
-	pthread_create(&hilo, NULL, (void *) planificar, NULL);
-	pthread_detach(hilo);
-}
-
 void planificar() {
 	while(1){
 		while (planificacion_activa) {
@@ -341,6 +341,7 @@ void imprimir(t_list* self){
 		printf("rafagas_estimadas: %f\n", aux->rafagas_estimadas);
 	}
 }
+
 /*Funcion que genera los IDs*/
 char* incrementarID(char *ID){
 	int i, begin, tail, len;

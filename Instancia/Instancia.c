@@ -5,15 +5,6 @@ void inicializar(){
 	entradas_administrativas = list_create();
 }
 
-/* Conexión con el Coordinador */
-void crearCliente(void) {
-	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
-	printf("Me conecté al Coordinador\n");
-	EnviarHandshake(socket_coordinador,INSTANCIA);
-	//iniciarManejoDeEntradas();
-	manejarEntradas();
-}
-
 /* Se setean los valores en el archivo de configuración */
 void setearValores(t_config * archivoConfig) {
  	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
@@ -27,13 +18,35 @@ void setearValores(t_config * archivoConfig) {
 	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Reemplazo: %s",algoritmo_de_reemplazo);
  }
 
-
-/* Creación de hilo para el manejo de entradas */
+/* Creación de hilos */
 void iniciarManejoDeEntradas(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
 	pthread_create(&hilo, NULL, (void *) manejarEntradas, NULL);
 	pthread_detach(hilo);
+}
+
+void iniciarDump(){
+	pthread_t hilo;
+	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
+	pthread_create(&hilo, NULL, (void *) dump, NULL);
+	pthread_detach(hilo);
+}
+
+void atenderCoordinador(){
+	pthread_t unHilo;
+	log_info(logger,"Se inicio un hilo para manejar la comunicacion con el Coordinador.");
+	pthread_create(&unHilo, NULL, (void *) crearCliente,NULL);
+	pthread_detach(unHilo);
+}
+
+/* Conexión con el Coordinador */
+void crearCliente() {
+	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
+	printf("Me conecté al Coordinador\n");
+	EnviarHandshake(socket_coordinador,INSTANCIA);
+	//iniciarManejoDeEntradas();
+	manejarEntradas();
 }
 
 void manejarEntradas() {
@@ -157,14 +170,6 @@ void verificarPuntoMontaje(){
 	}else{
 		log_error(logger, "Se detectó el siguiente error al abrir el directorio: %s", strerror(errno));
 	}
-}
-
-/* Se inicializa la función de DUMP */
-void iniciarDump(){
-	pthread_t hilo;
-	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
-	pthread_create(&hilo, NULL, (void *) dump, NULL);
-	pthread_detach(hilo);
 }
 
 //no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.

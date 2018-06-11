@@ -39,10 +39,11 @@ void dump();
 void cargarDatos(char* unaClave, char* unValor);
 void inicializarTabla();
 void verificarPuntoMontaje();
+void atenderCoordinador();
 
 /* Funciones */
 void inicializar();
-void crearCliente(void);
+void crearCliente();
 void setearValores(t_config * archivoConfig);
 bool handshakeInstanciaCoordinador();
 void iniciarManejoDeEntradas();
