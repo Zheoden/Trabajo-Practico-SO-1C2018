@@ -120,6 +120,7 @@ void coordinar(void* socket) {
 	sacar_instancia(socketActual);
 }
 
+/* Para EL */
 int obtenerProximaInstancia() {
 	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo Circular.");
 	if (list_size(instancias) == 0){
@@ -157,6 +158,7 @@ int obtenerProximaInstancia() {
 	return aux->socket;
 }
 
+/* Para Desconexiones */
 void sacar_instancia(int socket) {
 	int tiene_socket(t_Instancia *instancia) {
 		if (instancia->socket == socket)
@@ -165,6 +167,7 @@ void sacar_instancia(int socket) {
 	instancias = list_filter(instancias, (void*) tiene_socket);
 }
 
+/* Para Coordinar los distintos procesos, los hago polimorficos (revisar si vale la pena) */
 void coordinarInstancia(int socket, Paquete paquete, void* datos){
 
 	log_info(logger,"Llego un mensaje de una Instancia");
