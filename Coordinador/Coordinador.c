@@ -73,6 +73,7 @@ void setearValores(t_config * archivoConfig) {
 	cantidad_entradas = config_get_int_value(archivoConfig, "CANTIDAD_DE_ENTRADAS");
 	tamanio_entradas = config_get_int_value(archivoConfig, "TAMAÑO_DE_ENTRADAS");
 	retardo = config_get_int_value(archivoConfig, "RETARDO");
+	retardo = retardo / 1000; // Para pasar de mili segundos a segundos
 
 	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
 	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Distribución: %s",algoritmo_de_distribucion);
@@ -238,7 +239,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 	break;
 	case t_SET: {
 		printf("Se recibio un SET de un ESI\n");
-		usleep(retardo * 1000000);
+		usleep(retardo * SEGUNDO);
 		t_ESICoordinador* nuevo = malloc(sizeof(t_ESICoordinador));
 
 		nuevo->clave = malloc(strlen(datos) + 1);
@@ -294,7 +295,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 	break;
 	case t_GET: {
 		printf("Se recibio un GET de un ESI\n");
-		usleep(retardo * 1000000);
+		usleep(retardo * SEGUNDO);
 
 		t_ESICoordinador* nuevo = malloc(sizeof(t_ESICoordinador));
 		nuevo->clave = malloc(paquete.header.tamanioMensaje);
@@ -318,7 +319,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 	break;
 	case t_STORE: {
 		printf("Se recibio un STORE de un ESI\n");
-		usleep(retardo * 1000000);
+		usleep(retardo * SEGUNDO);
 
 		char* clave = malloc(strlen(datos) + 1);
 		strcpy(clave, datos);

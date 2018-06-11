@@ -13,6 +13,8 @@
 #include <Funciones/conexiones.h>
 #include <dirent.h>
 
+#define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
+
 
 /* Variables globales */
 

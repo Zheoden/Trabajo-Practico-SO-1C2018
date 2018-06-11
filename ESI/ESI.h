@@ -1,6 +1,5 @@
 #ifndef CLIENTE_H_
 #define CLIENTE_H_
-
 #include <string.h>
 #include <netdb.h> // Para getaddrinfo
 #include <unistd.h>
@@ -15,6 +14,8 @@
 #include <Funciones/conexiones.h>
 #include <Funciones/archivos.h>
 #include <dirent.h>
+
+#define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
 
 /* Variables globales */
 

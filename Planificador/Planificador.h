@@ -19,6 +19,7 @@
 #include <commons/collections/dictionary.h>
 #include <stdbool.h>
 
+#define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
 
 /* Estructuras */
 t_list* ESI_clavesBloqueadas;

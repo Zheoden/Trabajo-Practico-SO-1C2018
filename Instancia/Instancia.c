@@ -166,10 +166,11 @@ void iniciarDump(){
 	pthread_create(&hilo, NULL, (void *) dump, NULL);
 	pthread_detach(hilo);
 }
+
 //no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.
 void dump(){
 	while(1){
-		usleep(intervalo_de_dump * 1000000); //intervalo_de_dump segundos :D!
+		usleep(intervalo_de_dump * SEGUNDO); //intervalo_de_dump segundos :D!
 		//imprimirTabla(); //Esto no se necesita para el TP es solo para Debug
 		int i,j;
 		//Recoro las entradas para saber cuales tengo

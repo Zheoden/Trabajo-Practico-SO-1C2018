@@ -12,6 +12,8 @@
 #include <Funciones/configs.h>
 #include <Funciones/serializacion.h>
 
+#define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
+
 /* Estructuras */
 
 t_list* instancias;
