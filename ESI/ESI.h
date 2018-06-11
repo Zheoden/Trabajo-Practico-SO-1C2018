@@ -13,6 +13,7 @@
 #include <Funciones/configs.h>
 #include <Funciones/serializacion.h>
 #include <Funciones/conexiones.h>
+#include <Funciones/archivos.h>
 #include <dirent.h>
 
 /* Variables globales */
@@ -38,7 +39,6 @@ void atenderCoordinador();
 void setearValores(t_config * archivoConfig);
 void parsear();
 void matarESI();
-const char* get_filename(const char* path);
 void abrirArchivo(char* path);
 void foo();
 

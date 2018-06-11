@@ -59,7 +59,6 @@ void atenderCoordinador(){
 	pthread_detach(unHilo);
 }
 
-
 /* Archivo configuración */
 void setearValores(t_config * archivoConfig) {
  	planificador_puerto = config_get_int_value(archivoConfig, "PLANIFICADOR_PUERTO");
@@ -69,7 +68,6 @@ void setearValores(t_config * archivoConfig) {
 
  	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
  }
-
 
 /* Operaciones ESI */
 void parsear(char* line) {
@@ -127,14 +125,8 @@ void matarESI(){
 	exit(1);
 }
 
-
 /* Manejo de Archivos*/
-const char* get_filename(const char* path){
 
-	const char *file = strrchr(path,'/');
-	if(!file || file == path) return "";
-	return file +1;
-}
 
 void abrirArchivo(char* path){
 	fp = fopen(path, "r");
