@@ -4,6 +4,28 @@
 void crearClienteCoor() {
 	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
 	EnviarHandshake(socket_coordinador,ESI);
+
+	Paquete paquete;
+
+	while (RecibirPaqueteCliente(socket_coordinador, ESI, &paquete) > 0) {
+		switch (paquete.header.tipoMensaje) {
+
+		case t_RESPUESTALINEACORRECTA: {
+
+			EnviarDatosTipo(socket_planificador, ESI, NULL, 0, t_RESPUESTALINEACORRECTA);
+
+		}
+		break;
+		case t_RESPUESTALINEAINCORRECTA: {
+
+			EnviarDatosTipo(socket_planificador, ESI, NULL, 0, t_RESPUESTALINEAINCORRECTA);
+
+		}
+		break;
+
+		}
+	}
+
 }
 
 void crearClientePlanif() {

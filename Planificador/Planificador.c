@@ -243,10 +243,6 @@ void planificar() {
 	while(1){
 		while (planificacion_activa) {
 			if( !list_is_empty(ESI_listos) || !list_is_empty(ESI_ejecucion) ){
-				if(list_is_empty(ESI_ejecucion) && !list_is_empty(ESI_listos)){
-					pthread_mutex_unlock(&siguiente_linea);
-				}
-				pthread_mutex_lock(&siguiente_linea);
 				if (!strcmp(algoritmo_planificacion, "FIFO")) {
 					aplicarFIFO();
 					ejecutarEsi();
@@ -315,6 +311,22 @@ void ejecutarEsi() {
 		t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_get(ESI_ejecucion, 0);
 		esiAEjecutar->rafagas_ejecutadas++;
 		EnviarDatosTipo(esiAEjecutar->socket, PLANIFICADOR, NULL, 0, t_SIGUIENTELINEA);
+
+		Paquete paquete;
+		while (RecibirPaqueteCliente(esiAEjecutar->socket, PLANIFICADOR, &paquete) > 0) {
+			switch (paquete.header.tipoMensaje) {
+			case t_RESPUESTALINEACORRECTA: {
+				printf("Se ejecuto correctamente la linea actual");
+			}
+			break;
+			case t_RESPUESTALINEAINCORRECTA: {
+				EnviarDatosTipo(esiAEjecutar->socket, PLANIFICADOR, NULL, 0, t_ABORTARESI);
+			}
+			break;
+			}
+			break;
+		}
+
 	}
 }
 
