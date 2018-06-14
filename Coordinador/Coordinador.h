@@ -35,6 +35,9 @@ int tamanio_entradas;
 int retardo_real;
 float retardo;
 
+/* Semaforos */
+pthread_mutex_t t_set;
+
 /* Funciones */
 
 void sigchld_handler(int s);

@@ -85,6 +85,8 @@ void inicializar(){
 	todas_las_claves = list_create();
 	instancias = list_create();
 	hilos = list_create();
+	pthread_mutex_init(&t_set,NULL);
+	pthread_mutex_lock(&t_set);
 
 	log_info(logger,"Se inicio inicializaron las listas correctamente.");
 }
@@ -217,11 +219,14 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		list_add(aux->claves, clave);
 		log_info(logger,"Se le agrego a la Instancia: %s, la clave %s.", aux->nombre, clave);
 		EnviarDatosTipo(socket_planificador, COORDINADOR, NULL,0, t_SET);
+//		EnviarDatosTipo(socket_ESI_actual, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
+		pthread_mutex_unlock(&t_set);
 	}
 	break;
 	case t_RESPUESTASTORE: {
 		printf("Se recibio una respuesta store de una Instancia\n");
 		EnviarDatosTipo(socket_planificador, COORDINADOR, datos , strlen(datos)+1, t_STORE);
+//		EnviarDatosTipo(socket_ESI_actual, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 	}
 	break;
 
@@ -288,9 +293,12 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			//}
 		} else {
 			//clave no existe en el sistema
-			printf("Se intenta bloquear la clave %s pero no existe",nuevo->clave);
+			printf("Se intenta bloquear la clave %s pero no existe\n",nuevo->clave);
 			EnviarDatosTipo(socket_planificador, COORDINADOR, NULL , 0, t_ABORTARESI);
+//			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEAINCORRECTA);
 		}
+		pthread_mutex_lock(&t_set);
+		EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 	}
 	break;
 	case t_GET: {
@@ -315,6 +323,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		void* sendPlanificador = malloc(tamSend);
 		strcpy(sendPlanificador, nuevo->clave);
 		EnviarDatosTipo(socket_planificador, COORDINADOR, sendPlanificador,tamSend, t_GET);
+		EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 	}
 	break;
 	case t_STORE: {
@@ -335,8 +344,10 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 
 		if ( aux == NULL ) {
 			EnviarDatosTipo(socket_planificador, COORDINADOR, NULL ,0, t_ABORTARESI);
+			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEAINCORRECTA);
 		} else {
 			EnviarDatosTipo(aux->socket, COORDINADOR, datos, strlen(datos) + 1, t_STORE);
+			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 		}
 	}
 	break;

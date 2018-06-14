@@ -112,6 +112,7 @@ void manejarEntradas() {
 			cargarDatos(clave,valor);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASET);
 			log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
+			printf("Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.\n");
 			free(clave);
 			free(valor);
 		}

@@ -10,6 +10,7 @@ void inicializar(){
 	ESI_finalizados = list_create();
 	hilos = list_create();
 	pthread_mutex_init(&siguiente_linea,NULL);
+	pthread_mutex_unlock(&siguiente_linea);
 	planificacion_activa=true;
 	ultimo_ID_Asignado = malloc(4);
 	strcpy(ultimo_ID_Asignado,"000");
@@ -128,7 +129,7 @@ void accion(void* socket){
 	int socket_actual = *(int*) socket;
 	Paquete paquete;
 
-	while (RecibirPaqueteServidor(socket_actual, PLANIFICADOR, &paquete) > 0) {
+	if (RecibirPaqueteServidor(socket_actual, PLANIFICADOR, &paquete) > 0) {
 		if (paquete.header.quienEnvia == ESI) {
 			switch(paquete.header.tipoMensaje){
 				case t_HANDSHAKE:{
@@ -142,14 +143,14 @@ void accion(void* socket){
 					imprimir(ESI_listos);
 				}
 					break;
-				case t_ABORTARESI:{
+/*				case t_ABORTARESI:{
 					printf("Creo que sufri un %s\n","Aborto");
 					t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove(ESI_ejecucion,0 );
 					//liberarrecursos()
 					list_add(ESI_finalizados, esiAAbortar);
 					log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
 				}
-				break;
+				break;*/
 			}
 		}else{
 			log_error(logger,"No es ningún proceso ESI.");
@@ -231,7 +232,6 @@ void crearCliente() {
 		break;
 
 		}
-		pthread_mutex_unlock(&siguiente_linea);
 	}
 	if (paquete.mensaje != NULL) {
 		free(paquete.mensaje);
@@ -313,10 +313,10 @@ void ejecutarEsi() {
 		EnviarDatosTipo(esiAEjecutar->socket, PLANIFICADOR, NULL, 0, t_SIGUIENTELINEA);
 
 		Paquete paquete;
-		while (RecibirPaqueteCliente(esiAEjecutar->socket, PLANIFICADOR, &paquete) > 0) {
+		if (RecibirPaqueteCliente(esiAEjecutar->socket, PLANIFICADOR, &paquete) > 0) {
 			switch (paquete.header.tipoMensaje) {
 			case t_RESPUESTALINEACORRECTA: {
-				printf("Se ejecuto correctamente la linea actual");
+				printf("Se ejecuto correctamente la linea actual\n");
 			}
 			break;
 			case t_RESPUESTALINEAINCORRECTA: {
@@ -324,9 +324,9 @@ void ejecutarEsi() {
 			}
 			break;
 			}
-			break;
+		}else{ //El ESI se desconecto
+			list_remove(ESI_ejecucion,0);
 		}
-
 	}
 }
 
