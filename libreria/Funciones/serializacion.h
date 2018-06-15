@@ -26,7 +26,8 @@ typedef enum t_protocolo {
 	t_RESPUESTALINEACORRECTA,
 	t_RESPUESTALINEAINCORRECTA,
 	t_RESPUESTASET,
-	t_RESPUESTASTORE
+	t_RESPUESTASTORE,
+	t_CLAVEBORRADA
 } t_protocolo;
 
 //////////////////////////////////////////
