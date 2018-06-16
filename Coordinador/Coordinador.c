@@ -239,7 +239,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 	case t_HANDSHAKE: {
 		printf("Se recibio un Handshake de un ESI\n");
 		log_info(logger,"Se recibio un Handshake del ESI");
-		log_info(logger,"Se guardo el sockte del ESI, con el numero: %d",socket);
+		log_info(logger,"Se guardo el socket del ESI, con el numero: %d",socket);
 	}
 	break;
 	case t_SET: {
@@ -297,6 +297,8 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			EnviarDatosTipo(socket_planificador, COORDINADOR, NULL , 0, t_ABORTARESI);
 //			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEAINCORRECTA);
 		}
+		log_info(loggerOperaciones,"El ESI: %d, recibió operación SET con CLAVE: %s y VALOR: %s", socket, nuevo->clave, nuevo->valor);
+		printf("TEST PRINT LOG SET CONSOLA\n");
 		pthread_mutex_lock(&t_set);
 		EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 	}
@@ -324,6 +326,8 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		strcpy(sendPlanificador, nuevo->clave);
 		EnviarDatosTipo(socket_planificador, COORDINADOR, sendPlanificador,tamSend, t_GET);
 		EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
+		log_info(loggerOperaciones,"El ESI: %d, recibió operación GET con CLAVE: %s", socket, nuevo->clave);
+		printf("TEST PRINT LOG GET CONSOLA\n");
 	}
 	break;
 	case t_STORE: {
@@ -349,6 +353,8 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			EnviarDatosTipo(aux->socket, COORDINADOR, datos, strlen(datos) + 1, t_STORE);
 			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 		}
+		log_info(loggerOperaciones,"El ESI: %d, recibió operación STORE con CLAVE: %s", socket, datos);
+		printf("TEST PRINT LOG STORE CONSOLA\n");
 	}
 	break;
 	}
