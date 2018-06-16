@@ -5,6 +5,7 @@
 
 
 t_log * logger;
+t_log * loggerOperacionesCoordinador;
 
 void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
 
