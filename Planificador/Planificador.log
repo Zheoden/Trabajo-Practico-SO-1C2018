@@ -1,0 +1,35 @@
+[INFO] 16:20:44:92 Planificador/(8279:8279): Se inicio cargo correctamente el archivo de configuración.
+[INFO] 16:20:44:92 Planificador/(8279:8279): Se inicio el Planificador con el siguiente Algoritmo de Planificación: SJF/CD
+[INFO] 16:20:44:92 Planificador/(8279:8279): Archivo de configuracion leido correctamente
+[INFO] 16:20:44:92 Planificador/(8279:8279): Se inicio inicializaron las variables correctamente.
+[INFO] 16:20:44:92 Planificador/(8279:8279): Se inicio un hilo para manejar la consola.
+[INFO] 16:20:44:92 Planificador/(8279:8279): Se inicio un hilo para manejar la comunicación con el ESI.
+[INFO] 16:20:44:92 Planificador/(8279:8279): Se inicio un hilo para manejar la comunicacion con el Coordinador.
+[INFO] 16:20:44:95 Planificador/(8279:8282): Se establecio conexion con el Coordinador correctamente
+[INFO] 16:20:44:95 Planificador/(8279:8282): Se envio un Handshake al Coordiandor
+[INFO] 16:20:44:95 Planificador/(8279:8281): El Servidor esta levantado esperando conexiones.
+[INFO] 16:20:48:822 Planificador/(8279:8281): Se recibio una conexion de: 127.0.0.1
+[INFO] 16:20:48:824 Planificador/(8279:8289): Se agrego al ESI: 001, a la lista de Listos.
+[INFO] 16:20:48:827 Planificador/(8279:8282): Se bloqueo correctamente la clave: futbol:messi, y se agrego a la lista de claves Bloqueadas.
+[INFO] 16:20:48:828 Planificador/(8279:8282): Se bloqueo correctamente el ESI: 001, y se agrego a la lista de Bloqueados.
+[INFO] 16:21:12:94 Planificador/(8301:8301): Se inicio cargo correctamente el archivo de configuración.
+[INFO] 16:21:12:94 Planificador/(8301:8301): Se inicio el Planificador con el siguiente Algoritmo de Planificación: SJF/CD
+[INFO] 16:21:12:94 Planificador/(8301:8301): Archivo de configuracion leido correctamente
+[INFO] 16:21:12:94 Planificador/(8301:8301): Se inicio inicializaron las variables correctamente.
+[INFO] 16:21:12:94 Planificador/(8301:8301): Se inicio un hilo para manejar la consola.
+[INFO] 16:21:12:95 Planificador/(8301:8301): Se inicio un hilo para manejar la comunicación con el ESI.
+[INFO] 16:21:12:95 Planificador/(8301:8301): Se inicio un hilo para manejar la comunicacion con el Coordinador.
+[INFO] 16:21:12:105 Planificador/(8301:8304): Se establecio conexion con el Coordinador correctamente
+[INFO] 16:21:12:105 Planificador/(8301:8304): Se envio un Handshake al Coordiandor
+[INFO] 16:21:12:106 Planificador/(8301:8303): El Servidor esta levantado esperando conexiones.
+[INFO] 16:21:15:221 Planificador/(8301:8302): //Hay que ejecutar pausar() o continuar()
+[INFO] 16:21:17:543 Planificador/(8301:8303): Se recibio una conexion de: 127.0.0.1
+[INFO] 16:21:17:543 Planificador/(8301:8311): Se agrego al ESI: 001, a la lista de Listos.
+[INFO] 16:21:27:598 Planificador/(8301:8302): Se bloqueó el proceso ESI de id 001, en la cola del recurso pepe.
+[INFO] 16:21:30:814 Planificador/(8301:8302): Se listan los procesos bloqueados esperando el recurso pepe.
+[INFO] 16:21:35:871 Planificador/(8301:8302): Se desbloqueó el primer proceso ESI en la cola del recurso pepe.
+[INFO] 16:21:39:278 Planificador/(8301:8302): Se listan los procesos bloqueados esperando el recurso pepe.
+[INFO] 16:21:50:357 Planificador/(8301:8302): //Hay que ejecutar pausar() o continuar()
+[INFO] 16:21:50:363 Planificador/(8301:8304): Se bloqueo correctamente la clave: futbol:messi, y se agrego a la lista de claves Bloqueadas.
+[INFO] 16:21:50:364 Planificador/(8301:8304): Se bloqueo correctamente el ESI: 001, y se agrego a la lista de Bloqueados.
+[INFO] 16:21:55:505 Planificador/(8301:8302): Se bloqueó el proceso ESI de id 001, en la cola del recurso pepe.
