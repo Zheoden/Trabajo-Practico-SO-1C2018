@@ -16,7 +16,6 @@
 #include <Funciones/conexiones.h>
 #include <pthread.h>
 #include <stdlib.h>
-#include <commons/collections/dictionary.h>
 #include <stdbool.h>
 
 #define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
@@ -25,7 +24,6 @@
 t_list* ESI_clavesBloqueadas;
 t_list* ESI_listos;
 t_list* ESI_ejecucion;
-t_list* ESI_bloqueados;
 t_list* ESI_finalizados;
 t_list* hilos;
 

@@ -190,6 +190,9 @@ void crearCliente() {
 					return !strcmp(esi->ID, paquete.mensaje + strlen(paquete.mensaje)+1);
 				}
 				t_ESIPlanificador* esiABloquear = (t_ESIPlanificador*) list_remove(ESI_ejecucion, 0);
+				esiABloquear->razon_bloqueo = malloc(strlen(paquete.mensaje)+1);
+				strcpy(esiABloquear->razon_bloqueo,paquete.mensaje);
+				esiABloquear->bloqueado = true;
 				list_add(ESI_bloqueados, esiABloquear);
 				log_info(logger,"Se bloqueo correctamente el ESI: %s, y se agrego a la lista de Bloqueados.",esiABloquear->ID);
 			}

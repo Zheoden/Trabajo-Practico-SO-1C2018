@@ -53,6 +53,8 @@ void consola(){
 
 		char **parametros = string_split(linea, " ");
 
+		listar(parametros[1]);
+
 		printf("Se listan los procesos bloqueados esperando el recurso %s.\n", parametros[1]);
 		log_info(logger,"Se listan los procesos bloqueados esperando el recurso %s.", parametros[1]);
 
@@ -107,3 +109,38 @@ void consola(){
 void pausarOContinuar(){
 	planificacion_activa = !planificacion_activa;
 }
+
+void bloquear(){
+
+}
+
+void desbloquear(){
+
+}
+
+void listar(char* recurso){
+
+	int i;
+	for (i = 0; i < list_size(ESI_bloqueados); i++) {
+		t_ESIPlanificador* aux = (t_ESIPlanificador*) list_get(ESI_bloqueados,i);
+		if( !strcmp(recurso, aux->razon_bloqueo) ){
+
+		printf("ID: %s\n",aux->ID);
+		printf("Bloqueado: %d\n",aux->bloqueado);
+		printf("Rafagas Ejecutadas: %d\n",aux->rafagas_ejecutadas);
+		printf("Razon De Bloqueo: %s\n",aux->razon_bloqueo);
+		printf("Socket: %d\n",aux->socket);
+		printf("%s\n","------------------------------------");
+
+		}
+	}
+
+}
+
+
+
+
+
+
+
+
