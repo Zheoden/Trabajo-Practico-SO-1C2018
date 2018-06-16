@@ -12,11 +12,13 @@ bool planificacion_activa;
 
 /* Estructuras */
 t_list* ESI_bloqueados;
+t_list* ESI_listos;
+t_list* ESI_ejecucion;
 
 
 void consola();
 void pausarOContinuar();
-void bloquear();
+void bloquear(char* clave, char* id);
 void desbloquear();
 void listar(char* recurso);
 void killProceso();

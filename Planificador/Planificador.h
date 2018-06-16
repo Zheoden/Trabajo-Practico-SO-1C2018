@@ -22,8 +22,6 @@
 
 /* Estructuras */
 t_list* ESI_clavesBloqueadas;
-t_list* ESI_listos;
-t_list* ESI_ejecucion;
 t_list* ESI_finalizados;
 t_list* hilos;
 
