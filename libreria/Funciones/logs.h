@@ -5,9 +5,10 @@
 
 
 t_log * logger;
-t_log * loggerOperacionesCoordinador;
+t_log * loggerOperaciones;
 
 void crearLogger(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
+void crearLoggerOperaciones(char* logPath,  char * logMemoNombreArch, bool consolaActiva);
 
 
 #endif /* LOGS_H_ */
