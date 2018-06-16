@@ -19,7 +19,7 @@ t_list* ESI_ejecucion;
 void consola();
 void pausarOContinuar();
 void bloquear(char* clave, char* id);
-void desbloquear();
+void desbloquear(char* clave);
 void listar(char* recurso);
 void killProceso();
 void status();

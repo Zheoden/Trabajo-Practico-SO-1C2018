@@ -41,6 +41,8 @@ void consola(){
 
 		char **parametros = string_split(linea, " ");
 
+		desbloquear(parametros[1]);
+
 //		printf("Se desbloqueó el primer proceso ESI en la cola del recurso %s.\n", parametros[1]);
 		log_info(logger,"Se desbloqueó el primer proceso ESI en la cola del recurso %s.", parametros[1]);
 
@@ -142,7 +144,21 @@ void bloquear(char* clave, char* id){
 
 }
 
-void desbloquear(){
+void desbloquear(char* clave){
+
+	bool comparadorClaves(t_ESIPlanificador* unESI){
+		return !strcmp(unESI->razon_bloqueo, clave);
+	}
+
+	t_ESIPlanificador* aux = (t_ESIPlanificador*) list_remove_by_condition(ESI_bloqueados,(void*)comparadorClaves);
+	if(aux != NULL){//Encontramos el ESI en ejecucion, lo modifico y lo paso a bloqueados
+		aux->bloqueado = false;
+		strcpy(aux->razon_bloqueo,"");
+		list_add(ESI_listos,aux);
+		printf("Se desbloqueo el ESI con el ID: %s.\n",aux->ID);
+	}else{ // No existe el esi en listos ni en ejecucion. notifico al usuario
+		printf("No se Encontro ningun ESI bloqueado por esa clave, por favor intente con otro.\n");
+	}
 
 }
 
