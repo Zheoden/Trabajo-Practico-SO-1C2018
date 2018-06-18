@@ -65,7 +65,7 @@ int RecibirDatos(void* paquete, int socketFD, uint32_t cantARecibir) {
 	memcpy(paquete, datos, cantARecibir);
 	free(datos);
 	if (recibido < 0) {
-//		printf("Cliente Desconectado\n");
+		printf("Cliente Desconectado\n");
 		close(socketFD); // ¡Hasta luego!
 	} else if (recibido == 0) {
 		printf("Fin de Conexion en socket %d\n", socketFD);

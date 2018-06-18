@@ -115,6 +115,9 @@ void manejarEntradas() {
 			printf("Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.\n");
 			free(clave);
 			free(valor);
+
+			algoritmoCircular(list_get(entradas_administrativas,0));
+
 		}
 		break;
 
@@ -338,10 +341,6 @@ void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar){
 	}
 }
 
-
-
-
-
 void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux) {
 
 	if (aux->entradasOcupadas <= cantidad_de_entradas) {
@@ -352,33 +351,10 @@ void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux) {
 			if (aux->entradasOcupadas == 1) {
 				EnviarDatosTipo(socket_coordinador, INSTANCIA, aux->clave,strlen(aux->clave) + 1, t_CLAVEBORRADA);
 				liberarMemoria(aux);
-
 			}
 		}
-
 	}
-
 }
-
-/*
-Pseudo codigo para Algoritmo circular:
-
--evaluar si la cantidad de entradas que necesito sea menor a la cantidad de entradas totales
-
--recorrer la tabla de entradas desde el comienzo y preguntar si el valor es atomico
-
--si lo es, lo elimino de la tabla de entradas y de entradas administrativas y notifico al coordinador de la accion.
-
--si no lo es, salgo el punteri hasta el final de ese valor
-
--esto se repite hasta liberar la cantidad de entradas que necesito.
-
--en caso de no conseguir esa cantidad de entradas de forma lineal, aplico compactacion para eliminar la fragmentancion externa(esto ultimo va para el siguiente chk)
-
----------------------------------------------------------------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-*/
 
 
 

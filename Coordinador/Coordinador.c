@@ -59,6 +59,7 @@ void servidor() {
 			list_add(hilos, itemNuevo);
 
 		}
+
 		close(socketFD);  // El proceso padre no lo necesita
 		log_info(logger,"Se cerró el socket %d.",socketFD);
 }
@@ -96,9 +97,10 @@ void coordinar(void* socket) {
 	int socketActual = *(int*) socket;
 	printf("Se va a proceder a Coordinar el socket: %d\n", socketActual);
 	log_info(logger,"Se va a proceder a Coordinar el socket: %d", socketActual);
+	int datosRecibidos = 0;
 	Paquete paquete;
 	void* datos;
-	while (RecibirPaqueteServidor(socketActual, COORDINADOR ,&paquete) > 0) {
+	while (datosRecibidos = RecibirPaqueteServidor(socketActual, COORDINADOR ,&paquete) > 0) {
 		datos = paquete.mensaje;
 		switch (paquete.header.quienEnvia) {
 		case INSTANCIA:{
@@ -119,6 +121,10 @@ void coordinar(void* socket) {
 			free(paquete.mensaje);
 		}
 	}
+	if(datosRecibidos == 0){
+		sacar_instancia(socketActual);
+	}
+
 	close(socketActual);
 	sacar_instancia(socketActual);
 }
@@ -132,10 +138,16 @@ int obtenerProximaInstancia() {
 	t_Instancia* aux;
 
 	void inicializar(t_Instancia * elemento) {
-		elemento->flagEL=false;
+		if(elemento->estado_de_conexion){
+			elemento->flagEL = false;
+		}
 	}
 	bool verificarVacio(t_Instancia * elemento) {
-		return elemento->flagEL==true;
+		if(elemento->estado_de_conexion){
+			return elemento->flagEL;
+		}else{
+			return false;
+		}
 	}
 
 	if (list_all_satisfy(instancias,(void*)verificarVacio)){
@@ -143,14 +155,19 @@ int obtenerProximaInstancia() {
 		aux = list_get(instancias, 0);
 		aux->flagEL = true;
 		list_replace(instancias, 0, aux);
+		log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
 		return aux->socket;
 	}
 
 	int i = -1;
 
 	bool proximo(t_Instancia *elemento) {
-		i++;
-		return !elemento->flagEL;
+		if(elemento->estado_de_conexion){
+			i++;
+			return !elemento->flagEL;
+		}else{
+			return false;
+		}
 	}
 
 	list_find(instancias, (void*) proximo);
@@ -163,11 +180,16 @@ int obtenerProximaInstancia() {
 
 /* Para Desconexiones */
 void sacar_instancia(int socket) {
-	int tiene_socket(t_Instancia *instancia) {
-		if (instancia->socket == socket)
-			return instancia->socket != socket;
+	bool tiene_socket(t_Instancia *instancia) {
+		return instancia->socket == socket;
 	}
-	instancias = list_filter(instancias, (void*) tiene_socket);
+	t_Instancia* instancia = list_find(instancias, (void*) tiene_socket);
+	if( instancia != NULL ){
+		int indexInstancia = list_get_index(instancias,instancia,(void*)tiene_socket);
+		instancia->estado_de_conexion = false;
+		list_replace(instancias, indexInstancia, instancia);
+		printf("Se Desconecto una Instancia en el socket: %d\n",socket);
+	}
 }
 
 /* Para Coordinar los distintos procesos, los hago polimorficos (revisar si vale la pena) */
@@ -199,6 +221,7 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		t_Instancia* instancia = malloc(sizeof(t_Instancia));
 		instancia->socket = socket;
 		instancia->nombre = malloc(strlen(nombreInstancia) + 1);
+		instancia->estado_de_conexion = true;
 		instancia->flagEL = false;
 		instancia->claves = list_create();
 		strcpy(instancia->nombre, nombreInstancia);
@@ -227,6 +250,41 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		printf("Se recibio una respuesta store de una Instancia\n");
 		EnviarDatosTipo(socket_planificador, COORDINADOR, datos , strlen(datos)+1, t_STORE);
 //		EnviarDatosTipo(socket_ESI_actual, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
+	}
+	break;
+	case t_CLAVEBORRADA: {
+
+		char* clave_a_borrar = malloc(strlen(datos)+1);
+		strcpy(clave_a_borrar,datos);
+
+		printf("%s\n",clave_a_borrar);
+
+		bool buscar_por_socket(t_Instancia* unaInstancia,t_Instancia* otraInstancia) {
+			return unaInstancia->socket == otraInstancia->socket;
+		}
+
+		bool tiene_socket(t_Instancia* instancia) {
+			return instancia->socket == socket;
+		}
+
+		bool buscador_de_claves(char* unaClave, char* otraClave){
+			return !strcmp(unaClave,otraClave);
+		}
+
+		t_Instancia* instancia = list_find(instancias, (void*) tiene_socket);
+		if( instancia != NULL ){
+			int indexInstancia = list_get_index(instancias,instancia,(void*)buscar_por_socket);
+			printf("El Index de la instancia es: %d\n",indexInstancia);
+			int indexClave = list_get_index(instancia->claves,clave_a_borrar,(void*)buscador_de_claves);
+			printf("El Index de la clave es: %d\n",indexClave);
+
+			printf("Se recibio una solicitud de borrar clave para la instancia %s\n",instancia->nombre);
+
+			list_remove(instancia->claves,indexClave);
+			list_replace(instancias, indexInstancia, instancia);
+		}else{
+			printf("La instancia no existe\n");
+		}
 	}
 	break;
 
@@ -298,7 +356,6 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 //			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEAINCORRECTA);
 		}
 		log_info(loggerOperaciones,"El ESI: %d, recibió operación SET con CLAVE: %s y VALOR: %s", socket, nuevo->clave, nuevo->valor);
-		printf("TEST PRINT LOG SET CONSOLA\n");
 		pthread_mutex_lock(&t_set);
 		EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 	}
@@ -327,7 +384,6 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		EnviarDatosTipo(socket_planificador, COORDINADOR, sendPlanificador,tamSend, t_GET);
 		EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 		log_info(loggerOperaciones,"El ESI: %d, recibió operación GET con CLAVE: %s", socket, nuevo->clave);
-		printf("TEST PRINT LOG GET CONSOLA\n");
 	}
 	break;
 	case t_STORE: {
@@ -354,7 +410,6 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 		}
 		log_info(loggerOperaciones,"El ESI: %d, recibió operación STORE con CLAVE: %s", socket, datos);
-		printf("TEST PRINT LOG STORE CONSOLA\n");
 	}
 	break;
 	}

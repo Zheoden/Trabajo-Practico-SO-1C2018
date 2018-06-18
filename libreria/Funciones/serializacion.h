@@ -93,6 +93,7 @@ typedef struct {
 typedef struct {
 	int socket;
 	char* nombre;
+	bool estado_de_conexion;
 	bool flagEL;
 	t_list* claves;
 }__attribute__((packed)) t_Instancia;

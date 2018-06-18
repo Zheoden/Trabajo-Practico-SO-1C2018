@@ -11,6 +11,7 @@
 #include <Funciones/logs.h>
 #include <Funciones/configs.h>
 #include <Funciones/serializacion.h>
+#include <Funciones/lista.h>
 
 #define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
 
