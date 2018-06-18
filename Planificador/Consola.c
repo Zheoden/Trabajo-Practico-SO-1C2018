@@ -29,11 +29,13 @@ void consola(){
 
     	char **parametros = string_split(linea, " ");
 
-    	bloquear(parametros[1],parametros[2]);
-
-//    	printf("Se bloqueó el proceso ESI de id %s, en la cola del recurso %s.\n", parametros[2], parametros[1]);
-    	log_info(logger,"Se bloqueó el proceso ESI de id %s, en la cola del recurso %s.", parametros[2], parametros[1]);
-
+		if(!strcmp(parametros[1], "") && !strcmp(parametros[2], "")){
+			printf("El Comando listar debe recibir dos parametros.\n");
+		}else{
+			bloquear(parametros[1],parametros[2]);
+//    		printf("Se bloqueó el proceso ESI de id %s, en la cola del recurso %s.\n", parametros[2], parametros[1]);
+    		log_info(logger,"Se bloqueó el proceso ESI de id %s, en la cola del recurso %s.", parametros[2], parametros[1]);
+		}
     	string_iterate_lines(parametros,free);
 		free(parametros);
 
@@ -41,34 +43,39 @@ void consola(){
 
 		char **parametros = string_split(linea, " ");
 
-		desbloquear(parametros[1]);
-
-//		printf("Se desbloqueó el primer proceso ESI en la cola del recurso %s.\n", parametros[1]);
-		log_info(logger,"Se desbloqueó el primer proceso ESI en la cola del recurso %s.", parametros[1]);
-
+		if(!strcmp(parametros[1], "")){
+			printf("El Comando desbloquear debe recibir un parametro.\n");
+		}else{
+			desbloquear(parametros[1]);
+//			printf("Se desbloqueó el primer proceso ESI en la cola del recurso %s.\n", parametros[1]);
+			log_info(logger,"Se desbloqueó el primer proceso ESI en la cola del recurso %s.", parametros[1]);
+		}
 		string_iterate_lines(parametros,free);
 		free(parametros);
 
 
     }else	if(!strncmp(linea, "listar", 6)) {
 
-    	printf("//Hay que ejecutar listar()\n");
 
 		char **parametros = string_split(linea, " ");
 
-		listar(parametros[1]);
-
-		printf("Se listan los procesos bloqueados esperando el recurso %s.\n", parametros[1]);
-		log_info(logger,"Se listan los procesos bloqueados esperando el recurso %s.", parametros[1]);
+		if(!strcmp(parametros[1], "")){
+			printf("El Comando listar debe recibir un parametro.\n");
+		}else{
+			listar(parametros[1]);
+	//		printf("Se listan los procesos bloqueados esperando el recurso %s.\n", parametros[1]);
+			log_info(logger,"Se listan los procesos bloqueados esperando el recurso %s.", parametros[1]);
+		}
 
 		string_iterate_lines(parametros,free);
 		free(parametros);
 
     }else	if(!strncmp(linea, "kill", 4)) {
 
-    	printf("//Hay que ejecutar kill()\n");
 
 		char **parametros = string_split(linea, " ");
+
+		killProceso(parametros[1]);
 
 		printf("Se finaliza el proceso de id %s.\n", parametros[1]);
 		log_info(logger,"Se finaliza el proceso de id %s.", parametros[1]);
@@ -178,6 +185,45 @@ void listar(char* recurso){
 
 		}
 	}
+
+}
+
+void killProceso(char* id){
+
+	bool comparadorID(t_ESIPlanificador* unESI){
+		return !strcmp(unESI->ID, id);
+	}
+
+	//Busco el ESI en todas las listas (Listos, Bloqueados, Ejecucion)
+	//Lo Busco en Listos
+	t_ESIPlanificador* ESIenListos = (t_ESIPlanificador*) list_remove_by_condition(ESI_listos,(void*)comparadorID);
+	if(ESIenListos != NULL){//Encontramos el ESI en listos
+		printf("El ESI con el ID ingresado (%s), se encontro en la cola de Listos, se paso a finalizado.\n",id);
+
+		list_add(ESI_finalizados,ESIenListos);
+	}else{//No esta en la lista de listos, libero aux para poder reutilizarlo
+		free(ESIenListos);
+		//Lo Busco en Ejecucion
+		t_ESIPlanificador* ESIenEjecucion = (t_ESIPlanificador*) list_remove_by_condition(ESI_ejecucion,(void*)comparadorID);
+		if(ESIenEjecucion != NULL){//Encontramos el ESI en ejecucion
+			printf("El ESI con el ID ingresado (%s), se encontro en la cola de Ejecucion, se paso a finalizado.\n",id);
+			list_add(ESI_finalizados,ESIenEjecucion);
+		}else{ // No existe el esi en listos ni en ejecucion.
+			free(ESIenEjecucion);
+			//Lo Busco en Bloqueados
+			t_ESIPlanificador* ESIenBloqueados = (t_ESIPlanificador*) list_remove_by_condition(ESI_bloqueados,(void*)comparadorID);
+			if(ESIenBloqueados != NULL){//Encontramos el ESI en bloqueados
+				printf("El ESI con el ID ingresado (%s), se encontro en la cola de Bloqueados, se paso a finalizado.\n",id);
+				list_add(ESI_finalizados,ESIenBloqueados);
+			}else{ // No existe el esi en listos ni en ejecucion ni en bloqueados, se le notifica al usuario que no se encontro el ID solicitado.
+				printf("No se Encontro el ID especificado, por favor intente con otro.\n");
+				free(ESIenBloqueados);//libero aux para que no ocupe memoria un NULL
+			}
+		}
+	}
+}
+
+void status(){
 
 }
 

@@ -14,6 +14,7 @@ bool planificacion_activa;
 t_list* ESI_bloqueados;
 t_list* ESI_listos;
 t_list* ESI_ejecucion;
+t_list* ESI_finalizados;
 
 
 void consola();
@@ -21,7 +22,7 @@ void pausarOContinuar();
 void bloquear(char* clave, char* id);
 void desbloquear(char* clave);
 void listar(char* recurso);
-void killProceso();
+void killProceso(char* id);
 void status();
 void deadlock();
 
