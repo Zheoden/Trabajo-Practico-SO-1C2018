@@ -257,7 +257,8 @@ void planificar() {
 					aplicarSJFConDesalojo();
 					ejecutarEsi();
 				} else if (!strcmp(algoritmo_planificacion, "HRRN")) {
-
+					aplicarHRRN();
+					ejecutarEsi();
 
 				}
 			}
@@ -297,6 +298,21 @@ void aplicarSJF() {
 	list_add(ESI_ejecucion, esiAEjecutar);
 
 }
+void aplicarHRRN(){
+
+	t_list* aux = list_map(ESI_listos, (void*) CalcularResponseRatio);
+	list_sort(aux, (void*) ComparadorDeResponseRatio);
+
+	t_ESIPlanificador* esiAux = (t_ESIPlanificador*) list_remove(aux, 0);
+
+	bool comparator(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
+		return !strcmp(unESI->ID, otroESI->ID);
+	}
+
+	int index = list_get_index(ESI_listos,esiAux,(void*)comparator);
+	t_ESIPlanificador* esiAEjecutar = list_remove(ESI_listos,index);
+	list_add(ESI_ejecucion, esiAEjecutar);
+}
 
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
 	unEsi->rafagas_estimadas = (alfa_planificacion * estimacion_inicial)
@@ -306,6 +322,15 @@ t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
 
 bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
 	return unESI->rafagas_estimadas <= otroESI->rafagas_estimadas;
+}
+/*
+t_ESIPlanificador* CalcularResponseRatio(t_ESIPlanificador* unEsi) {
+	unEsi->response_ratio =
+	return unEsi;
+}
+*/
+bool ComparadorResponseRatio(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
+	return unESI->response_ratio <= otroESI->response_ratio;
 }
 
 /* Ejecución de ESI */
