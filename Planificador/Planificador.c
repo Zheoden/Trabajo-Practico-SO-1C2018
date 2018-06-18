@@ -298,6 +298,7 @@ void aplicarSJF() {
 	list_add(ESI_ejecucion, esiAEjecutar);
 
 }
+
 void aplicarHRRN(){
 
 	t_list* aux = list_map(ESI_listos, (void*) CalcularResponseRatio);

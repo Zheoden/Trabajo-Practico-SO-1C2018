@@ -29,11 +29,10 @@ void consola(){
 
     	char **parametros = string_split(linea, " ");
 
-		if(!strcmp(parametros[1], "") && !strcmp(parametros[2], "")){
+		if( parametros[1] == NULL && parametros[2] == NULL){
 			printf("El Comando listar debe recibir dos parametros.\n");
 		}else{
 			bloquear(parametros[1],parametros[2]);
-//    		printf("Se bloqueó el proceso ESI de id %s, en la cola del recurso %s.\n", parametros[2], parametros[1]);
     		log_info(logger,"Se bloqueó el proceso ESI de id %s, en la cola del recurso %s.", parametros[2], parametros[1]);
 		}
     	string_iterate_lines(parametros,free);
@@ -43,7 +42,7 @@ void consola(){
 
 		char **parametros = string_split(linea, " ");
 
-		if(!strcmp(parametros[1], "")){
+		if(parametros[1] == NULL){
 			printf("El Comando desbloquear debe recibir un parametro.\n");
 		}else{
 			desbloquear(parametros[1]);
@@ -58,8 +57,7 @@ void consola(){
 
 
 		char **parametros = string_split(linea, " ");
-
-		if(!strcmp(parametros[1], "")){
+		if(parametros[1] == NULL){
 			printf("El Comando listar debe recibir un parametro.\n");
 		}else{
 			listar(parametros[1]);
@@ -74,12 +72,13 @@ void consola(){
 
 
 		char **parametros = string_split(linea, " ");
-
-		killProceso(parametros[1]);
-
-		printf("Se finaliza el proceso de id %s.\n", parametros[1]);
-		log_info(logger,"Se finaliza el proceso de id %s.", parametros[1]);
-
+		if(parametros[1] == NULL){
+			printf("El Comando kill debe recibir un parametro.\n");
+		}else{
+			killProceso(parametros[1]);
+			printf("Se finaliza el proceso de id %s.\n", parametros[1]);
+			log_info(logger,"Se finaliza el proceso de id %s.", parametros[1]);
+		}
 		string_iterate_lines(parametros,free);
 		free(parametros);
 
