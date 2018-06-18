@@ -63,7 +63,7 @@ void aplicarHRRN();
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi);
 bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
 t_ESIPlanificador* CalcularResponseRatio(t_ESIPlanificador* unEsi);
-bool ComparadorDeResponseRatio(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
+bool ComparadorResponseRatio(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
 t_ESIPlanificador* inicializarESI(char* ID,int socket);
 void ejecutarEsi();
 void imprimir(t_list* self);

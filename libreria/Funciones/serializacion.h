@@ -78,7 +78,7 @@ typedef struct {
 	char* razon_bloqueo;//clave que lo bloqueo o "consola"
 	int rafagas_ejecutadas;
 	float rafagas_estimadas;
-	int response_ratio
+	int response_ratio;
 }__attribute__((packed)) t_ESIPlanificador;
 
 typedef struct {

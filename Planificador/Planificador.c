@@ -301,7 +301,7 @@ void aplicarSJF() {
 void aplicarHRRN(){
 
 	t_list* aux = list_map(ESI_listos, (void*) CalcularResponseRatio);
-	list_sort(aux, (void*) ComparadorDeResponseRatio);
+	list_sort(aux, (void*) ComparadorResponseRatio);
 
 	t_ESIPlanificador* esiAux = (t_ESIPlanificador*) list_remove(aux, 0);
 
@@ -323,12 +323,11 @@ t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
 bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
 	return unESI->rafagas_estimadas <= otroESI->rafagas_estimadas;
 }
-/*
+
 t_ESIPlanificador* CalcularResponseRatio(t_ESIPlanificador* unEsi) {
-	unEsi->response_ratio =
 	return unEsi;
 }
-*/
+
 bool ComparadorResponseRatio(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
 	return unESI->response_ratio <= otroESI->response_ratio;
 }

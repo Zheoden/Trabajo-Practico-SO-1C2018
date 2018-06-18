@@ -277,7 +277,6 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 			printf("El Index de la instancia es: %d\n",indexInstancia);
 			int indexClave = list_get_index(instancia->claves,clave_a_borrar,(void*)buscador_de_claves);
 			printf("El Index de la clave es: %d\n",indexClave);
-
 			printf("Se recibio una solicitud de borrar clave para la instancia %s\n",instancia->nombre);
 
 			list_remove(instancia->claves,indexClave);
