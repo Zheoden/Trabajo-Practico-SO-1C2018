@@ -71,7 +71,7 @@ void sigchld_handler(int s){
  }
 
 void crearServidor() {
-	int sockfd; // Escuchar sobre sock_fd, nuevas conexiones sobre new_fd
+	int sockfd,socket_esi; // Escuchar sobre sock_fd, nuevas conexiones sobre new_fd
 	struct sockaddr_in my_addr;    // información sobre mi dirección
 	struct sockaddr_in their_addr; // información sobre la dirección del cliente
 	int sin_size;
@@ -226,7 +226,7 @@ void crearCliente() {
 		case t_ABORTARESI:{
 			printf("me llego %s\n","un abortar esi");
 			t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove(ESI_ejecucion,0 );
-			EnviarDatosTipo(socket_esi,PLANIFICADOR, NULL, 0, t_ABORTARESI);
+			EnviarDatosTipo(esiAAbortar->socket,PLANIFICADOR, NULL, 0, t_ABORTARESI);
 
 			//liberarrecursos()
 			list_add(ESI_finalizados, esiAAbortar);

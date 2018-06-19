@@ -46,7 +46,6 @@ void consola(){
 			printf("El Comando desbloquear debe recibir un parametro.\n");
 		}else{
 			desbloquear(parametros[1]);
-//			printf("Se desbloqueó el primer proceso ESI en la cola del recurso %s.\n", parametros[1]);
 			log_info(logger,"Se desbloqueó el primer proceso ESI en la cola del recurso %s.", parametros[1]);
 		}
 		string_iterate_lines(parametros,free);
@@ -198,8 +197,8 @@ void killProceso(char* id){
 	t_ESIPlanificador* ESIenListos = (t_ESIPlanificador*) list_remove_by_condition(ESI_listos,(void*)comparadorID);
 	if(ESIenListos != NULL){//Encontramos el ESI en listos
 		printf("El ESI con el ID ingresado (%s), se encontro en la cola de Listos, se paso a finalizado.\n",id);
-
 		list_add(ESI_finalizados,ESIenListos);
+		EnviarDatosTipo(ESIenListos->socket,PLANIFICADOR, NULL, 0, t_ABORTARESI);
 	}else{//No esta en la lista de listos, libero aux para poder reutilizarlo
 		free(ESIenListos);
 		//Lo Busco en Ejecucion
@@ -207,6 +206,7 @@ void killProceso(char* id){
 		if(ESIenEjecucion != NULL){//Encontramos el ESI en ejecucion
 			printf("El ESI con el ID ingresado (%s), se encontro en la cola de Ejecucion, se paso a finalizado.\n",id);
 			list_add(ESI_finalizados,ESIenEjecucion);
+			EnviarDatosTipo(ESIenEjecucion->socket,PLANIFICADOR, NULL, 0, t_ABORTARESI);
 		}else{ // No existe el esi en listos ni en ejecucion.
 			free(ESIenEjecucion);
 			//Lo Busco en Bloqueados
@@ -214,6 +214,7 @@ void killProceso(char* id){
 			if(ESIenBloqueados != NULL){//Encontramos el ESI en bloqueados
 				printf("El ESI con el ID ingresado (%s), se encontro en la cola de Bloqueados, se paso a finalizado.\n",id);
 				list_add(ESI_finalizados,ESIenBloqueados);
+				EnviarDatosTipo(ESIenBloqueados->socket,PLANIFICADOR, NULL, 0, t_ABORTARESI);
 			}else{ // No existe el esi en listos ni en ejecucion ni en bloqueados, se le notifica al usuario que no se encontro el ID solicitado.
 				printf("No se Encontro el ID especificado, por favor intente con otro.\n");
 				free(ESIenBloqueados);//libero aux para que no ocupe memoria un NULL

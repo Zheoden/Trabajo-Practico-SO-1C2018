@@ -36,9 +36,6 @@ char* algoritmo_planificacion;
 char* claves_bloqueadas;
 int estimacion_inicial;
 int alfa_planificacion;
-
-int socket_esi;
-
 char* ultimo_ID_Asignado;
 
 /* Semaforos */
