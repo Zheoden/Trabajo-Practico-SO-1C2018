@@ -45,6 +45,7 @@ void crearCliente() {
 	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
 	printf("Me conecté al Coordinador\n");
 	EnviarHandshake(socket_coordinador,INSTANCIA);
+	log_info(logger,"Se envio un Handshake al Coordiandor");
 	//iniciarManejoDeEntradas();
 	manejarEntradas();
 }
@@ -61,10 +62,8 @@ void manejarEntradas() {
 			tamanio_entrada = *((int*) paquete.mensaje);
 			datos += sizeof(int);
 			cantidad_de_entradas = *((int*) datos);
-			printf("Tamanio: %d y cantidad: %d\n", tamanio_entrada,cantidad_de_entradas);
 			inicializarTabla();
 			verificarPuntoMontaje();
-			log_info(logger,"Se envio un Handshake al Coordiandor");
 		}
 		break;
 		case t_SOLICITUDNOMBRE: {
@@ -97,6 +96,7 @@ void manejarEntradas() {
 
 			log_info(logger,"Se proceso correctamente el STORE.");
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, datos, aux, t_RESPUESTASTORE);
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, datos, aux, t_CLAVEBORRADA);
 			free(clave);
 		}
 		break;
@@ -115,9 +115,12 @@ void manejarEntradas() {
 			printf("Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.\n");
 			free(clave);
 			free(valor);
-
-			algoritmoCircular(list_get(entradas_administrativas,0));
-
+		}
+		break;
+		case t_LEERCLAVE: {
+			char*clave = malloc(strlen(datos) + 1);
+			strcpy(clave, datos);
+			printf("Se recibio una solicitud de leer una clave: %s.\n",clave);
 		}
 		break;
 

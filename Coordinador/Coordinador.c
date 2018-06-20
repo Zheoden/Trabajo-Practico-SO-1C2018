@@ -64,7 +64,6 @@ void servidor() {
 		log_info(logger,"Se cerró el socket %d.",socketFD);
 }
 
-
 /* Archivo de Configuración */
 void setearValores(t_config * archivoConfig) {
 
@@ -95,7 +94,6 @@ void inicializar(){
 /* Operaciones COORDINADOR */
 void coordinar(void* socket) {
 	int socketActual = *(int*) socket;
-	printf("Se va a proceder a Coordinar el socket: %d\n", socketActual);
 	log_info(logger,"Se va a proceder a Coordinar el socket: %d", socketActual);
 	int datosRecibidos = 0;
 	Paquete paquete;
@@ -120,9 +118,6 @@ void coordinar(void* socket) {
 		if (paquete.mensaje != NULL){
 			free(paquete.mensaje);
 		}
-	}
-	if(datosRecibidos == 0){
-		sacar_instancia(socketActual);
 	}
 
 	close(socketActual);
@@ -183,13 +178,19 @@ void sacar_instancia(int socket) {
 	bool tiene_socket(t_Instancia *instancia) {
 		return instancia->socket == socket;
 	}
+
+	bool comparador_de_socket(t_Instancia* unaInstancia, t_Instancia* otraInstancia) {
+		return unaInstancia->socket == otraInstancia->socket;
+	}
+
 	t_Instancia* instancia = list_find(instancias, (void*) tiene_socket);
 	if( instancia != NULL ){
-		int indexInstancia = list_get_index(instancias,instancia,(void*)tiene_socket);
+		int indexInstancia = list_get_index(instancias,instancia,(void*)comparador_de_socket);
 		instancia->estado_de_conexion = false;
 		list_replace(instancias, indexInstancia, instancia);
-		printf("Se Desconecto una Instancia en el socket: %d\n",socket);
+		printf("Se Desconecto la Instancia %s.\n",instancia->nombre);
 	}
+
 }
 
 /* Para Coordinar los distintos procesos, los hago polimorficos (revisar si vale la pena) */
@@ -218,15 +219,52 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 	case t_IDENTIFICACIONINSTANCIA: {
 		char *nombreInstancia = malloc(paquete.header.tamanioMensaje);
 		strcpy(nombreInstancia, (char*) paquete.mensaje);
-		t_Instancia* instancia = malloc(sizeof(t_Instancia));
-		instancia->socket = socket;
-		instancia->nombre = malloc(strlen(nombreInstancia) + 1);
-		instancia->estado_de_conexion = true;
-		instancia->flagEL = false;
-		instancia->claves = list_create();
-		strcpy(instancia->nombre, nombreInstancia);
-		list_add(instancias, instancia);
-		log_info(logger,"Se agrego la Instancia: %s, a la lista de Instancias.", instancia->nombre);
+
+		bool BuscarNombre(t_Instancia* elemento){
+			return !strcmp(elemento->nombre,nombreInstancia);
+		}
+
+		bool ComparadorDeNombre(t_Instancia* unaInstancia, t_Instancia* otraInstancia){
+			return !strcmp(unaInstancia->nombre, otraInstancia->nombre);
+		}
+
+		t_Instancia* aux = list_find(instancias,(void*)BuscarNombre);
+		if(aux != NULL){//La instancia ya existia, se esta reincorporando
+
+			int indexInstancia = list_get_index(instancias,aux,(void*)ComparadorDeNombre);
+			aux->estado_de_conexion = true;
+			aux->socket = socket;
+			aux->flagEL = false;
+			list_replace(instancias, indexInstancia, aux);
+
+			printf("Se reincorporo la instancia: %s\n",aux->nombre);
+			printf("Se le va a enviar las claves que tenia almacenadas.\n");
+
+			int cantidad_de_claves = list_size(aux->claves);
+			int i;
+			for (i = 0; i < cantidad_de_claves; i++) {
+
+				int tamanio = strlen(list_get(aux->claves,i))+1;
+				char* clave = malloc(tamanio);
+				strcpy(clave,list_get(aux->claves,i));
+
+				EnviarDatosTipo(socket, COORDINADOR, clave, tamanio, t_LEERCLAVE);
+
+				free(clave);
+			}
+
+
+		}else{
+			t_Instancia* instancia = malloc(sizeof(t_Instancia));
+			instancia->socket = socket;
+			instancia->nombre = malloc(strlen(nombreInstancia) + 1);
+			instancia->estado_de_conexion = true;
+			instancia->flagEL = false;
+			instancia->claves = list_create();
+			strcpy(instancia->nombre, nombreInstancia);
+			list_add(instancias, instancia);
+			log_info(logger,"Se agrego la Instancia: %s, a la lista de Instancias.", instancia->nombre);
+		}
 	}
 	break;
 	case t_RESPUESTASET: {
@@ -242,22 +280,18 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		list_add(aux->claves, clave);
 		log_info(logger,"Se le agrego a la Instancia: %s, la clave %s.", aux->nombre, clave);
 		EnviarDatosTipo(socket_planificador, COORDINADOR, NULL,0, t_SET);
-//		EnviarDatosTipo(socket_ESI_actual, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 		pthread_mutex_unlock(&t_set);
 	}
 	break;
 	case t_RESPUESTASTORE: {
 		printf("Se recibio una respuesta store de una Instancia\n");
 		EnviarDatosTipo(socket_planificador, COORDINADOR, datos , strlen(datos)+1, t_STORE);
-//		EnviarDatosTipo(socket_ESI_actual, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 	}
 	break;
 	case t_CLAVEBORRADA: {
 
 		char* clave_a_borrar = malloc(strlen(datos)+1);
 		strcpy(clave_a_borrar,datos);
-
-		printf("%s\n",clave_a_borrar);
 
 		bool buscar_por_socket(t_Instancia* unaInstancia,t_Instancia* otraInstancia) {
 			return unaInstancia->socket == otraInstancia->socket;
@@ -274,9 +308,7 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		t_Instancia* instancia = list_find(instancias, (void*) tiene_socket);
 		if( instancia != NULL ){
 			int indexInstancia = list_get_index(instancias,instancia,(void*)buscar_por_socket);
-			printf("El Index de la instancia es: %d\n",indexInstancia);
 			int indexClave = list_get_index(instancia->claves,clave_a_borrar,(void*)buscador_de_claves);
-			printf("El Index de la clave es: %d\n",indexClave);
 			printf("Se recibio una solicitud de borrar clave para la instancia %s\n",instancia->nombre);
 
 			list_remove(instancia->claves,indexClave);
@@ -324,8 +356,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			return list_any_satisfy(e->claves,(void*)verificarClaveDeAUna);
 		}
 
-		if (list_any_satisfy(todas_las_claves,
-				(void*) verificarExistenciaEnListaDeClaves)) {
+		if (list_any_satisfy(todas_las_claves,(void*) verificarExistenciaEnListaDeClaves)) {
 			/*if (!list_any_satisfy(instancias, (void*) verificarClave)) {
 				//clave existe en el sistema, pero no esta en ninguna instancia
 				log_info(logger,"Se intenta bloquear la clave %s pero en este momento no esta disponible.", nuevo->clave);
@@ -352,7 +383,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			//clave no existe en el sistema
 			printf("Se intenta bloquear la clave %s pero no existe\n",nuevo->clave);
 			EnviarDatosTipo(socket_planificador, COORDINADOR, NULL , 0, t_ABORTARESI);
-//			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEAINCORRECTA);
+			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEAINCORRECTA);
 		}
 		log_info(loggerOperaciones,"El ESI: %d, recibió operación SET con CLAVE: %s y VALOR: %s", socket, nuevo->clave, nuevo->valor);
 		pthread_mutex_lock(&t_set);
