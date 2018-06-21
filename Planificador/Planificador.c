@@ -326,6 +326,13 @@ bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
 }
 
 t_ESIPlanificador* CalcularResponseRatio(t_ESIPlanificador* unEsi) {
+	t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi);
+	t_ESIPlanificador* CalcularTiempoDeEspera(t_ESIPlanificador* unEsi);
+	unEsi->response_ratio = 1 + (unEsi->tiempo_espera / unEsi->rafagas_estimadas);
+	return unEsi;
+}
+
+t_ESIPlanificador* CalcularTiempoDeEspera(t_ESIPlanificador* unEsi){
 	return unEsi;
 }
 

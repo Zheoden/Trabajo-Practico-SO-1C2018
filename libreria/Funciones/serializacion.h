@@ -80,6 +80,7 @@ typedef struct {
 	int rafagas_ejecutadas;
 	float rafagas_estimadas;
 	int response_ratio;
+	int tiempo_espera;
 }__attribute__((packed)) t_ESIPlanificador;
 
 typedef struct {
