@@ -98,6 +98,7 @@ typedef struct {
 	char* nombre;
 	bool estado_de_conexion;
 	bool flagEL;
+	int tamanio_ocupado;
 	t_list* claves;
 }__attribute__((packed)) t_Instancia;
 
