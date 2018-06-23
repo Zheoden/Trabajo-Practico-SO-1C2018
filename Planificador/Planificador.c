@@ -315,6 +315,11 @@ void aplicarHRRN(){
 	list_add(ESI_ejecucion, esiAEjecutar);
 }
 
+t_ESIPlanificador* AumentarTiempoEspera(t_ESIPlanificador* unEsi){
+	unEsi->tiempo_espera++;
+	return unEsi;
+}
+
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
 	unEsi->rafagas_estimadas = (alfa_planificacion * estimacion_inicial)
 			+ ((1 - alfa_planificacion) * (unEsi->rafagas_ejecutadas));
@@ -327,24 +332,21 @@ bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
 
 t_ESIPlanificador* CalcularResponseRatio(t_ESIPlanificador* unEsi) {
 	t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi);
-	t_ESIPlanificador* CalcularTiempoDeEspera(t_ESIPlanificador* unEsi);
 	unEsi->response_ratio = 1 + (unEsi->tiempo_espera / unEsi->rafagas_estimadas);
 	return unEsi;
 }
 
-t_ESIPlanificador* CalcularTiempoDeEspera(t_ESIPlanificador* unEsi){
-	return unEsi;
-}
-
 bool ComparadorResponseRatio(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
-	return unESI->response_ratio <= otroESI->response_ratio;
+	return unESI->response_ratio >= otroESI->response_ratio;
 }
 
 /* Ejecución de ESI */
 void ejecutarEsi() {
 	if(!list_is_empty(ESI_ejecucion)){
 		t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_get(ESI_ejecucion, 0);
+		esiAEjecutar->tiempo_espera = 0;
 		esiAEjecutar->rafagas_ejecutadas++;
+		list_map(ESI_listos, (void*)AumentarTiempoEspera);
 		EnviarDatosTipo(esiAEjecutar->socket, PLANIFICADOR, NULL, 0, t_SIGUIENTELINEA);
 
 		Paquete paquete;
