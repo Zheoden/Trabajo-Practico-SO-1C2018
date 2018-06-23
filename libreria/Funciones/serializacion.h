@@ -28,7 +28,9 @@ typedef enum t_protocolo {
 	t_RESPUESTASET,
 	t_RESPUESTASTORE,
 	t_CLAVEBORRADA,
-	t_LEERCLAVE
+	t_LEERCLAVE,
+	t_SOLICITARMEMORIATOTAL,
+	t_RESPUESTAMEMORIA
 } t_protocolo;
 
 //////////////////////////////////////////
@@ -98,9 +100,13 @@ typedef struct {
 	char* nombre;
 	bool estado_de_conexion;
 	bool flagEL;
-	int tamanio_ocupado;
 	t_list* claves;
 }__attribute__((packed)) t_Instancia;
+
+typedef struct {
+	t_Instancia* dato;
+	int tamanio;
+}__attribute__((packed)) t_Instancia_con_tamanio;
 
 typedef struct {
 	char* clave;
