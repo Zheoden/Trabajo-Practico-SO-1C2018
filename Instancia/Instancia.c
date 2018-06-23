@@ -123,8 +123,18 @@ void manejarEntradas() {
 			printf("Se recibio una solicitud de leer una clave: %s.\n",clave);
 		}
 		break;
-
+		/* case t_SOLICITARMEMORIATOTAL: {
+			int i;
+			int entradaslibres;
+			for (i = 0; i < cantidad_de_entradas; i++) {
+				if(tabla_entradas[i] != "null"){
+					entradaslibres++;
+				}
+			}
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, entradaslibres, sizeof(int), t_RESPUESTAMEMORIA);
 		}
+		break;
+		*/
 		if (paquete.mensaje != NULL) {
 			free(paquete.mensaje);
 			log_info(logger,"Se libero la memoria del paquete.");
