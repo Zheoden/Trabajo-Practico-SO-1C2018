@@ -173,6 +173,36 @@ int obtenerProximaInstancia() {
 	return aux->socket;
 }
 
+/* Para LSU */
+/*int proximaInstancia() {
+	if(instancias)
+	bool estaHabilitada(t_Instancia * elemento) {
+		return elemento->estado_de_conexion;
+	}
+	bool tamanioOcupado(t_Instancia_con_tamanio* e1, t_Instancia_con_tamanio* e2){
+		bool result = e1->tamanio < e2->tamanio;
+		return result;
+	}
+	t_Instancia_con_tamanio obtenerTamanio(t_Instancia* elem){
+		Paquete paquete;
+		int tamanio_buffer;
+		t_Instancia_con_tamanio* instancia_a_manejar = malloc(sizeof(t_Instancia_con_tamanio));
+		EnviarDatosTipo(elem->socket, COORDINADOR,(void*)NULL, 0, t_SOLICITARMEMORIATOTAL);
+		RecibirPaqueteCliente(elem->socket, INSTANCIA, &paquete);
+		tamanio_buffer = paquete.mensaje;
+		instancia_a_manejar->tamanio = tamanio_buffer;
+		return instancia_a_manejar->dato = elem;
+
+	}
+	t_Instancia* instancias_habilitadas = list_filter (instancias, estaHabilitada());
+	log_info(logger,"Se le envia a las Instancias solicitudes para conocer su disponibilidad de memoria");
+	t_Instancia_con_tamanio* instancias_a_tomar = list_map (instancias_habilitadas,obtenerTamanio());
+	list_sort(instancias_a_tomar,tamanioOcupado());
+	t_Instancia_con_tamanio* instancia_a_usar = list_get(instancias_a_tomar, 0);
+	list_destroy(instancias_habilitadas);
+	list_destroy(instancias_a_tomar);
+	return instancia_a_usar;
+}*/
 /* Para Desconexiones */
 void sacar_instancia(int socket) {
 	bool tiene_socket(t_Instancia *instancia) {

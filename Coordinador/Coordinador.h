@@ -48,6 +48,7 @@ void inicializar();
 void coordinar(void* socket);
 int obtenerProximaInstancia();
 void sacar_instancia(int socket);
+int proximaInstancia();
 
 void coordinarInstancia(int socket, Paquete paquete, void* datos);
 void coordinarESI(int socket, Paquete paquete, void* datos);
