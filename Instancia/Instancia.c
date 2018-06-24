@@ -135,6 +135,7 @@ void manejarEntradas() {
 		}
 		break;
 		*/
+		}
 		if (paquete.mensaje != NULL) {
 			free(paquete.mensaje);
 			log_info(logger,"Se libero la memoria del paquete.");
@@ -368,10 +369,5 @@ void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux) {
 		}
 	}
 }
-
-
-
-
-
 
 
