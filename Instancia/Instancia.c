@@ -120,7 +120,9 @@ void manejarEntradas() {
 		case t_LEERCLAVE: {
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
+			leerArchivo(clave);
 			printf("Se recibio una solicitud de leer una clave: %s.\n",clave);
+			imprimirTabla();
 		}
 		break;
 		case t_SOLICITARMEMORIATOTAL: {
@@ -159,30 +161,7 @@ void verificarPuntoMontaje(){
 		/* Directorio Existe. */
 		struct dirent *ent;
 		while( (ent = readdir(directorio_de_montaje)) != NULL ){
-			if( (strncmp(ent->d_name, ".", 1)) ){
-				FILE * fp;
-				char * line = NULL;
-				size_t len = 0;
-				ssize_t read;
-
-				char* ruta = malloc(strlen(punto_de_montaje) + strlen(ent->d_name) + 1);
-				strcpy(ruta, punto_de_montaje);
-				strcpy(ruta + strlen(punto_de_montaje),ent->d_name);
-
-				fp = fopen(ruta, "r");
-				if (fp == NULL) {
-					log_error(logger, "Error al abrir el archivo: %s",strerror(errno));
-					log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
-					fclose(fp);
-				}else{
-					while ((read = getline(&line, &len, fp)) != EOF) {
-						cargarDatos(ent->d_name,line);
-					}
-					free(ruta);
-					free(line);
-					fclose(fp);
-				}
-			}
+//			leerArchivo(ent->d_name);
 		}
 		closedir(directorio_de_montaje);
 	}else{
@@ -353,7 +332,33 @@ void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar){
 	}
 }
 
-void leerArchivo(char* filename){}
+void leerArchivo(char* filename){
+
+	if( (strncmp(filename, ".", 1)) ){
+		FILE * fp;
+		char * line = NULL;
+		size_t len = 0;
+		ssize_t read;
+
+		char* ruta = malloc(strlen(punto_de_montaje) + strlen(filename) + 1);
+		strcpy(ruta, punto_de_montaje);
+		strcpy(ruta + strlen(punto_de_montaje),filename);
+
+		fp = fopen(ruta, "r");
+		if (fp == NULL) {
+			log_error(logger, "Error al abrir el archivo: %s",strerror(errno));
+			log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
+			fclose(fp);
+		}else{
+			while ((read = getline(&line, &len, fp)) != EOF) {
+				cargarDatos(filename,line);
+			}
+			free(ruta);
+			free(line);
+			fclose(fp);
+		}
+	}
+}
 
 void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux) {
 

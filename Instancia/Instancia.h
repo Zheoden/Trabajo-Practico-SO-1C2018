@@ -59,6 +59,7 @@ void inicializarTabla();
 void imprimirTabla();
 void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store);
 void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar);
+void leerArchivo(char* filename);
 void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux);
 
 
