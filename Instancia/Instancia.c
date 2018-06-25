@@ -194,7 +194,6 @@ void verificarPuntoMontaje(){
 void dump(){
 	while(1){
 		usleep(intervalo_de_dump * SEGUNDO); //intervalo_de_dump segundos :D!
-		//imprimirTabla(); //Esto no se necesita para el TP es solo para Debug
 		int i;
 		//Recoro las entradas para saber cuales tengo
 		for (i=0;  i< list_size(entradas_administrativas); i++) {
@@ -202,7 +201,6 @@ void dump(){
 			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas, i);
 			guardarAArchivo(actual);
 		}
-		//printf("%s\n",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");//Esto no se necesita para el TP es solo para Debug
 	}
 }
 
@@ -340,7 +338,7 @@ void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store){
 	fwrite(valor,clave_a_store->tamanio,sizeof(char),file_a_crear);
 
 
-	//free(valor);
+	free(valor);
 	fclose(file_a_crear);
 }
 
@@ -354,6 +352,8 @@ void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar){
 		}
 	}
 }
+
+void leerArchivo(char* filename){}
 
 void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux) {
 
