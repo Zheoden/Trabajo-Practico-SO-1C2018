@@ -23,13 +23,4 @@
 int ConectarAServidor(int puerto, char* ip);
 
 
-
-
-
-
-
-
-
-
-
 #endif /* CONEXIONES_H_ */

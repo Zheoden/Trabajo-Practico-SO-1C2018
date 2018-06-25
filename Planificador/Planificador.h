@@ -58,7 +58,7 @@ void aplicarSJF();
 void aplicarHRRN();
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi);
 bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
-t_ESIPlanificador* AumentarTiempoEspera(t_ESIPlanificador* unEsi);
+void AumentarTiempoEspera(t_ESIPlanificador* unEsi);
 t_ESIPlanificador* CalcularResponseRatio(t_ESIPlanificador* unEsi);
 bool ComparadorResponseRatio(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
 t_ESIPlanificador* inicializarESI(char* ID,int socket);

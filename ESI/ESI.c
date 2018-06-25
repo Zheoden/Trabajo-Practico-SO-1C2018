@@ -159,18 +159,3 @@ void abrirArchivo(char* path){
 	}
 	filename = get_filename(path);
 }
-
-/* Función PRUEBA*/
-void foo(){
-	char * line = NULL;
-	size_t len = 0;
-	ssize_t read;
-
-	while ((read = getline(&line, &len, fp)) != EOF) {
-		parsear(line);
-	}
-	if (line) {
-		free(line);
-		log_info(logger, "Se libero la memoria de la linea actual.");
-	}
-}

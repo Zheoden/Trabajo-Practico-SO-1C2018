@@ -67,7 +67,7 @@ typedef struct {
 typedef struct {
 	pthread_t hilo;
 	int socket;
-} t_prueba_hilo;
+} t_hilo;
 
 
 typedef struct {

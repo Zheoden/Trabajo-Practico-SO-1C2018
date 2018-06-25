@@ -123,18 +123,18 @@ void manejarEntradas() {
 			printf("Se recibio una solicitud de leer una clave: %s.\n",clave);
 		}
 		break;
-		/* case t_SOLICITARMEMORIATOTAL: {
+		case t_SOLICITARMEMORIATOTAL: {
 			int i;
 			int entradaslibres;
 			for (i = 0; i < cantidad_de_entradas; i++) {
-				if(tabla_entradas[i] != "null"){
+				if(!strcmp(tabla_entradas[i],"null")){
 					entradaslibres++;
 				}
 			}
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, entradaslibres, sizeof(int), t_RESPUESTAMEMORIA);
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, (void*) entradaslibres, sizeof(int), t_RESPUESTAMEMORIA);
 		}
 		break;
-		*/
+
 		}
 		if (paquete.mensaje != NULL) {
 			free(paquete.mensaje);
@@ -195,7 +195,7 @@ void dump(){
 	while(1){
 		usleep(intervalo_de_dump * SEGUNDO); //intervalo_de_dump segundos :D!
 		//imprimirTabla(); //Esto no se necesita para el TP es solo para Debug
-		int i,j;
+		int i;
 		//Recoro las entradas para saber cuales tengo
 		for (i=0;  i< list_size(entradas_administrativas); i++) {
 			//Agarro las entradas de a 1

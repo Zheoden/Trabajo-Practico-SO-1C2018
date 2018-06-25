@@ -8,7 +8,6 @@ int main(int argc, char ** argv) {
 	leerConfig(instancia_config_ruta,logger);
 	abrirArchivo(argv[1]);
 	atenderCoordinador();
-	//crearClientePlanif();
 	atenderPlanificador();
 	for(;;);
 	return EXIT_SUCCESS;

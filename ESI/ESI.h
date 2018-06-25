@@ -1,5 +1,5 @@
-#ifndef CLIENTE_H_
-#define CLIENTE_H_
+#ifndef ESI_H_
+#define ESI_H_
 #include <string.h>
 #include <netdb.h> // Para getaddrinfo
 #include <unistd.h>
@@ -14,8 +14,6 @@
 #include <Funciones/conexiones.h>
 #include <Funciones/archivos.h>
 #include <dirent.h>
-
-#define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
 
 /* Variables globales */
 
@@ -41,8 +39,7 @@ void setearValores(t_config * archivoConfig);
 void parsear();
 void matarESI();
 void abrirArchivo(char* path);
-void foo();
 
 
-#endif /* CLIENTE_H_ */
+#endif /* ESI_H_ */
 

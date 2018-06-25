@@ -115,7 +115,7 @@ void crearServidor() {
 		}
 		log_info(logger,"Se recibio una conexion de: %s",inet_ntoa(their_addr.sin_addr));
 
-		t_prueba_hilo* itemNuevo = malloc(sizeof(t_prueba_hilo));
+		t_hilo* itemNuevo = malloc(sizeof(t_hilo));
 		itemNuevo->socket = socket_esi;
 		pthread_create(&(itemNuevo->hilo), NULL, (void*)accion, &socket_esi);
 		list_add(hilos, itemNuevo);
@@ -252,14 +252,12 @@ void planificar() {
 				} else if (!strcmp(algoritmo_planificacion, "SJF/SD")) {
 					aplicarSJF();
 					ejecutarEsi();
-
 				} else if (!strcmp(algoritmo_planificacion, "SJF/CD")) {
 					aplicarSJFConDesalojo();
 					ejecutarEsi();
 				} else if (!strcmp(algoritmo_planificacion, "HRRN")) {
 					aplicarHRRN();
 					ejecutarEsi();
-
 				}
 			}
 		}
@@ -283,41 +281,42 @@ void aplicarSJFConDesalojo(){
 }
 
 void aplicarSJF() {
+	if (!list_is_empty(ESI_listos)) {
+		t_list* aux = list_map(ESI_listos, (void*) CalcularEstimacion);
+		list_sort(aux, (void*) ComparadorDeRafagas);
 
-	t_list* aux = list_map(ESI_listos, (void*) CalcularEstimacion);
-	list_sort(aux, (void*) ComparadorDeRafagas);
+		t_ESIPlanificador* esiAux = (t_ESIPlanificador*) list_remove(aux, 0);
 
-	t_ESIPlanificador* esiAux = (t_ESIPlanificador*) list_remove(aux, 0);
+		bool comparator(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
+			return !strcmp(unESI->ID, otroESI->ID);
+		}
 
-	bool comparator(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
-		return !strcmp(unESI->ID, otroESI->ID);
+		int index = list_get_index(ESI_listos,esiAux,(void*)comparator);
+		t_ESIPlanificador* esiAEjecutar = list_remove(ESI_listos,index);
+		list_add(ESI_ejecucion, esiAEjecutar);
 	}
-
-	int index = list_get_index(ESI_listos,esiAux,(void*)comparator);
-	t_ESIPlanificador* esiAEjecutar = list_remove(ESI_listos,index);
-	list_add(ESI_ejecucion, esiAEjecutar);
 
 }
 
 void aplicarHRRN(){
+	if (!list_is_empty(ESI_listos)) {
+		t_list* aux = list_map(ESI_listos, (void*) CalcularResponseRatio);
+		list_sort(aux, (void*) ComparadorResponseRatio);
 
-	t_list* aux = list_map(ESI_listos, (void*) CalcularResponseRatio);
-	list_sort(aux, (void*) ComparadorResponseRatio);
+		t_ESIPlanificador* esiAux = (t_ESIPlanificador*) list_remove(aux, 0);
 
-	t_ESIPlanificador* esiAux = (t_ESIPlanificador*) list_remove(aux, 0);
+		bool comparator(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
+			return !strcmp(unESI->ID, otroESI->ID);
+		}
 
-	bool comparator(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
-		return !strcmp(unESI->ID, otroESI->ID);
+		int index = list_get_index(ESI_listos,esiAux,(void*)comparator);
+		t_ESIPlanificador* esiAEjecutar = list_remove(ESI_listos,index);
+		list_add(ESI_ejecucion, esiAEjecutar);
 	}
-
-	int index = list_get_index(ESI_listos,esiAux,(void*)comparator);
-	t_ESIPlanificador* esiAEjecutar = list_remove(ESI_listos,index);
-	list_add(ESI_ejecucion, esiAEjecutar);
 }
 
-t_ESIPlanificador* AumentarTiempoEspera(t_ESIPlanificador* unEsi){
+void AumentarTiempoEspera(t_ESIPlanificador* unEsi){
 	unEsi->tiempo_espera++;
-	return unEsi;
 }
 
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
@@ -346,7 +345,7 @@ void ejecutarEsi() {
 		t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_get(ESI_ejecucion, 0);
 		esiAEjecutar->tiempo_espera = 0;
 		esiAEjecutar->rafagas_ejecutadas++;
-		list_map(ESI_listos, (void*)AumentarTiempoEspera);
+		list_iterate(ESI_listos, (void*)AumentarTiempoEspera);
 		EnviarDatosTipo(esiAEjecutar->socket, PLANIFICADOR, NULL, 0, t_SIGUIENTELINEA);
 
 		Paquete paquete;
@@ -376,6 +375,8 @@ t_ESIPlanificador* inicializarESI(char* ID,int socket){
 	aux->socket = socket;
 	aux->rafagas_ejecutadas = 0;
 	aux->rafagas_estimadas = 0;
+	aux->response_ratio=0;
+	aux->tiempo_espera=0;
 	return aux;
 }
 
@@ -388,6 +389,7 @@ void imprimir(t_list* self){
 		printf("ID: %s\n", aux->ID);
 		printf("rafagas_ejecutadas: %d\n", aux->rafagas_ejecutadas);
 		printf("rafagas_estimadas: %f\n", aux->rafagas_estimadas);
+		printf("response_ratio: %d\n", aux->response_ratio);
 	}
 }
 
@@ -434,8 +436,8 @@ void liberarClave(char* clave){
 		return !strcmp(aux, clave);
 	}
 
-//	list_remove_by_condition(ESI_clavesBloqueadas,(void*)buscarClave);
-	list_remove(ESI_clavesBloqueadas,0);
+	list_remove_by_condition(ESI_clavesBloqueadas,(void*)buscarClave);
+//	list_remove(ESI_clavesBloqueadas,0);
 
 	void compararClave(t_ESIPlanificador* aux){
 		if(aux->bloqueado && (!strcmp(aux->razon_bloqueo, clave))){

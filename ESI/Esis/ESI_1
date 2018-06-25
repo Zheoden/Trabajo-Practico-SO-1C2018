@@ -3,5 +3,4 @@ SET futbol:messi TraemeLaCopa
 GET futbol:messi
 GET futbol:messi
 GET futbol:messi
-GET futbol:messi
 STORE futbol:messi
