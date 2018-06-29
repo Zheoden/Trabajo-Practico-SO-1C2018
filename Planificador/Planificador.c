@@ -143,14 +143,6 @@ void accion(void* socket){
 					imprimir(ESI_listos);
 				}
 					break;
-/*				case t_ABORTARESI:{
-					printf("Creo que sufri un %s\n","Aborto");
-					t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove(ESI_ejecucion,0 );
-					//liberarrecursos()
-					list_add(ESI_finalizados, esiAAbortar);
-					log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
-				}
-				break;*/
 			}
 		}else{
 			log_error(logger,"No es ningún proceso ESI.");
@@ -202,6 +194,10 @@ void crearCliente() {
 				claveABloquear->clave = malloc(strlen(paquete.mensaje) + 1);
 				strcpy(claveABloquear->clave, paquete.mensaje);
 				list_add(ESI_clavesBloqueadas, claveABloquear);
+
+				t_ESIPlanificador* EsiEjecutando = list_get(ESI_ejecucion,0);
+				list_add(EsiEjecutando->clave,paquete.mensaje);
+				list_replace(ESI_ejecucion, 0, EsiEjecutando);
 				log_info(logger,"Se bloqueo correctamente la clave: %s, y se agrego a la lista de claves Bloqueadas.",claveABloquear->clave);
 			}
 
@@ -225,12 +221,8 @@ void crearCliente() {
 
 		case t_ABORTARESI:{
 			printf("me llego %s\n","un abortar esi");
-			t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_remove(ESI_ejecucion,0 );
+			t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_get(ESI_ejecucion,0 );
 			EnviarDatosTipo(esiAAbortar->socket,PLANIFICADOR, NULL, 0, t_ABORTARESI);
-
-			//liberarrecursos()
-			list_add(ESI_finalizados, esiAAbortar);
-			log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
 		}
 		break;
 
@@ -361,7 +353,9 @@ void ejecutarEsi() {
 			break;
 			}
 		}else{ //El ESI se desconecto
-			list_remove(ESI_ejecucion,0);
+			printf("el esi se desconecto.\n");
+			t_ESIPlanificador* esiDesconectado = (t_ESIPlanificador*)list_remove(ESI_ejecucion,0);
+			abortarEsi(esiDesconectado);
 		}
 	}
 }
@@ -371,6 +365,7 @@ t_ESIPlanificador* inicializarESI(char* ID,int socket){
 	t_ESIPlanificador*aux = malloc(sizeof(t_ESIPlanificador)+25);
 	aux->ID = malloc(4);
 	strcpy(aux->ID, ID);
+	aux->clave = list_create();
 	aux->bloqueado=false;
 	aux->socket = socket;
 	aux->rafagas_ejecutadas = 0;
@@ -432,6 +427,7 @@ char* incrementarID(char *ID){
 
 void liberarClave(char* clave){
 
+	printf("Se libero la clave: %s\n",clave);
 	int buscarClave(t_PlanificadorCoordinador* aux){
 		return !strcmp(aux->clave, clave);
 	}
@@ -459,3 +455,13 @@ void liberarClave(char* clave){
 	}
 }
 
+void abortarEsi(t_ESIPlanificador* esiAAbortar){
+
+	int i=0;
+	for (i = 0; i < list_size(esiAAbortar->clave); i++) {
+		liberarClave(list_get(esiAAbortar->clave,i));
+	}
+
+	list_add(ESI_finalizados, esiAAbortar);
+	log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
+}

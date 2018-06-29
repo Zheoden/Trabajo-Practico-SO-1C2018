@@ -227,6 +227,10 @@ void status(){
 
 }
 
+void deadlock(){
+
+}
+
 
 
 

@@ -66,9 +66,7 @@ void ejecutarEsi();
 void imprimir(t_list* self);
 char* incrementarID(char *ID);
 void liberarClave(char* clave);
-
-void crearServidor();  //Esta wea no se usa
-
+void abortarEsi(t_ESIPlanificador* esiAAbortar);
 void accion(void* socket);
 
 #endif /* PLANIFICADOR_H_ */

@@ -77,6 +77,7 @@ typedef struct {
 typedef struct {
 	int socket;
 	char* ID;
+	t_list* clave;
 	bool bloqueado;
 	char* razon_bloqueo;//clave que lo bloqueo o "consola"
 	int rafagas_ejecutadas;
@@ -89,11 +90,6 @@ typedef struct {
 	char* clave;
 	char* valor;
 }__attribute__((packed)) t_ESICoordinador;
-
-typedef struct {
-	char* ID;
-	t_list* clave;
-}__attribute__((packed)) t_ESI;
 
 typedef struct {
 	int socket;

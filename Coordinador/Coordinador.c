@@ -392,35 +392,34 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		bool verificarClave(t_Instancia *e) {
 			return list_any_satisfy(e->claves,(void*)verificarClaveDeAUna);
 		}
-
+// RESIVAR ESTE IF
 		if (list_any_satisfy(todas_las_claves,(void*) verificarExistenciaEnListaDeClaves)) {
-			/*if (!list_any_satisfy(instancias, (void*) verificarClave)) {
+			if (list_any_satisfy(instancias, (void*) verificarClave)) {
 				//clave existe en el sistema, pero no esta en ninguna instancia
 				log_info(logger,"Se intenta bloquear la clave %s pero en este momento no esta disponible.", nuevo->clave);
 				EnviarDatosTipo(socket_planificador, COORDINADOR, NULL ,0, t_ABORTARESI);
-			} else {*/
-			int tam = strlen(nuevo->clave) + strlen(nuevo->valor) + 2;
-			void*sendInstancia = malloc(tam);
-			strcpy(sendInstancia, nuevo->clave);
-			sendInstancia += strlen(nuevo->clave) + 1;
-			strcpy(sendInstancia, nuevo->valor);
-			sendInstancia += strlen(nuevo->valor) + 1;
-			sendInstancia -= tam;
-			if (!strcmp(algoritmo_de_distribucion, "EL")) {
-				int socketSiguiente = obtenerProximaInstancia();
-				if (socketSiguiente != 0) {
-					EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
-				} else {
-					//error, no hay instancias conectadas al sistema
+			} else {
+				int tam = strlen(nuevo->clave) + strlen(nuevo->valor) + 2;
+				void*sendInstancia = malloc(tam);
+				strcpy(sendInstancia, nuevo->clave);
+				sendInstancia += strlen(nuevo->clave) + 1;
+				strcpy(sendInstancia, nuevo->valor);
+				sendInstancia += strlen(nuevo->valor) + 1;
+				sendInstancia -= tam;
+				if (!strcmp(algoritmo_de_distribucion, "EL")) {
+					int socketSiguiente = obtenerProximaInstancia();
+					if (socketSiguiente != 0) {
+						EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
+					} else {
+						//error, no hay instancias conectadas al sistema
+					}
 				}
+				free(sendInstancia);
 			}
-			free(sendInstancia);
-			//}
 		} else {
 			//clave no existe en el sistema
-			printf("Se intenta bloquear la clave %s pero no existe\n",nuevo->clave);
+			printf("Se intenta bloquear la clave %s pero no existe en el sistema.\n",nuevo->clave);
 			EnviarDatosTipo(socket_planificador, COORDINADOR, NULL , 0, t_ABORTARESI);
-			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEAINCORRECTA);
 		}
 		log_info(loggerOperaciones,"El ESI: %d, recibió operación SET con CLAVE: %s y VALOR: %s", socket, nuevo->clave, nuevo->valor);
 		pthread_mutex_lock(&t_set);
@@ -439,8 +438,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			return !strcmp(e, nuevo->clave);
 		}
 
-		if (!list_any_satisfy(todas_las_claves,
-				(void*) verificarExistenciaEnListaDeClaves)) {
+		if (!list_any_satisfy(todas_las_claves,(void*) verificarExistenciaEnListaDeClaves)) {
 			list_add(todas_las_claves, (char*) nuevo->clave);
 		}
 
