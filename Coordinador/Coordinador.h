@@ -35,9 +35,11 @@ int cantidad_entradas;
 int tamanio_entradas;
 int retardo_real;
 float retardo;
+int tamanio_instancia;
 
 /* Semaforos */
 pthread_mutex_t t_set;
+pthread_t recibir_tamanio;
 
 /* Funciones */
 

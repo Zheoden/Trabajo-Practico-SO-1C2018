@@ -188,12 +188,10 @@ int proximaInstancia() {
 		int tamanio_buffer;
 		t_Instancia_con_tamanio* instancia_a_manejar = malloc(sizeof(t_Instancia_con_tamanio));
 		EnviarDatosTipo(elem->socket, COORDINADOR,(void*)NULL, 0, t_SOLICITARMEMORIATOTAL);
-
-//		RecibirPaqueteCliente(elem->socket, INSTANCIA, &paquete);
-
 		tamanio_buffer = *((int*) paquete.mensaje);
 		instancia_a_manejar->tamanio = tamanio_buffer;
 		instancia_a_manejar->dato = (t_Instancia*)elem;
+		pthread_lock(recibir_tamanio);
 		return instancia_a_manejar;
 
 	}
@@ -208,6 +206,11 @@ int proximaInstancia() {
 		return instancia_a_usar->dato->socket;
 	}
 	return 0;
+}
+
+/* Para KE */
+int instanciaSiguiente(){
+
 }
 
 /* Para Desconexiones */
@@ -355,7 +358,10 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		}
 	}
 	break;
-
+	case t_RESPUESTAMEMORIA: {
+		tamanio_instancia = paquete.mensaje;
+	}
+	break;
 	}
 }
 
