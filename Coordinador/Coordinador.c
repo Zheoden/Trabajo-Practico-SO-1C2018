@@ -124,8 +124,27 @@ void coordinar(void* socket) {
 	sacar_instancia(socketActual);
 }
 
+/* Obtiene proxima instancia en base al algoritmo de distribucion */
+int obtenerProximaInstancia(){
+
+	if (!strcmp(algoritmo_de_distribucion, "EL")) {
+
+		return EL();
+
+	} else if (!strcmp(algoritmo_de_distribucion, "LSU")) {
+
+		return LSU();
+
+	} else if (!strcmp(algoritmo_de_distribucion, "KE")) {
+
+		return KE();
+
+	}
+
+}
+
 /* Para EL */
-int obtenerProximaInstancia() {
+int EL() {
 	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo Circular.");
 	if (list_size(instancias) == 0){
 		return 0;
@@ -174,7 +193,7 @@ int obtenerProximaInstancia() {
 }
 
 /* Para LSU */
-int proximaInstancia() {
+int LSU() {
 
 	int estaHabilitada(t_Instancia* elemento) {
 		return elemento->estado_de_conexion;
@@ -191,7 +210,7 @@ int proximaInstancia() {
 		tamanio_buffer = *((int*) paquete.mensaje);
 		instancia_a_manejar->tamanio = tamanio_buffer;
 		instancia_a_manejar->dato = (t_Instancia*)elem;
-		pthread_lock(recibir_tamanio);
+		pthread_mutex_lock(&recibir_tamanio);
 		return instancia_a_manejar;
 
 	}
@@ -209,7 +228,7 @@ int proximaInstancia() {
 }
 
 /* Para KE */
-int instanciaSiguiente(){
+int KE(){
 
 }
 
@@ -400,11 +419,10 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		}
 // RESIVAR ESTE IF
 		if (list_any_satisfy(todas_las_claves,(void*) verificarExistenciaEnListaDeClaves)) {
-			if (list_any_satisfy(instancias, (void*) verificarClave)) {
-				//clave existe en el sistema, pero no esta en ninguna instancia
-				log_info(logger,"Se intenta bloquear la clave %s pero en este momento no esta disponible.", nuevo->clave);
-				EnviarDatosTipo(socket_planificador, COORDINADOR, NULL ,0, t_ABORTARESI);
-			} else {
+			if (!list_any_satisfy(instancias, (void*) verificarClave)) {
+				//clave existe en el sistema, pero no esta en ninguna instancia, es clave nueva
+//				log_info(logger,"Se intenta bloquear la clave %s pero en este momento no esta disponible.", nuevo->clave);
+//				EnviarDatosTipo(socket_planificador, COORDINADOR, NULL ,0, t_ABORTARESI);
 				int tam = strlen(nuevo->clave) + strlen(nuevo->valor) + 2;
 				void*sendInstancia = malloc(tam);
 				strcpy(sendInstancia, nuevo->clave);
@@ -412,15 +430,18 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 				strcpy(sendInstancia, nuevo->valor);
 				sendInstancia += strlen(nuevo->valor) + 1;
 				sendInstancia -= tam;
-				if (!strcmp(algoritmo_de_distribucion, "EL")) {
-					int socketSiguiente = obtenerProximaInstancia();
-					if (socketSiguiente != 0) {
-						EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
-					} else {
-						//error, no hay instancias conectadas al sistema
-					}
+
+				int socketSiguiente = obtenerProximaInstancia();
+				if (socketSiguiente != 0) {
+					EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
+				} else {
+					//error, no hay instancias conectadas al sistema
 				}
 				free(sendInstancia);
+
+			} else {
+				//clave existe en el sistema, y esta en alguna instancia, hay que buscar en que instancia y enviarlo.
+
 			}
 		} else {
 			//clave no existe en el sistema

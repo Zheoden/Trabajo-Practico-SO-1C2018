@@ -39,7 +39,7 @@ int tamanio_instancia;
 
 /* Semaforos */
 pthread_mutex_t t_set;
-pthread_t recibir_tamanio;
+pthread_mutex_t recibir_tamanio;
 
 /* Funciones */
 
@@ -49,6 +49,9 @@ void setearValores(t_config * archivoConfig);
 void inicializar();
 void coordinar(void* socket);
 int obtenerProximaInstancia();
+int EL();
+int LSU();
+int KE();
 void sacar_instancia(int socket);
 int proximaInstancia();
 

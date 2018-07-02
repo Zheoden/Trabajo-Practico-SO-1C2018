@@ -337,8 +337,6 @@ void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store){
 	FILE* file_a_crear = fopen(directorio_actual,"w+");
 	fwrite(valor,clave_a_store->tamanio,sizeof(char),file_a_crear);
 
-
-	free(valor);
 	fclose(file_a_crear);
 }
 
