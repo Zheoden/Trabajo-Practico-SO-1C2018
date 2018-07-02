@@ -36,6 +36,7 @@ int tamanio_entradas;
 int retardo_real;
 float retardo;
 int tamanio_instancia;
+int instancias_manejadas;
 
 /* Semaforos */
 pthread_mutex_t t_set;

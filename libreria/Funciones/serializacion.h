@@ -101,6 +101,11 @@ typedef struct {
 
 typedef struct {
 	t_Instancia* dato;
+	int rango;
+}__attribute__((packed)) t_Instancia_con_rangos;
+
+typedef struct {
+	t_Instancia* dato;
 	int tamanio;
 }__attribute__((packed)) t_Instancia_con_tamanio;
 

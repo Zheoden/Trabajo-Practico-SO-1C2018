@@ -228,10 +228,40 @@ int LSU() {
 }
 
 /* Para KE */
-int KE(){
+/*int KE(){
+	char letras[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+	instancias_manejadas = 0;
 
+	int estaHabilitada(t_Instancia* elemento) {
+		return elemento->estado_de_conexion;
+	}
+
+	t_Instancia_con_rangos* obtenerRango(t_Instancia* elem){
+		t_Instancia_con_rangos* instancia_a_manejar = malloc(sizeof(t_Instancia_con_rangos));
+		instancias_manejadas += 1;
+		int total_instancias = sizeof(instancias);
+		instancia_a_manejar->dato = (t_Instancia*)elem;
+		instancia_a_manejar->rango = (26/total_instancias)*instancias_manejadas + 1;
+		return instancia_a_manejar;
+	}
+
+	int clavePerteneceARango(t_Instancia* elem){
+
+	}
+
+	if(!list_is_empty(instancias)){
+		t_list* instancias_habilitadas = list_filter (instancias, (void*) estaHabilitada);
+		t_list* instancias_a_tomar = list_map (instancias_habilitadas,(void*) obtenerRango);
+		t_list* instancias_a_usar = list_filter (instancias, (void*) clavePerteneceARango);
+		t_Instancia_con_rangos* instancia_a_usar = list_get(instancias_a_tomar, 0);
+		list_destroy(instancias_habilitadas);
+		list_destroy(instancias_a_tomar);
+		list_destroy(instancias_a_usar);
+		return instancia_a_usar->dato->socket;
+	}
+	return 0;
 }
-
+*/
 /* Para Desconexiones */
 void sacar_instancia(int socket) {
 	bool tiene_socket(t_Instancia *instancia) {
