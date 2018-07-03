@@ -228,10 +228,10 @@ int LSU() {
 }
 
 /* Para KE */
-/*int KE(){
+int KE(){
 	char letras[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
 	instancias_manejadas = 0;
-
+	char* clave;
 	int estaHabilitada(t_Instancia* elemento) {
 		return elemento->estado_de_conexion;
 	}
@@ -245,8 +245,15 @@ int LSU() {
 		return instancia_a_manejar;
 	}
 
-	int clavePerteneceARango(t_Instancia* elem){
-
+	int clavePerteneceARango(t_Instancia_con_rangos* elem){
+		int i = 0;
+		while(clave[0] != letras[i] || i >= 26){
+			i++;
+		}
+		if(i < elem->rango)
+			return 1;
+		else
+			return 0;
 	}
 
 	if(!list_is_empty(instancias)){
@@ -261,7 +268,7 @@ int LSU() {
 	}
 	return 0;
 }
-*/
+
 /* Para Desconexiones */
 void sacar_instancia(int socket) {
 	bool tiene_socket(t_Instancia *instancia) {
