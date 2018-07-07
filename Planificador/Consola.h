@@ -15,6 +15,7 @@ t_list* ESI_bloqueados;
 t_list* ESI_listos;
 t_list* ESI_ejecucion;
 t_list* ESI_finalizados;
+t_list* ESI_clavesBloqueadas;
 
 
 void consola();

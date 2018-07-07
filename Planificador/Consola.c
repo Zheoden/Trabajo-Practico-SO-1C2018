@@ -96,7 +96,9 @@ void consola(){
 
 
     }else	if(!strncmp(linea, "deadlock", 8)) {
-    	printf("//Hay que ejecutar deadlock()\n");
+
+    	deadlock();
+
     	log_info(logger,"//Hay que ejecutar deadlock()");
 
     }else	if(!strncmp(linea, "exit", 4)) {
@@ -173,17 +175,14 @@ void listar(char* recurso){
 	for (i = 0; i < list_size(ESI_bloqueados); i++) {
 		t_ESIPlanificador* aux = (t_ESIPlanificador*) list_get(ESI_bloqueados,i);
 		if( !strcmp(recurso, aux->razon_bloqueo) ){
-
-		printf("ID: %s\n",aux->ID);
-		printf("Bloqueado: %d\n",aux->bloqueado);
-		printf("Rafagas Ejecutadas: %d\n",aux->rafagas_ejecutadas);
-		printf("Razon De Bloqueo: %s\n",aux->razon_bloqueo);
-		printf("Socket: %d\n",aux->socket);
-		printf("%s\n","------------------------------------");
-
+			printf("ID: %s\n",aux->ID);
+			printf("Bloqueado: %d\n",aux->bloqueado);
+			printf("Rafagas Ejecutadas: %d\n",aux->rafagas_ejecutadas);
+			printf("Razon De Bloqueo: %s\n",aux->razon_bloqueo);
+			printf("Socket: %d\n",aux->socket);
+			printf("%s\n","------------------------------------");
 		}
 	}
-
 }
 
 void killProceso(char* id){
@@ -228,7 +227,68 @@ void status(){
 }
 
 void deadlock(){
+	//Para analizar el deadlock, voy a revisar clave a clave para ver quienes las necesitan
 
+	bool necesita(t_ESIPlanificador* esi, t_PlanificadorCoordinador* clave ) {
+		return !strcmp(esi->razon_bloqueo, clave->clave);
+	}
+	bool necesita_Clave(t_ESIPlanificador* esi, char* clave ) {
+		return !strcmp(esi->razon_bloqueo, clave);
+	}
+
+	bool tieneTomada(t_ESIPlanificador* esi, t_PlanificadorCoordinador* clave ) {
+
+		bool esta_la_clave(char* laClave ) {
+			return !strcmp(laClave, clave->clave);
+		}
+
+		return list_any_satisfy(esi->clave, (void*)esta_la_clave);
+	}
+
+
+	int i,j,k,x;
+	int cantidad_de_claves = list_size(ESI_clavesBloqueadas);
+	int cantidad_de_bloqueados = list_size(ESI_bloqueados);
+
+	for (i = 0; i < cantidad_de_claves ; i++) {
+
+		t_PlanificadorCoordinador* clave_actual = (t_PlanificadorCoordinador*) list_get(ESI_clavesBloqueadas,i);
+		//voy a preguntar si alguien necesita esta clave
+
+		for (j = 0; j < cantidad_de_bloqueados ; j++) {
+			t_ESIPlanificador* esi_actual = (t_ESIPlanificador*) list_get(ESI_bloqueados,j);
+
+			if(necesita(esi_actual,clave_actual)){// Encontre un ESI que necesita la clave
+				//voy a verificar quien tiene tomada la clave para ver si hay posibilidad de deadlock
+
+
+				for (k = 0; k < cantidad_de_bloqueados ; k++) {
+					t_ESIPlanificador* esi_tomador = (t_ESIPlanificador*) list_get(ESI_bloqueados,k);
+
+					if(tieneTomada(esi_tomador,clave_actual)){//Encontre el esi que tiene tomada la clave
+						//tengo que verificar si este esi esta bloqueado esperando otro
+
+						for (x = 0; x < list_size(esi_actual->clave) ; x++) {
+
+
+							if(necesita_Clave(esi_tomador,list_get(esi_actual->clave,x))){//ENCONTRE UN DEADLOCK!!!!!!!!!!!
+								printf("%s\n","HAY DEADLOCK BITCH!!!!!!");
+								printf("Entre los siguientes procesos: \n");
+								printf("ID:(tomador) %s\n", esi_tomador->ID);
+								printf("y \n");
+								printf("ID:(actual) %s\n", esi_actual->ID);
+								printf("Para la clave: %s\n", clave_actual->clave);
+								printf("%s\n","HAY DEADLOCK BITCH!!!!!!");
+								printf("%s\n","--------------------------------------------------------");
+								printf("%s\n","--------------------------------------------------------");
+								printf("%s\n","--------------------------------------------------------");
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 

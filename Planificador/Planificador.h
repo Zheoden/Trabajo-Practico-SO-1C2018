@@ -21,7 +21,6 @@
 #define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
 
 /* Estructuras */
-t_list* ESI_clavesBloqueadas;
 t_list* hilos;
 
 /* Variables globales */
