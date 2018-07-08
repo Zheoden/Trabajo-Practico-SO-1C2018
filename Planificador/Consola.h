@@ -31,5 +31,6 @@ void deadlock();
 void verificar_si_alguien_tiene_el_recurso(char* clave);
 bool verificar_si_hay_circulo();
 bool tiene_clave_tomada(t_ESIPlanificador* esi, char* clave );
+bool comparador_de_esis(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
 
 #endif /* CONSOLA_H_ */

@@ -227,8 +227,6 @@ void status(){
 }
 
 void deadlock(){
-	//Para analizar el deadlock, voy a revisar clave a clave para ver quienes las necesitan
-
 	int i;
 	int cantidad_de_bloqueados = list_size(ESI_bloqueados);
 	esis_en_deadlock = list_create();
@@ -237,26 +235,27 @@ void deadlock(){
 		t_ESIPlanificador* esi_actual = (t_ESIPlanificador*) list_get(ESI_bloqueados,i);
 		char* clave_que_necesita = malloc (strlen(esi_actual->razon_bloqueo) + 1);
 		strcpy(clave_que_necesita,esi_actual->razon_bloqueo);
+
 		if(!verificar_si_hay_circulo()){
 			verificar_si_alguien_tiene_el_recurso(clave_que_necesita);
 		}
-		free(clave_que_necesita);
 
-	}// pruebo el tema de la lista
-	printf(".\n");
-	printf(".\n");
-	printf(".\n");
-	printf(".\n");
-	printf(".\n");
-	printf(".\n");
-	printf(".\n");
+		free(clave_que_necesita);
+		//elimino el elemento repetido de la lista
+		list_remove(esis_en_deadlock,list_size(esis_en_deadlock)-1);
+
+	}// imprimo el deadlock encontrado
 	printf("Los siguientes esis estan en deadlock: ");
-	int t;
-	for (t = 0; t < list_size(esis_en_deadlock) ; t++) {
-		t_ESIPlanificador* aux = (t_ESIPlanificador*)list_get(esis_en_deadlock,t);
-		printf("%s, ",aux->ID);
+	int j;
+	for (j = 0; j < list_size(esis_en_deadlock) ; j++) {
+		t_ESIPlanificador* aux = (t_ESIPlanificador*)list_get(esis_en_deadlock,j);
+		if(j == list_size(esis_en_deadlock)-1){
+			printf("%s.\n ",aux->ID);
+		}else{
+			printf("%s, ",aux->ID);
+		}
 	}
-	printf(".\n");
+	list_destroy(esis_en_deadlock);
 }
 
 
@@ -269,6 +268,9 @@ bool tiene_clave_tomada(t_ESIPlanificador* esi, char* clave ) {
 	return list_any_satisfy(esi->clave, (void*)esta_la_clave);
 }
 
+bool comparador_de_esis(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
+	return !strcmp(unESI->ID, otroESI->ID);
+}
 
 void verificar_si_alguien_tiene_el_recurso(char* clave){
 
@@ -289,8 +291,5 @@ void verificar_si_alguien_tiene_el_recurso(char* clave){
 
 
 bool verificar_si_hay_circulo(){
-	bool comparador_de_esis(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
-		return !strcmp(unESI->ID, otroESI->ID);
-	}
 	return list_element_repeats(esis_en_deadlock,(void*)comparador_de_esis);
 }
