@@ -231,18 +231,37 @@ void deadlock(){
 	int cantidad_de_bloqueados = list_size(ESI_bloqueados);
 	esis_en_deadlock = list_create();
 
+	if(cantidad_de_bloqueados < 2){
+		printf("No se encontro ningun Deadlock.\n");
+		return;
+	}
+
 	for (i = 0; i < cantidad_de_bloqueados ; i++) {
 		t_ESIPlanificador* esi_actual = (t_ESIPlanificador*) list_get(ESI_bloqueados,i);
 		char* clave_que_necesita = malloc (strlen(esi_actual->razon_bloqueo) + 1);
 		strcpy(clave_que_necesita,esi_actual->razon_bloqueo);
 
 		if(!verificar_si_hay_circulo()){
+			//si vuelvo a entrar es que para el primer esi no hay circulo por ende, no esta en deadlock
+			list_destroy(esis_en_deadlock);
+			esis_en_deadlock = list_create();
 			verificar_si_alguien_tiene_el_recurso(clave_que_necesita);
 		}
 
 		free(clave_que_necesita);
-		//elimino el elemento repetido de la lista
-		list_remove(esis_en_deadlock,list_size(esis_en_deadlock)-1);
+
+		//verifico si se encontro deadlock
+		if(verificar_si_hay_circulo()){//Hay deadlock
+			//elimino el elemento repetido de la lista
+			list_remove(esis_en_deadlock,list_size(esis_en_deadlock)-1);
+			if(list_size(esis_en_deadlock) == 1){//se bloqueo porque hizo doble get el mismo proceso
+				printf("No se encontro ningun Deadlock.\n");
+				return;
+			}
+		}else{//no hay deadlock
+			printf("No se encontro ningun Deadlock.\n");
+			return;
+		}
 
 	}// imprimo el deadlock encontrado
 	printf("Los siguientes esis estan en deadlock: ");
