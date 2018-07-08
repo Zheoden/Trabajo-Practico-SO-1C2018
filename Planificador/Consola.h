@@ -17,6 +17,8 @@ t_list* ESI_ejecucion;
 t_list* ESI_finalizados;
 t_list* ESI_clavesBloqueadas;
 
+t_list* esis_en_deadlock;
+
 
 void consola();
 void pausarOContinuar();
@@ -26,5 +28,8 @@ void listar(char* recurso);
 void killProceso(char* id);
 void status();
 void deadlock();
+void verificar_si_alguien_tiene_el_recurso(char* clave);
+bool verificar_si_hay_circulo();
+bool tiene_clave_tomada(t_ESIPlanificador* esi, char* clave );
 
 #endif /* CONSOLA_H_ */

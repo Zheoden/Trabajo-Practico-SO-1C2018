@@ -229,72 +229,68 @@ void status(){
 void deadlock(){
 	//Para analizar el deadlock, voy a revisar clave a clave para ver quienes las necesitan
 
-	bool necesita(t_ESIPlanificador* esi, t_PlanificadorCoordinador* clave ) {
-		return !strcmp(esi->razon_bloqueo, clave->clave);
-	}
-	bool necesita_Clave(t_ESIPlanificador* esi, char* clave ) {
-		return !strcmp(esi->razon_bloqueo, clave);
-	}
-
-	bool tieneTomada(t_ESIPlanificador* esi, t_PlanificadorCoordinador* clave ) {
-
-		bool esta_la_clave(char* laClave ) {
-			return !strcmp(laClave, clave->clave);
-		}
-
-		return list_any_satisfy(esi->clave, (void*)esta_la_clave);
-	}
-
-
-	int i,j,k,x;
-	int cantidad_de_claves = list_size(ESI_clavesBloqueadas);
+	int i;
 	int cantidad_de_bloqueados = list_size(ESI_bloqueados);
+	esis_en_deadlock = list_create();
 
-	for (i = 0; i < cantidad_de_claves ; i++) {
+	for (i = 0; i < cantidad_de_bloqueados ; i++) {
+		t_ESIPlanificador* esi_actual = (t_ESIPlanificador*) list_get(ESI_bloqueados,i);
+		char* clave_que_necesita = malloc (strlen(esi_actual->razon_bloqueo) + 1);
+		strcpy(clave_que_necesita,esi_actual->razon_bloqueo);
+		if(!verificar_si_hay_circulo()){
+			verificar_si_alguien_tiene_el_recurso(clave_que_necesita);
+		}
+		free(clave_que_necesita);
 
-		t_PlanificadorCoordinador* clave_actual = (t_PlanificadorCoordinador*) list_get(ESI_clavesBloqueadas,i);
-		//voy a preguntar si alguien necesita esta clave
+	}// pruebo el tema de la lista
+	printf(".\n");
+	printf(".\n");
+	printf(".\n");
+	printf(".\n");
+	printf(".\n");
+	printf(".\n");
+	printf(".\n");
+	printf("Los siguientes esis estan en deadlock: ");
+	int t;
+	for (t = 0; t < list_size(esis_en_deadlock) ; t++) {
+		t_ESIPlanificador* aux = (t_ESIPlanificador*)list_get(esis_en_deadlock,t);
+		printf("%s, ",aux->ID);
+	}
+	printf(".\n");
+}
 
-		for (j = 0; j < cantidad_de_bloqueados ; j++) {
-			t_ESIPlanificador* esi_actual = (t_ESIPlanificador*) list_get(ESI_bloqueados,j);
 
-			if(necesita(esi_actual,clave_actual)){// Encontre un ESI que necesita la clave
-				//voy a verificar quien tiene tomada la clave para ver si hay posibilidad de deadlock
+bool tiene_clave_tomada(t_ESIPlanificador* esi, char* clave ) {
 
+	bool esta_la_clave(char* laClave ) {
+		return !strcmp(laClave, clave);
+	}
 
-				for (k = 0; k < cantidad_de_bloqueados ; k++) {
-					t_ESIPlanificador* esi_tomador = (t_ESIPlanificador*) list_get(ESI_bloqueados,k);
-
-					if(tieneTomada(esi_tomador,clave_actual)){//Encontre el esi que tiene tomada la clave
-						//tengo que verificar si este esi esta bloqueado esperando otro
-
-						for (x = 0; x < list_size(esi_actual->clave) ; x++) {
+	return list_any_satisfy(esi->clave, (void*)esta_la_clave);
+}
 
 
-							if(necesita_Clave(esi_tomador,list_get(esi_actual->clave,x))){//ENCONTRE UN DEADLOCK!!!!!!!!!!!
-								printf("%s\n","HAY DEADLOCK BITCH!!!!!!");
-								printf("Entre los siguientes procesos: \n");
-								printf("ID:(tomador) %s\n", esi_tomador->ID);
-								printf("y \n");
-								printf("ID:(actual) %s\n", esi_actual->ID);
-								printf("Para la clave: %s\n", clave_actual->clave);
-								printf("%s\n","HAY DEADLOCK BITCH!!!!!!");
-								printf("%s\n","--------------------------------------------------------");
-								printf("%s\n","--------------------------------------------------------");
-								printf("%s\n","--------------------------------------------------------");
-							}
-						}
-					}
-				}
+void verificar_si_alguien_tiene_el_recurso(char* clave){
+
+	int k;
+	int cantidad_de_bloqueados = list_size(ESI_bloqueados);
+	for (k = 0; k < cantidad_de_bloqueados ; k++) {
+		t_ESIPlanificador* esi_actual = (t_ESIPlanificador*) list_get(ESI_bloqueados,k);
+
+		if(tiene_clave_tomada(esi_actual,clave)){//Encontre el esi que tiene tomada la clave
+			//tengo que verificar si este esi esta bloqueado esperando otro
+			list_add(esis_en_deadlock,esi_actual);
+			if(!verificar_si_hay_circulo()){
+				verificar_si_alguien_tiene_el_recurso(esi_actual->razon_bloqueo);
 			}
 		}
 	}
 }
 
 
-
-
-
-
-
-
+bool verificar_si_hay_circulo(){
+	bool comparador_de_esis(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI){
+		return !strcmp(unESI->ID, otroESI->ID);
+	}
+	return list_element_repeats(esis_en_deadlock,(void*)comparador_de_esis);
+}
