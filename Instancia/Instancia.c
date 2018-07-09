@@ -125,13 +125,15 @@ void manejarEntradas() {
 		break;
 		case t_SOLICITARMEMORIATOTAL: {
 			int i;
-			int entradaslibres;
+			int entradasLibres = 0;
 			for (i = 0; i < cantidad_de_entradas; i++) {
 				if(!strcmp(tabla_entradas[i],"null")){
-					entradaslibres++;
+					entradasLibres++;
 				}
 			}
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, (void*) entradaslibres, sizeof(int), t_RESPUESTAMEMORIA);
+			void *datosEntradas = malloc(sizeof(int));
+			*((int*) datosEntradas) = entradasLibres;
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, (void*) datosEntradas, sizeof(int), t_RESPUESTAMEMORIA);
 		}
 		break;
 

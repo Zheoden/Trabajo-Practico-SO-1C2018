@@ -41,6 +41,7 @@ int instancias_manejadas;
 /* Semaforos */
 pthread_mutex_t t_set;
 pthread_mutex_t recibir_tamanio;
+int tamanio_buffer;
 
 /* Funciones */
 
