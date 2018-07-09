@@ -229,7 +229,7 @@ int LSU() {
 /* Para KE */
 int KE(){
 	char letras[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-	instancias_manejadas = 0;
+	int instancias_manejadas = 0;
 	char* clave;
 	int estaHabilitada(t_Instancia* elemento) {
 		return elemento->estado_de_conexion;
@@ -246,7 +246,7 @@ int KE(){
 
 	int clavePerteneceARango(t_Instancia_con_rangos* elem){
 		int i = 0;
-		while(clave[0] != letras[i] || i >= 26){
+		while(!strncmp(clave, letras[i], 1) || i >= 26){
 			i++;
 		}
 		if(i < elem->rango)
