@@ -126,7 +126,7 @@ void manejarEntradas() {
 		case t_SOLICITARMEMORIATOTAL: {
 			int i;
 			int entradasLibres = 0;
-			for (i = 0; i < cantidad_de_entradas; i++) {
+			for (i = 0; i <= cantidad_de_entradas; i++) {
 				if(!strcmp(tabla_entradas[i],"null")){
 					entradasLibres++;
 				}
