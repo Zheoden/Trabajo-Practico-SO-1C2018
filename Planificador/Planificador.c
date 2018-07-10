@@ -10,6 +10,7 @@ void inicializar(){
 	ESI_finalizados = list_create();
 	hilos = list_create();
 	pthread_mutex_init(&siguiente_linea,NULL);
+	pthread_mutex_init(&t_status,NULL);
 	pthread_mutex_unlock(&siguiente_linea);
 	planificacion_activa=true;
 	ultimo_ID_Asignado = malloc(4);
@@ -223,6 +224,18 @@ void crearCliente() {
 			printf("me llego %s\n","un abortar esi");
 			t_ESIPlanificador* esiAAbortar = (t_ESIPlanificador*) list_get(ESI_ejecucion,0 );
 			EnviarDatosTipo(esiAAbortar->socket,PLANIFICADOR, NULL, 0, t_ABORTARESI);
+		}
+		break;
+		case t_INSTANCIACONCLAVE:{
+			nombreInstancia = malloc(strlen(datos)+1);
+			strcpy(nombreInstancia, datos);
+			pthread_mutex_unlock(&t_status);
+		}
+		break;
+		case t_INSTANCIAQUETENDRIALACLAVE:{
+			instancia_que_tendria_la_clave = malloc(strlen(datos)+1);
+			strcpy(instancia_que_tendria_la_clave, datos);
+			pthread_mutex_unlock(&t_status);
 		}
 		break;
 

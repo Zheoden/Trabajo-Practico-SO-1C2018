@@ -56,6 +56,8 @@ int LSU();
 int KE();
 void sacar_instancia(int socket);
 int proximaInstancia();
+int buscarInstanciaPorClave(char* clave);
+int buscarInstanciaQueTendriaClave(char* clave);
 
 void coordinarInstancia(int socket, Paquete paquete, void* datos);
 void coordinarESI(int socket, Paquete paquete, void* datos);

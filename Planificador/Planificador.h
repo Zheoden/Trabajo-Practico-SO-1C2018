@@ -14,7 +14,7 @@
 #include <Funciones/logs.h>
 #include <Funciones/serializacion.h>
 #include <Funciones/conexiones.h>
-#include <pthread.h>
+
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -29,7 +29,7 @@ int server_puerto;
 
 char* coordinador_ip;
 int coordinador_puerto;
-int socket_coordinador;
+
 
 char* algoritmo_planificacion;
 char* claves_bloqueadas;

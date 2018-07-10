@@ -444,6 +444,16 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		strcpy(nuevo->valor, datos);
 
 
+		int tam = strlen(nuevo->clave) + strlen(nuevo->valor) + 2;
+		void*sendInstancia = malloc(tam);
+		strcpy(sendInstancia, nuevo->clave);
+		sendInstancia += strlen(nuevo->clave) + 1;
+		strcpy(sendInstancia, nuevo->valor);
+		sendInstancia += strlen(nuevo->valor) + 1;
+		sendInstancia -= tam;
+
+
+
 		bool verificarExistenciaEnListaDeClaves(char*e) {
 			return !strcmp(e, nuevo->clave);
 		}
@@ -454,19 +464,9 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		bool verificarClave(t_Instancia *e) {
 			return list_any_satisfy(e->claves,(void*)verificarClaveDeAUna);
 		}
-// RESIVAR ESTE IF
 		if (list_any_satisfy(todas_las_claves,(void*) verificarExistenciaEnListaDeClaves)) {
 			if (!list_any_satisfy(instancias, (void*) verificarClave)) {
 				//clave existe en el sistema, pero no esta en ninguna instancia, es clave nueva
-//				log_info(logger,"Se intenta bloquear la clave %s pero en este momento no esta disponible.", nuevo->clave);
-//				EnviarDatosTipo(socket_planificador, COORDINADOR, NULL ,0, t_ABORTARESI);
-				int tam = strlen(nuevo->clave) + strlen(nuevo->valor) + 2;
-				void*sendInstancia = malloc(tam);
-				strcpy(sendInstancia, nuevo->clave);
-				sendInstancia += strlen(nuevo->clave) + 1;
-				strcpy(sendInstancia, nuevo->valor);
-				sendInstancia += strlen(nuevo->valor) + 1;
-				sendInstancia -= tam;
 
 				int socketSiguiente = obtenerProximaInstancia();
 				if (socketSiguiente != 0) {
@@ -478,7 +478,10 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 
 			} else {
 				//clave existe en el sistema, y esta en alguna instancia, hay que buscar en que instancia y enviarlo.
-
+				int socketInstanciaConClave = buscarInstanciaPorClave(nuevo->clave);
+				if (socketInstanciaConClave != 0) {
+					EnviarDatosTipo(socketInstanciaConClave, COORDINADOR, sendInstancia, tam, t_SET);
+				}
 			}
 		} else {
 			//clave no existe en el sistema
@@ -553,6 +556,86 @@ void coordinarPlanificador(int socket, Paquete paquete, void* datos){
 		socket_planificador = socket;
 	}
 	break;
+	case t_VALORDECLAVE: {
+		char* clave = malloc(strlen(datos) + 1);
+		strcpy(clave, datos);
+
 
 	}
+	break;
+	case t_INSTANCIACONCLAVE: {
+		char* clave = malloc(strlen(datos) + 1);
+		strcpy(clave, datos);
+
+		int socket_de_la_instancia = buscarInstanciaPorClave(clave);
+		if(socket_de_la_instancia != 0){//existe la instancia
+
+			bool BuscarSocket(t_Instancia* elemento){
+				return elemento->socket == socket_de_la_instancia;
+			}
+			t_Instancia* instancia = (t_Instancia*)list_find(instancias,(void*)BuscarSocket);
+
+			int tamSend = strlen(instancia->nombre) + +1;
+			void* sendPlanificador = malloc(tamSend);
+			strcpy(sendPlanificador, instancia->nombre);
+
+			EnviarDatosTipo(socket_planificador, COORDINADOR, sendPlanificador, tamSend, t_INSTANCIACONCLAVE);
+		}else{
+			EnviarDatosTipo(socket_planificador, COORDINADOR, "Ninguna Instancia tiene esta clave", strlen("Ninguna Instancia tiene esta clave") + 1, t_INSTANCIACONCLAVE);
+		}
+
+	}
+	break;
+	case t_INSTANCIAQUETENDRIALACLAVE: {
+		char* clave = malloc(strlen(datos) + 1);
+		strcpy(clave, datos);
+		int socket_de_la_instancia = buscarInstanciaQueTendriaClave(clave);
+		if(socket_de_la_instancia != 0){//existe la instancia
+
+			bool BuscarSocket(t_Instancia* elemento){
+				return elemento->socket == socket_de_la_instancia;
+			}
+			t_Instancia* instancia = (t_Instancia*)list_find(instancias,(void*)BuscarSocket);
+
+			int tamSend = strlen(instancia->nombre) + +1;
+			void* sendPlanificador = malloc(tamSend);
+			strcpy(sendPlanificador, instancia->nombre);
+
+			EnviarDatosTipo(socket_planificador, COORDINADOR, sendPlanificador, tamSend, t_INSTANCIAQUETENDRIALACLAVE);
+		}else{
+			EnviarDatosTipo(socket_planificador, COORDINADOR, "No hay instancias en el sistema", strlen("No hay instancias en el sistema") + 1, t_INSTANCIAQUETENDRIALACLAVE);
+		}
+
+	}
+	break;
+
+	}
+}
+
+
+int buscarInstanciaPorClave(char* clave){
+
+	int tieneClave(char* unaClave) {
+		return !strcmp(unaClave, clave);
+	}
+
+	int i;
+	int cantidad_de_instancias = list_size(instancias);
+	for (i = 0; i < cantidad_de_instancias; i++) {
+		t_Instancia* instancia_actual = (t_Instancia*)list_get(instancias,i);
+		if (list_any_satisfy(instancia_actual->claves, (void*) tieneClave) && instancia_actual->estado_de_conexion) {
+			return instancia_actual->socket;
+		}
+	}
+	return 0;
+}
+
+int buscarInstanciaQueTendriaClave(char* clave){
+
+	if(buscarInstanciaPorClave(clave) == 0){//es clave nueva
+
+	}else{
+		return buscarInstanciaPorClave(clave);
+	}
+	return 0;
 }
