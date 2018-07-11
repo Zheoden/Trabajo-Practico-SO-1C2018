@@ -136,6 +136,30 @@ void manejarEntradas() {
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, (void*) datosEntradas, sizeof(int), t_RESPUESTAMEMORIA);
 		}
 		break;
+		case t_VALORDECLAVE: {
+			char* clave = malloc(strlen(datos) + 1);
+			strcpy(clave, datos);
+
+			bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
+				return !strcmp(unaEntrada->clave, clave);
+			}
+
+			t_AlmacenamientoEntradaAdministrativa* nueva = (t_AlmacenamientoEntradaAdministrativa*)list_find(entradas_administrativas,(void*)buscarClave);
+			int j;
+			char* valor=malloc(nueva->tamanio);
+			int tamanioPegado=0;
+
+			for (j = nueva->index; j < (nueva->index + nueva->entradasOcupadas);j++) {
+				if((nueva->index + nueva->entradasOcupadas) -1 == j){
+					strcpy(valor+tamanioPegado, tabla_entradas[j]);
+				}else{
+					strcpy(valor+tamanioPegado, tabla_entradas[j]);
+					tamanioPegado+=tamanio_entrada;
+				}
+			}
+			//responde el valor
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, valor, nueva->tamanio + 1, t_VALORDECLAVE);
+		}
 
 		}
 		if (paquete.mensaje != NULL) {

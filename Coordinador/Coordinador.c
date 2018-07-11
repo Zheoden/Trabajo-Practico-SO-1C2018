@@ -88,6 +88,7 @@ void inicializar(){
 	pthread_mutex_init(&t_set,NULL);
 	pthread_mutex_lock(&t_set);
 	pthread_mutex_init(&recibir_tamanio,NULL);
+	pthread_mutex_init(&recibir_valor_clave,NULL);
 
 
 	log_info(logger,"Se inicio inicializaron las listas correctamente.");
@@ -418,6 +419,13 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		pthread_mutex_unlock (&recibir_tamanio);
 	}
 	break;
+	case t_VALORDECLAVE: {
+		valor_clave = malloc(strlen(datos) + 1);
+		strcpy(valor_clave, datos);
+		printf("Respuesta valor: %s\n",valor_clave);
+		pthread_mutex_unlock(&recibir_valor_clave);
+	}
+	break;
 	}
 }
 
@@ -560,7 +568,16 @@ void coordinarPlanificador(int socket, Paquete paquete, void* datos){
 		char* clave = malloc(strlen(datos) + 1);
 		strcpy(clave, datos);
 
+		int socket_de_la_instancia = buscarInstanciaPorClave(clave);
+		if(socket_de_la_instancia != 0){//existe la instancia
 
+			EnviarDatosTipo(socket_de_la_instancia, COORDINADOR, clave, strlen(clave)+1, t_VALORDECLAVE);
+			pthread_mutex_lock(&recibir_valor_clave);
+			printf("Respuesta valor: %s\n",valor_clave);
+			EnviarDatosTipo(socket_planificador, COORDINADOR, valor_clave, strlen(valor_clave)+1, t_VALORDECLAVE);
+		}else{
+			EnviarDatosTipo(socket_planificador, COORDINADOR, "Esta clave no tiene valor", strlen("Esta clave no tiene valor") + 1, t_VALORDECLAVE);
+		}
 	}
 	break;
 	case t_INSTANCIACONCLAVE: {

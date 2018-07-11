@@ -225,20 +225,27 @@ void killProceso(char* id){
 
 void status(char* clave){
 	//Valor, en caso de no poseer valor un mensaje que lo indique.
-//	EnviarDatosTipo(socket_coordinador,PLANIFICADOR, NULL, 0, t_ABORTARESI);
-//	pthread_mutex_lock(&t_status);
+	EnviarDatosTipo(socket_coordinador,PLANIFICADOR, clave, strlen(clave)+1, t_VALORDECLAVE);
+	pthread_mutex_lock(&t_status);
+	printf("La clave %s tiene el valor: %s.\n",clave,valorClave);
+//	free(valorClave);
+
 	//Instancia actual en la cual se encuentra la clave. (En caso de que la clave no se encuentre en una instancia,
 	//no se debe mostrar este valor)
 	EnviarDatosTipo(socket_coordinador,PLANIFICADOR, clave, strlen(clave)+1, t_INSTANCIACONCLAVE);
 	pthread_mutex_lock(&t_status);
 	printf("La instancia que tiene la clave es: %s.\n",nombreInstancia);
 //	free(nombreInstancia);
+
+
 	//Instancia en la cual se guardaría actualmente la clave (Calcular este valor mediante el algoritmo de
 	//distribución(^4), pero sin afectar la distribución actual de las claves).
 	EnviarDatosTipo(socket_coordinador,PLANIFICADOR, clave, strlen(clave)+1, t_INSTANCIAQUETENDRIALACLAVE);
 	pthread_mutex_lock(&t_status);
 	printf("La instancia que tendria la clave es: %s.\n",instancia_que_tendria_la_clave);
 //	free(instancia_que_tendria_la_clave);
+
+
 	//ESIs bloqueados a la espera de dicha clave.
 	printf("A continuacion se van a mostrar a los esis bloqueados esperando la clave: \n");
 	listar(clave);

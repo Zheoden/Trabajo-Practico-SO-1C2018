@@ -27,6 +27,7 @@ pthread_mutex_t t_status;
 /* Cosas para el Status */
 char* nombreInstancia;
 char* instancia_que_tendria_la_clave;
+char* valorClave;
 
 void consola();
 void pausarOContinuar();

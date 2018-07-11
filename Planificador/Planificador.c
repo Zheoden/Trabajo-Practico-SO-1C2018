@@ -238,6 +238,12 @@ void crearCliente() {
 			pthread_mutex_unlock(&t_status);
 		}
 		break;
+		case t_VALORDECLAVE:{
+			valorClave = malloc(strlen(datos)+1);
+			strcpy(valorClave, datos);
+			pthread_mutex_unlock(&t_status);
+		}
+		break;
 
 		}
 	}
