@@ -33,7 +33,8 @@ typedef enum t_protocolo {
 	t_RESPUESTAMEMORIA,
 	t_VALORDECLAVE,
 	t_INSTANCIACONCLAVE,
-	t_INSTANCIAQUETENDRIALACLAVE
+	t_INSTANCIAQUETENDRIALACLAVE,
+	t_REINICIARLINEA
 } t_protocolo;
 
 //////////////////////////////////////////

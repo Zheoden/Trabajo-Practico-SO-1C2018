@@ -187,6 +187,8 @@ void crearCliente() {
 				strcpy(esiABloquear->razon_bloqueo,paquete.mensaje);
 				esiABloquear->bloqueado = true;
 				list_add(ESI_bloqueados, esiABloquear);
+				//le digo al esi que como se bloqueo, tiene que volver a ejecutar esa linea
+				EnviarDatosTipo(esiABloquear->socket ,PLANIFICADOR ,NULL ,0 ,t_REINICIARLINEA);
 				log_info(logger,"Se bloqueo correctamente el ESI: %s, y se agrego a la lista de Bloqueados.",esiABloquear->ID);
 			}
 			else {
@@ -201,6 +203,7 @@ void crearCliente() {
 				list_replace(ESI_ejecucion, 0, EsiEjecutando);
 				log_info(logger,"Se bloqueo correctamente la clave: %s, y se agrego a la lista de claves Bloqueadas.",claveABloquear->clave);
 			}
+			printf("PUDE TERMINAR EL GET\n");
 
 		}
 		break;

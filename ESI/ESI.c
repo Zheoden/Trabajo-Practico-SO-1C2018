@@ -37,6 +37,8 @@ void crearClientePlanif() {
 	size_t len = 0;
 	ssize_t read;
 	Paquete paquete;
+	int estado_actual = 0;
+	int estado_anterior = 0;
 
 	while (RecibirPaqueteCliente(socket_planificador, ESI, &paquete) > 0) {
 		switch (paquete.header.tipoMensaje) {
@@ -44,6 +46,8 @@ void crearClientePlanif() {
 			printf("Recibi un siguiente linea \n");
 			if ((read = getline(&line, &len, fp)) != EOF) {
 				parsear(line);
+				estado_anterior = estado_actual;
+				estado_actual = ftell(fp);
 			}else{
 				EnviarDatosTipo(socket_planificador, ESI, NULL, 0, t_ABORTARESI);
 				if (line) {
@@ -61,6 +65,12 @@ void crearClientePlanif() {
 		break;
 		case t_HANDSHAKE: {
 			printf("Recibi un Handshake de %s\n","Planificador");
+		}
+		break;
+		case t_REINICIARLINEA: {
+			fseek(fp,estado_anterior,SEEK_SET);
+			estado_actual = estado_anterior;
+			printf("Volvi la linea Atras para que se ejecute de nuevo.\n");
 		}
 		break;
 		}
