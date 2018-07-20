@@ -62,6 +62,9 @@ void sacar_instancia(int socket);
 int proximaInstancia();
 int buscarInstanciaPorClave(char* clave);
 int buscarInstanciaQueTendriaClave(char* clave);
+void reiniciarInstanciaPorSocket(int socket);
+t_Instancia* buscarInstanciaPorSocket(int socket);
+void reiniciarEL(t_Instancia* instancia_a_reiniciar);
 
 void coordinarInstancia(int socket, Paquete paquete, void* datos);
 void coordinarESI(int socket, Paquete paquete, void* datos);

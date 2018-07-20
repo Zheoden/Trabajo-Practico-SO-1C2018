@@ -160,6 +160,7 @@ void manejarEntradas() {
 			//responde el valor
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, valor, nueva->tamanio + 1, t_VALORDECLAVE);
 		}
+		break;
 
 		}
 		if (paquete.mensaje != NULL) {

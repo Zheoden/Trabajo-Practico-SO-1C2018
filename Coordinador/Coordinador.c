@@ -629,7 +629,6 @@ void coordinarPlanificador(int socket, Paquete paquete, void* datos){
 	}
 }
 
-
 int buscarInstanciaPorClave(char* clave){
 
 	int tieneClave(char* unaClave) {
@@ -650,9 +649,32 @@ int buscarInstanciaPorClave(char* clave){
 int buscarInstanciaQueTendriaClave(char* clave){
 
 	if(buscarInstanciaPorClave(clave) == 0){//es clave nueva
-
+		int socket_auxiliar = obtenerProximaInstancia();
+		reiniciarInstanciaPorSocket(socket_auxiliar);
+		return socket_auxiliar;
 	}else{
 		return buscarInstanciaPorClave(clave);
 	}
 	return 0;
 }
+
+t_Instancia* buscarInstanciaPorSocket(int socket) {
+	bool tiene_socket(t_Instancia *instancia) {
+		return instancia->socket == socket;
+	}
+
+	return list_find(instancias,(void*)tiene_socket);
+}
+
+void reiniciarInstanciaPorSocket(int socket){
+	if (!strcmp(algoritmo_de_distribucion, "EL")) {
+		t_Instancia* aux = buscarInstanciaPorSocket(socket);
+		reiniciarEL(aux);
+	}
+}
+
+void reiniciarEL(t_Instancia* instancia_a_reiniciar){
+	instancia_a_reiniciar->flagEL=false;
+}
+
+
