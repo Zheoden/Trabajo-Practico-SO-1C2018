@@ -144,7 +144,6 @@ void manejarEntradas() {
 			bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
 				return !strcmp(unaEntrada->clave, clave);
 			}
-
 			t_AlmacenamientoEntradaAdministrativa* nueva = (t_AlmacenamientoEntradaAdministrativa*)list_find(entradas_administrativas,(void*)buscarClave);
 			int j;
 			char* valor=malloc(nueva->tamanio);
@@ -163,6 +162,10 @@ void manejarEntradas() {
 		}
 		break;
 
+		case t_COMPACTACIONINSTANCIA: {
+		compactacion();
+		}
+		break;
 		}
 		if (paquete.mensaje != NULL) {
 			free(paquete.mensaje);
@@ -426,6 +429,7 @@ t_AlmacenamientoEntradaAdministrativa* esAtomico(int index){
 
 void compactacion(){
 
+	printf("Se inicia el proceso de compactación \n");
 	t_list* clavesDelSistema = list_create();
 
 	int i, j;
@@ -452,19 +456,6 @@ void compactacion(){
 
 
 
-
-/*
- generar una lista con todas las claves que esten en el sistema
-
-guardar a archivo todas las funciones de la lista
-
-repetitiva por toda la tabla de entradas admin y por cada entrada voy a guardar el nombre de la
-entrada en una lista de char* y voy a llamar a guardarAArchivo y a liberar memoria
-
-una vez hecho eso, hago una repetetiva que sea de TODOS los elementos de la lista que cree
- y por cada elemento llamo a leerArchivo
-
- */
 
 
 
