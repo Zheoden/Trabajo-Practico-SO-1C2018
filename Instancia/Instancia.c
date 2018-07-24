@@ -144,7 +144,6 @@ void manejarEntradas() {
 			bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
 				return !strcmp(unaEntrada->clave, clave);
 			}
-
 			t_AlmacenamientoEntradaAdministrativa* nueva = (t_AlmacenamientoEntradaAdministrativa*)list_find(entradas_administrativas,(void*)buscarClave);
 			int j;
 			char* valor=malloc(nueva->tamanio);
@@ -163,6 +162,10 @@ void manejarEntradas() {
 		}
 		break;
 
+		case t_COMPACTACIONINSTANCIA: {
+		compactacion();
+		}
+		break;
 		}
 		if (paquete.mensaje != NULL) {
 			free(paquete.mensaje);
@@ -424,15 +427,35 @@ t_AlmacenamientoEntradaAdministrativa* esAtomico(int index){
 
 
 
+void compactacion(){
 
-/*
-- Lleva registro de hace cuanto fue referenciada la entrada
-	- la cuenta esa es hace cuantas operaciones fue referenciada
-	- Se almacena la ultima referencia
-	- Se reemplaza el menor
-	- SOLO CON SET Y STORE
-- Se reemplaza la entrada que más tiempo lleva referenciada
-*/
+	printf("Se inicia el proceso de compactación \n");
+	t_list* clavesDelSistema = list_create();
+
+	int i, j;
+
+	int tamanioEntradasAdmin = list_size(entradas_administrativas);
+
+	for(i=0; i < tamanioEntradasAdmin ; i++){
+		t_AlmacenamientoEntradaAdministrativa* entradaActual = list_get(entradas_administrativas, 0);
+		list_add(clavesDelSistema, (char*)entradaActual->clave);
+		guardarAArchivo(entradaActual);
+		liberarMemoria(entradaActual);
+	}
+
+	for(j=0; j < tamanioEntradasAdmin ; j++){
+
+		char* claveActual = list_get(clavesDelSistema, j);
+		leerArchivo(claveActual);
+
+		}
+
+	list_destroy_and_destroy_elements(clavesDelSistema, free);
+
+}
+
+
+
 
 
 
