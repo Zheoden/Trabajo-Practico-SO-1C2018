@@ -185,33 +185,6 @@ void verificarPuntoMontaje(){
 	}
 	if (directorio_de_montaje != NULL){
 		/* Directorio Existe. */
-		struct dirent *ent;
-		while( (ent = readdir(directorio_de_montaje)) != NULL ){
-			if( (strncmp(ent->d_name, ".", 1)) ){
-				FILE * fp;
-				char * line = NULL;
-				size_t len = 0;
-				ssize_t read;
-
-				char* ruta = malloc(strlen(punto_de_montaje) + strlen(ent->d_name) + 1);
-				strcpy(ruta, punto_de_montaje);
-				strcpy(ruta + strlen(punto_de_montaje),ent->d_name);
-
-				fp = fopen(ruta, "r");
-				if (fp == NULL) {
-					log_error(logger, "Error al abrir el archivo: %s",strerror(errno));
-					log_info(logger,"Se le envio al planificador la orden de matar al ESI.");
-					fclose(fp);
-				}else{
-					while ((read = getline(&line, &len, fp)) != EOF) {
-						cargarDatos(ent->d_name,line);
-					}
-					free(ruta);
-					free(line);
-					fclose(fp);
-				}
-			}
-		}
 		closedir(directorio_de_montaje);
 	}else{
 		log_error(logger, "Se detectó el siguiente error al abrir el directorio: %s", strerror(errno));
