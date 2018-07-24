@@ -34,7 +34,8 @@ typedef enum t_protocolo {
 	t_VALORDECLAVE,
 	t_INSTANCIACONCLAVE,
 	t_INSTANCIAQUETENDRIALACLAVE,
-	t_REINICIARLINEA
+	t_REINICIARLINEA,
+	t_COMPACTACIONINSTANCIA
 } t_protocolo;
 
 //////////////////////////////////////////
