@@ -63,6 +63,6 @@ void leerArchivo(char* filename);
 void LeastRecentlyUsed(t_AlmacenamientoEntradaAdministrativa* aux);
 t_AlmacenamientoEntradaAdministrativa* esAtomico(int index);
 void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux);
-
+void compactacion();
 
 #endif /* INSTANCIA_H_ */

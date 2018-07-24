@@ -424,15 +424,47 @@ t_AlmacenamientoEntradaAdministrativa* esAtomico(int index){
 
 
 
+void compactacion(){
+
+	t_list* clavesDelSistema = list_create();
+
+	int i, j;
+
+	int tamanioEntradasAdmin = list_size(entradas_administrativas);
+
+	for(i=0; i < tamanioEntradasAdmin ; i++){
+		t_AlmacenamientoEntradaAdministrativa* entradaActual = list_get(entradas_administrativas, 0);
+		list_add(clavesDelSistema, (char*)entradaActual->clave);
+		guardarAArchivo(entradaActual);
+		liberarMemoria(entradaActual);
+	}
+
+	for(j=0; j < tamanioEntradasAdmin ; j++){
+
+		char* claveActual = list_get(clavesDelSistema, j);
+		leerArchivo(claveActual);
+
+		}
+
+	list_destroy_and_destroy_elements(clavesDelSistema, free);
+
+}
+
+
+
 
 /*
-- Lleva registro de hace cuanto fue referenciada la entrada
-	- la cuenta esa es hace cuantas operaciones fue referenciada
-	- Se almacena la ultima referencia
-	- Se reemplaza el menor
-	- SOLO CON SET Y STORE
-- Se reemplaza la entrada que más tiempo lleva referenciada
-*/
+ generar una lista con todas las claves que esten en el sistema
+
+guardar a archivo todas las funciones de la lista
+
+repetitiva por toda la tabla de entradas admin y por cada entrada voy a guardar el nombre de la
+entrada en una lista de char* y voy a llamar a guardarAArchivo y a liberar memoria
+
+una vez hecho eso, hago una repetetiva que sea de TODOS los elementos de la lista que cree
+ y por cada elemento llamo a leerArchivo
+
+ */
 
 
 
