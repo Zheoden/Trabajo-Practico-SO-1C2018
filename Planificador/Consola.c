@@ -116,7 +116,6 @@ void consola(){
   }
 }
 
-
 void pausarOContinuar(){
 	planificacion_activa = !planificacion_activa;
 }
@@ -228,14 +227,14 @@ void status(char* clave){
 	EnviarDatosTipo(socket_coordinador,PLANIFICADOR, clave, strlen(clave)+1, t_VALORDECLAVE);
 	pthread_mutex_lock(&t_status);
 	printf("La clave %s tiene el valor: %s.\n",clave,valorClave);
-//	free(valorClave);
+	free(valorClave);
 
 	//Instancia actual en la cual se encuentra la clave. (En caso de que la clave no se encuentre en una instancia,
 	//no se debe mostrar este valor)
 	EnviarDatosTipo(socket_coordinador,PLANIFICADOR, clave, strlen(clave)+1, t_INSTANCIACONCLAVE);
 	pthread_mutex_lock(&t_status);
 	printf("La instancia que tiene la clave es: %s.\n",nombreInstancia);
-//	free(nombreInstancia);
+	free(nombreInstancia);
 
 
 	//Instancia en la cual se guardaría actualmente la clave (Calcular este valor mediante el algoritmo de
@@ -243,7 +242,7 @@ void status(char* clave){
 	EnviarDatosTipo(socket_coordinador,PLANIFICADOR, clave, strlen(clave)+1, t_INSTANCIAQUETENDRIALACLAVE);
 	pthread_mutex_lock(&t_status);
 	printf("La instancia que tendria la clave es: %s.\n",instancia_que_tendria_la_clave);
-//	free(instancia_que_tendria_la_clave);
+	free(instancia_que_tendria_la_clave);
 
 
 	//ESIs bloqueados a la espera de dicha clave.

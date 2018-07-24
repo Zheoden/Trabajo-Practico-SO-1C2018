@@ -12,6 +12,9 @@ void inicializar(){
 	pthread_mutex_init(&siguiente_linea,NULL);
 	pthread_mutex_init(&t_status,NULL);
 	pthread_mutex_unlock(&siguiente_linea);
+
+	pthread_mutex_lock(&t_status);
+
 	planificacion_activa=true;
 	ultimo_ID_Asignado = malloc(4);
 	strcpy(ultimo_ID_Asignado,"000");
@@ -203,7 +206,7 @@ void crearCliente() {
 				list_replace(ESI_ejecucion, 0, EsiEjecutando);
 				log_info(logger,"Se bloqueo correctamente la clave: %s, y se agrego a la lista de claves Bloqueadas.",claveABloquear->clave);
 			}
-			printf("PUDE TERMINAR EL GET\n");
+//			printf("PUDE TERMINAR EL GET\n");
 
 		}
 		break;
