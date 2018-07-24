@@ -426,6 +426,14 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		pthread_mutex_unlock(&recibir_valor_clave);
 	}
 	break;
+	case t_COMPACTACIONINSTANCIA: {
+		int cantidad_de_entradas = list_size(instancias);
+		for (int i = 0; i < cantidad_de_entradas; i++) {
+			t_Instancia* instancia_actual = (t_Instancia*)list_get(instancias,i);
+			EnviarDatosTipo(instancia_actual->socket, COORDINADOR, NULL , 0, t_COMPACTACIONINSTANCIA);
+		}
+	}
+	break;
 	}
 }
 
