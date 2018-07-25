@@ -117,10 +117,15 @@ void consola(){
 }
 
 void pausarOContinuar(){
+
+	log_info(logger,"Se ejecuta comando de pausar/continuar");
+
 	planificacion_activa = !planificacion_activa;
 }
 
 void bloquear(char* clave, char* id){
+
+	log_info(logger,"Se ejecuta comando de bloquear");
 
 	bool comparadorID(t_ESIPlanificador* unESI){
 		return !strcmp(unESI->ID, id);
@@ -153,6 +158,8 @@ void bloquear(char* clave, char* id){
 
 void desbloquear(char* clave){
 
+	log_info(logger,"Se ejecuta comando de desbloquear");
+
 	bool comparadorClaves(t_ESIPlanificador* unESI){
 		return !strcmp(unESI->razon_bloqueo, clave);
 	}
@@ -171,6 +178,8 @@ void desbloquear(char* clave){
 
 void listar(char* recurso){
 
+	log_info(logger,"Se ejecuta comando de listar");
+
 	int i;
 	for (i = 0; i < list_size(ESI_bloqueados); i++) {
 		t_ESIPlanificador* aux = (t_ESIPlanificador*) list_get(ESI_bloqueados,i);
@@ -186,6 +195,8 @@ void listar(char* recurso){
 }
 
 void killProceso(char* id){
+
+	log_info(logger,"Se ejecuta comando de killProceso");
 
 	bool comparadorID(t_ESIPlanificador* unESI){
 		return !strcmp(unESI->ID, id);
@@ -223,6 +234,9 @@ void killProceso(char* id){
 }
 
 void status(char* clave){
+
+	log_info(logger,"Se ejecuta comando de status");
+
 	//Valor, en caso de no poseer valor un mensaje que lo indique.
 	EnviarDatosTipo(socket_coordinador,PLANIFICADOR, clave, strlen(clave)+1, t_VALORDECLAVE);
 	pthread_mutex_lock(&t_status);
@@ -251,6 +265,9 @@ void status(char* clave){
 }
 
 void deadlock(){
+
+	log_info(logger,"Se ejecuta comando de deadlock");
+
 	int i;
 	int cantidad_de_bloqueados = list_size(ESI_bloqueados);
 	esis_en_deadlock = list_create();

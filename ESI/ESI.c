@@ -2,6 +2,7 @@
 
 /* Conexiones */
 void crearClienteCoor() {
+	log_info(logger, "Se creó cliente Coordinador.");
 	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
 	EnviarHandshake(socket_coordinador,ESI);
 
@@ -29,6 +30,8 @@ void crearClienteCoor() {
 }
 
 void crearClientePlanif() {
+
+	log_info(logger, "Se creó cliente Planificador.");
 
 	socket_planificador = ConectarAServidor(planificador_puerto,planificador_ip);
 	EnviarHandshake(socket_planificador,ESI);
