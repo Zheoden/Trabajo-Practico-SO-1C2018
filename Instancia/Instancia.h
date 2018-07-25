@@ -12,8 +12,14 @@
 #include <Funciones/lista.h>
 #include <Funciones/conexiones.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
+
+
+#define try bool __HadError=false;
+#define catch(x) ExitJmp:if(__HadError);
+#define throw(x) __HadError=true;goto ExitJmp;
 
 
 /* Variables globales */

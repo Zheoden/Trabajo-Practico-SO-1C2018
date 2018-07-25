@@ -72,7 +72,7 @@ void manejarEntradas() {
 		case t_STORE: {
 			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
 
-			printf("Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
+ 			printf("Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
 			int aux = strlen(datos) + 1;
 			char*clave = malloc(aux);
 			strcpy(clave, datos);
@@ -102,7 +102,7 @@ void manejarEntradas() {
 			strcpy(clave, datos);
 			char* valor = malloc(strlen(datos) + 1);
 			datos += strlen(datos) + 1;
-			strcpy(valor, datos);
+ 			strcpy(valor, datos);
 
 			cargarDatos(clave,valor);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASET);
@@ -177,7 +177,7 @@ void verificarPuntoMontaje(){
 	if (ENOENT == errno){
 		/* Directorio No Existe. */
 		log_info(logger,"No existe el punto de montaje, se va a proceder a crearlo.");
-		mkdir(punto_de_montaje,0777);
+		mkdir(punto_de_montaje, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
 		log_info(logger,"El punto de montaje se creo exitosamente.");
 	}
 	if (directorio_de_montaje != NULL){
@@ -187,6 +187,8 @@ void verificarPuntoMontaje(){
 		log_error(logger, "Se detectó el siguiente error al abrir el directorio: %s", strerror(errno));
 	}
 }
+
+
 
 //no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.
 void dump(){
@@ -215,8 +217,8 @@ void cargarDatos(char* unaClave, char* unValor) {
 	t_AlmacenamientoEntradaAdministrativa* nueva = malloc(sizeof(t_AlmacenamientoEntradaAdministrativa));
 	nueva->clave = malloc(strlen(clave) + 1);
 	strcpy(nueva->clave, clave);
-	nueva->entradasOcupadas = ceilDivision(strlen(valor));
-	nueva->tamanio = strlen(valor);
+	nueva->entradasOcupadas = ceilDivision(strlen(valor)+1);
+	nueva->tamanio = strlen(valor)+1;
 
 	//Funcion Auxiliar
 	bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
@@ -336,10 +338,12 @@ void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store){
 			tamanioPegado+=tamanio_entrada;
 		}
 	}
+
 	FILE* file_a_crear = fopen(directorio_actual,"w+");
 	fwrite(valor,clave_a_store->tamanio,sizeof(char),file_a_crear);
 
 	fclose(file_a_crear);
+
 }
 
 void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar){

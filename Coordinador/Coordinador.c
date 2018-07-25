@@ -128,7 +128,7 @@ void coordinar(void* socket) {
 }
 
 /* Obtiene proxima instancia en base al algoritmo de distribucion */
-int obtenerProximaInstancia(){
+int obtenerProximaInstancia(char* clave){
 
 	if (!strcmp(algoritmo_de_distribucion, "EL")) {
 
@@ -140,7 +140,7 @@ int obtenerProximaInstancia(){
 
 	} else if (!strcmp(algoritmo_de_distribucion, "KE")) {
 
-		return KE();
+		return KE(clave);
 
 	}
 	return 0;
@@ -203,9 +203,8 @@ int LSU() {
 	int estaHabilitada(t_Instancia* elemento) {
 		return elemento->estado_de_conexion;
 	}
-	int tamanioOcupado(t_Instancia_con_tamanio* e1, t_Instancia_con_tamanio* e2){
-		bool result = e1->tamanio > e2->tamanio;
-		return result;
+	int tamanioOcupado(t_Instancia_con_tamanio* elemento1, t_Instancia_con_tamanio* elemento2){
+		return elemento1->tamanio > elemento2->tamanio;
 	}
 	t_Instancia_con_tamanio* obtenerTamanio(t_Instancia* elem){
 		t_Instancia_con_tamanio* instancia_a_manejar = malloc(sizeof(t_Instancia_con_tamanio));
@@ -216,9 +215,10 @@ int LSU() {
 		instancia_a_manejar->dato = (t_Instancia*)elem;
 		return instancia_a_manejar;
 	}
+
 	if(!list_is_empty(instancias)){
 		t_list* instancias_habilitadas = list_filter (instancias, (void*) estaHabilitada);
-//		log_info(logger,"Se le envia a las Instancias solicitudes para conocer su disponibilidad de memoria");
+		log_info(logger,"Se le envia a las Instancias solicitudes para conocer su disponibilidad de memoria");
 		t_list* instancias_a_tomar = list_map (instancias_habilitadas,(void*) obtenerTamanio);
 		list_sort(instancias_a_tomar,(void*)tamanioOcupado);
 		t_Instancia_con_tamanio* instancia_a_usar = list_get(instancias_a_tomar, 0);
@@ -230,46 +230,41 @@ int LSU() {
 }
 
 /* Para KE */
-int KE(){
+int KE(char* clave){
 
 	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo KE.");
 
-	char letras[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-	int instancias_manejadas = 0;
-	char* clave;
-	int estaHabilitada(t_Instancia* elemento) {
-		return elemento->estado_de_conexion;
-	}
-
-	t_Instancia_con_rangos* obtenerRango(t_Instancia* elem){
-		t_Instancia_con_rangos* instancia_a_manejar = malloc(sizeof(t_Instancia_con_rangos));
-		instancias_manejadas += 1;
-		int total_instancias = sizeof(instancias);
-		instancia_a_manejar->dato = (t_Instancia*)elem;
-		instancia_a_manejar->rango = (26/total_instancias)*instancias_manejadas + 1;
-		return instancia_a_manejar;
-	}
-
-	int clavePerteneceARango(t_Instancia_con_rangos* elem){
-		int i = 0;
-		while(!strncmp(clave, letras[i], 1) || i >= 26){
-			i++;
-		}
-		if(i < elem->rango)
-			return 1;
-		else
-			return 0;
-	}
+	int cantidad_de_instancias_activas = 0;
 
 	if(!list_is_empty(instancias)){
-		t_list* instancias_habilitadas = list_filter (instancias, (void*) estaHabilitada);
-		t_list* instancias_a_tomar = list_map (instancias_habilitadas,(void*) obtenerRango);
-		t_list* instancias_a_usar = list_filter (instancias, (void*) clavePerteneceARango);
-		t_Instancia_con_rangos* instancia_a_usar = list_get(instancias_a_tomar, 0);
-		list_destroy(instancias_habilitadas);
-		list_destroy(instancias_a_tomar);
-		list_destroy(instancias_a_usar);
-		return instancia_a_usar->dato->socket;
+		//calculo la cantidad de instancias habilitadas en el sistema
+		for (int i = 0; i < list_size(instancias); ++i) {
+			t_Instancia* actual = list_get(instancias,i);
+			if(actual->estado_de_conexion){
+				cantidad_de_instancias_activas++;
+			}
+		}
+		int rango = (26/cantidad_de_instancias_activas);
+		int index_clave = getIndexLetra(clave[0]);
+		int index_instancia = (index_clave/rango);
+		int aux = 0;
+
+		printf("rango: %d.\n",rango);
+		printf("index clave: %d.\n",index_clave);
+		printf("index instancia: %d.\n",index_instancia);
+
+		for (int i = 0; i < list_size(instancias); ++i) {
+			t_Instancia* actual = list_get(instancias,i);
+
+			if(aux == index_instancia){
+				return actual->socket;
+			}
+
+			if(actual->estado_de_conexion){
+				aux++;
+			}
+		}
+
 	}
 	return 0;
 }
@@ -493,7 +488,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			if (!list_any_satisfy(instancias, (void*) verificarClave)) {
 				//clave existe en el sistema, pero no esta en ninguna instancia, es clave nueva
 
-				int socketSiguiente = obtenerProximaInstancia();
+				int socketSiguiente = obtenerProximaInstancia(nuevo->clave);
 				if (socketSiguiente != 0) {
 					EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
 				} else {
@@ -667,7 +662,7 @@ int buscarInstanciaPorClave(char* clave){
 int buscarInstanciaQueTendriaClave(char* clave){
 
 	if(buscarInstanciaPorClave(clave) == 0){//es clave nueva
-		int socket_auxiliar = obtenerProximaInstancia();
+		int socket_auxiliar = obtenerProximaInstancia(clave);
 		reiniciarInstanciaPorSocket(socket_auxiliar);
 		return socket_auxiliar;
 	}else{
@@ -698,4 +693,12 @@ void reiniciarEL(t_Instancia* instancia_a_reiniciar){
 	instancia_a_reiniciar->flagEL=false;
 }
 
-
+int getIndexLetra(char letra){
+	char letras[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+	for (int i = 0; i < 26; ++i) {
+		if(letra == letras[i]){
+			return i;
+		}
+	}
+	return -1;
+};
