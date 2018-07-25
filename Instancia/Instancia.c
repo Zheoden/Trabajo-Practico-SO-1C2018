@@ -102,7 +102,8 @@ void manejarEntradas() {
 		break;
 		case t_SET: {
 			printf("Se recibio un SET del Coordinador, se va a pasar a procesar.\n");
-			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
+//			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, NULL , 0, t_COMPACTACIONINSTANCIA);
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
 			char* valor = malloc(strlen(datos) + 1);
@@ -163,13 +164,12 @@ void manejarEntradas() {
 		break;
 
 		case t_COMPACTACIONINSTANCIA: {
-		compactacion();
+//			compactacion();
 		}
 		break;
 		}
 		if (paquete.mensaje != NULL) {
 			free(paquete.mensaje);
-			log_info(logger,"Se libero la memoria del paquete.");
 		}
 
 	}
@@ -438,9 +438,12 @@ void compactacion(){
 
 	for(i=0; i < tamanioEntradasAdmin ; i++){
 		t_AlmacenamientoEntradaAdministrativa* entradaActual = list_get(entradas_administrativas, 0);
-		list_add(clavesDelSistema, (char*)entradaActual->clave);
+		char* clave_aux = malloc(strlen(entradaActual->clave)+1);
+		strcpy(clave_aux,entradaActual->clave);
 		guardarAArchivo(entradaActual);
 		liberarMemoria(entradaActual);
+
+		list_add(clavesDelSistema, clave_aux);
 	}
 
 	for(j=0; j < tamanioEntradasAdmin ; j++){
