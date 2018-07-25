@@ -3,6 +3,7 @@
 /* Se inicializan las entradas administrativas */
 void inicializar(){
 	entradas_administrativas = list_create();
+	envio_compactacion = false;
 }
 
 /* Se setean los valores en el archivo de configuración */
@@ -102,8 +103,8 @@ void manejarEntradas() {
 		break;
 		case t_SET: {
 			printf("Se recibio un SET del Coordinador, se va a pasar a procesar.\n");
-//			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, NULL , 0, t_COMPACTACIONINSTANCIA);
+			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
+
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
 			char* valor = malloc(strlen(datos) + 1);
@@ -164,7 +165,11 @@ void manejarEntradas() {
 		break;
 
 		case t_COMPACTACIONINSTANCIA: {
-//			compactacion();
+			if(!envio_compactacion){
+				compactacion();
+			}else{
+				envio_compactacion = false;
+			}
 		}
 		break;
 		}
@@ -223,7 +228,6 @@ void cargarDatos(char* unaClave, char* unValor) {
 	strcpy(nueva->clave, clave);
 	nueva->entradasOcupadas = ceilDivision(strlen(valor));
 	nueva->tamanio = strlen(valor);
-	nueva->index = getFirstIndex(nueva->entradasOcupadas);
 
 	//Funcion Auxiliar
 	bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
@@ -236,6 +240,11 @@ void cargarDatos(char* unaClave, char* unValor) {
 
 	//Busco el index ahora, que si ya existia, libere la posicion que ocupaba
 	nueva->index = getFirstIndex(nueva->entradasOcupadas);
+
+	if(nueva->index == -1){
+		verificarEspacio(nueva);
+	}
+
 	//Agrego la clave con su valor
 	list_add(entradas_administrativas, nueva);
 	log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
@@ -385,62 +394,96 @@ void leerArchivo(char* filename){
 
 }
 
-void leastRecentlyUsed(t_AlmacenamientoEntradaAdministrativa* aux) {
+bool verificarEspacio(t_AlmacenamientoEntradaAdministrativa* entrada_a_almacenar){
 
-	if (aux->entradasOcupadas <= cantidad_de_entradas) {
-		int i;
+	int cantidad_de_entradas_disponibles = cantidad_de_entradas_libres();
+
+	if(cantidad_de_entradas_disponibles >= entrada_a_almacenar->entradasOcupadas){
+
+		EnviarDatosTipo(socket_coordinador, INSTANCIA, NULL , 0, t_COMPACTACIONINSTANCIA);
+		compactacion();
+		envio_compactacion = true;
+
+		return true;
+
+	}else{
+		if (!strcmp(algoritmo_de_reemplazo, "LRU")) {
+
+			LRU((entrada_a_almacenar->entradasOcupadas - cantidad_de_entradas_disponibles));
+
+		} else if (!strcmp(algoritmo_de_reemplazo, "CIRC")) {
+
+			CIRC((entrada_a_almacenar->entradasOcupadas - cantidad_de_entradas_disponibles));
+
+		} else if (!strcmp(algoritmo_de_reemplazo, "BSU")) {
+
+			BSU((entrada_a_almacenar->entradasOcupadas - cantidad_de_entradas_disponibles));
+		}
+
+		cantidad_de_entradas_disponibles = cantidad_de_entradas_libres();
+
+		if(cantidad_de_entradas_disponibles == entrada_a_almacenar->entradasOcupadas){
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, NULL , 0, t_COMPACTACIONINSTANCIA);
+			compactacion();
+			envio_compactacion = true;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void LRU(int entradas_a_liberar) {
+	int i,j;
+	for (j = 0; j < entradas_a_liberar; j++) {
 		int tamanioEntradasAdministrativas = list_size(entradas_administrativas);
 		for (i = 0; i < tamanioEntradasAdministrativas; i++) {
-			t_AlmacenamientoEntradaAdministrativa* aux = (t_AlmacenamientoEntradaAdministrativa*) list_get(entradas_administrativas, i);
-			if (aux->entradasOcupadas == 1) {
-				EnviarDatosTipo(socket_coordinador, INSTANCIA, aux->clave,strlen(aux->clave) + 1, t_CLAVEBORRADA);
-				liberarMemoria(aux);
+			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*) list_get(entradas_administrativas, i);
+			if (actual->entradasOcupadas == 1) {
+				EnviarDatosTipo(socket_coordinador, INSTANCIA, actual->clave,strlen(actual->clave) + 1, t_CLAVEBORRADA);
+				liberarMemoria(actual);
+				break;
 			}
 		}
 	}
 }
 
-void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux) {
-
-	int i=0;
-
-	for (i = 0; i < cantidad_de_entradas; i++) {
-		t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)esAtomico(i);
-		if(actual != NULL){
-			liberarMemoria(actual);
-		}else{
-			free(actual);
-		}
-	}
-}
-
-void algoritmoBSU(t_AlmacenamientoEntradaAdministrativa* aux) {
-
-	int i=0;
-	int max = -1;
-	t_AlmacenamientoEntradaAdministrativa* candidato = NULL;
-	candidato->tamanio=-1;
-	for (i=0; i < cantidad_de_entradas; i++) {
-		t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)esAtomico(i);
-		if(actual != NULL){
-			if(candidato->tamanio < actual->tamanio){
-				candidato = actual;
+void CIRC(int entradas_a_liberar) {
+	int i,j;
+	for (j = 0; j < entradas_a_liberar; j++) {
+		for (i = 0; i < cantidad_de_entradas; i++) {
+			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)esAtomico(i);
+			if(actual != NULL){
+				EnviarDatosTipo(socket_coordinador, INSTANCIA, actual->clave,strlen(actual->clave) + 1, t_CLAVEBORRADA);
+				liberarMemoria(actual);
+				break;
+			}else{
+				free(actual);
 			}
-
-		}
-		else{
-			free(actual);
 		}
 	}
-
-	if(candidato->tamanio != -1){
-
-		liberarMemoria(candidato);
-
-	}
-
 }
 
+void BSU(int entradas_a_liberar) {
+	int i,j;
+	for (j = 0; j < entradas_a_liberar; j++) {
+		t_AlmacenamientoEntradaAdministrativa* candidato = NULL;
+		candidato->tamanio=-1;
+		for (i=0; i < cantidad_de_entradas; i++) {
+			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)esAtomico(i);
+			if(actual != NULL){
+				if(candidato->tamanio < actual->tamanio){
+					candidato = actual;
+				}
+			}
+		}
+		if(candidato->tamanio != -1){
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, candidato->clave,strlen(candidato->clave) + 1, t_CLAVEBORRADA);
+			liberarMemoria(candidato);
+		}
+	}
+}
 
 t_AlmacenamientoEntradaAdministrativa* esAtomico(int index){
 
@@ -450,9 +493,6 @@ t_AlmacenamientoEntradaAdministrativa* esAtomico(int index){
 
 	return list_find(entradas_administrativas,(void*)buscarClave);
 }
-
-
-
 
 void compactacion(){
 
@@ -484,9 +524,17 @@ void compactacion(){
 
 }
 
+int cantidad_de_entradas_libres(){
 
-
-
+	int i;
+	int cont = 0;
+	for (i=0;  i< cantidad_de_entradas; i++) {
+		if(!strcmp(tabla_entradas[i],"null")){
+			cont ++;
+		}
+	}
+	return cont;
+}
 
 
 

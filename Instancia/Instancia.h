@@ -32,6 +32,7 @@ int cantidad_de_entradas;
 
 char** tabla_entradas;
 t_list* entradas_administrativas;
+bool envio_compactacion;
 
 void iniciarDump();
 void imprimirTabla();
@@ -60,9 +61,12 @@ void imprimirTabla();
 void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store);
 void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar);
 void leerArchivo(char* filename);
-void LeastRecentlyUsed(t_AlmacenamientoEntradaAdministrativa* aux);
 t_AlmacenamientoEntradaAdministrativa* esAtomico(int index);
-void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux);
+void LRU(int entradas_a_liberar);
+void CIRC(int entradas_a_liberar);
+void BSU(int entradas_a_liberar);
 void compactacion();
+int cantidad_de_entradas_libres();
+bool verificarEspacio(t_AlmacenamientoEntradaAdministrativa* entrada_a_almacenar);
 
 #endif /* INSTANCIA_H_ */
