@@ -11,7 +11,6 @@ int main(int argc, char ** argv){
 	atenderCoordinador();
 	atenderESI();
 	iniciarPlanificacion();
-//	consola();
 	for(;;);
 	return EXIT_SUCCESS;
 }

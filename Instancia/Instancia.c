@@ -20,12 +20,6 @@ void setearValores(t_config * archivoConfig) {
  }
 
 /* Creación de hilos */
-void iniciarManejoDeEntradas(){
-	pthread_t hilo;
-	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
-	pthread_create(&hilo, NULL, (void *) manejarEntradas, NULL);
-	pthread_detach(hilo);
-}
 
 void iniciarDump(){
 	pthread_t hilo;
@@ -47,7 +41,6 @@ void crearCliente() {
 	printf("Me conecté al Coordinador\n");
 	EnviarHandshake(socket_coordinador,INSTANCIA);
 	log_info(logger,"Se envio un Handshake al Coordiandor");
-	//iniciarManejoDeEntradas();
 	manejarEntradas();
 }
 

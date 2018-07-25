@@ -47,7 +47,6 @@ void inicializar();
 void crearCliente();
 void setearValores(t_config * archivoConfig);
 bool handshakeInstanciaCoordinador();
-void iniciarManejoDeEntradas();
 void manejarEntradas();
 void verificarPuntoMontaje();
 void iniciarDump();
