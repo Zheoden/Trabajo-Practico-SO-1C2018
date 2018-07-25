@@ -53,7 +53,7 @@ void manejarEntradas() {
 		datos = paquete.mensaje;
 		switch (paquete.header.tipoMensaje) {
 		case t_CONFIGURACIONINSTANCIA: {
-			tamanio_entrada = *((int*) paquete.mensaje);
+			tamanio_entrada = *((int*) datos);
 			datos += sizeof(int);
 			cantidad_de_entradas = *((int*) datos);
 			inicializarTabla();
@@ -73,9 +73,9 @@ void manejarEntradas() {
 			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
 
  			printf("Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
-			int aux = strlen(datos) + 1;
+			int aux = strlen(paquete.mensaje) + 1;
 			char*clave = malloc(aux);
-			strcpy(clave, datos);
+			strcpy(clave, paquete.mensaje);
 
 
 			//Funcion Auxiliar
@@ -89,8 +89,8 @@ void manejarEntradas() {
 			liberarMemoria(instanciaAReemplazar);
 
 			log_info(logger,"Se proceso correctamente el STORE.");
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, datos, aux, t_RESPUESTASTORE);
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, datos, aux, t_CLAVEBORRADA);
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, paquete.mensaje, aux, t_RESPUESTASTORE);
+			EnviarDatosTipo(socket_coordinador, INSTANCIA, paquete.mensaje, aux, t_CLAVEBORRADA);
 			free(clave);
 		}
 		break;
@@ -113,14 +113,13 @@ void manejarEntradas() {
 		}
 		break;
 		case t_LEERCLAVE: {
-			char*clave = malloc(strlen(datos) + 1);
-			strcpy(clave, datos);
+			char*clave = malloc(strlen(paquete.mensaje) + 1);
+			strcpy(clave, paquete.mensaje);
 			leerArchivo(clave);
 			printf("Se recibio una solicitud de leer una clave: %s.\n",clave);
 		}
 		break;
 		case t_SOLICITARMEMORIATOTAL: {
-			int i;
 			int entradasLibres = cantidad_de_entradas_libres();
 
 			void *datosEntradas = malloc(sizeof(int));
@@ -129,8 +128,8 @@ void manejarEntradas() {
 		}
 		break;
 		case t_VALORDECLAVE: {
-			char* clave = malloc(strlen(datos) + 1);
-			strcpy(clave, datos);
+			char* clave = malloc(strlen(paquete.mensaje) + 1);
+			strcpy(clave, paquete.mensaje);
 
 			bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
 				return !strcmp(unaEntrada->clave, clave);
@@ -165,7 +164,6 @@ void manejarEntradas() {
 		if (paquete.mensaje != NULL) {
 			free(paquete.mensaje);
 		}
-
 	}
 	close(socket_coordinador);//Cierro el socket porque dejo de recibir info
 }
@@ -252,6 +250,7 @@ void cargarDatos(char* unaClave, char* unValor) {
 	}
 	free(clave);
 	free(valor);
+	free(valueAux);
 }
 
 bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada){
@@ -317,6 +316,7 @@ void imprimirTabla(){
 		}
 		printf("Valor: %s\n",valor);
 		printf("%s\n","------------------");
+		free(valor);
 	}
 }
 
@@ -343,6 +343,7 @@ void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store){
 	fwrite(valor,clave_a_store->tamanio,sizeof(char),file_a_crear);
 
 	fclose(file_a_crear);
+	free(directorio_actual);
 
 }
 

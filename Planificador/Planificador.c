@@ -179,8 +179,8 @@ void crearCliente() {
 			printf("me llego %s\n","un get");
 			//Se fija si la clave que recibio está en la lista de claves bloqueadas
 
-			bool vericarClavesBloqueadas(t_PlanificadorCoordinador* esi) {
-				return !strcmp(esi->clave, paquete.mensaje);
+			bool vericarClavesBloqueadas(char* esi) {
+				return !strcmp(esi, paquete.mensaje);
 			}
 
 			if(list_any_satisfy(ESI_clavesBloqueadas,(void*) vericarClavesBloqueadas)) {
@@ -199,15 +199,14 @@ void crearCliente() {
 			}
 			else {
 				//Sino, agrega la clave a claves bloqueadas
-				t_PlanificadorCoordinador* claveABloquear = malloc(sizeof(t_PlanificadorCoordinador));
-				claveABloquear->clave = malloc(strlen(paquete.mensaje) + 1);
-				strcpy(claveABloquear->clave, paquete.mensaje);
+				char* claveABloquear = malloc(strlen(paquete.mensaje) + 1);
+				strcpy(claveABloquear, paquete.mensaje);
 				list_add(ESI_clavesBloqueadas, claveABloquear);
 
 				t_ESIPlanificador* EsiEjecutando = list_get(ESI_ejecucion,0);
 				list_add(EsiEjecutando->clave,paquete.mensaje);
 				list_replace(ESI_ejecucion, 0, EsiEjecutando);
-				log_info(logger,"Se bloqueo correctamente la clave: %s, y se agrego a la lista de claves Bloqueadas.",claveABloquear->clave);
+				log_info(logger,"Se bloqueo correctamente la clave: %s, y se agrego a la lista de claves Bloqueadas.",claveABloquear);
 			}
 //			printf("PUDE TERMINAR EL GET\n");
 
@@ -220,6 +219,7 @@ void crearCliente() {
 			strcpy(clave, datos);
 			liberarClave(clave);
 			log_info(logger,"Se libero la clave: %s", clave);
+			free(clave);
 		}
 		break;
 
@@ -478,8 +478,8 @@ void liberarClave(char* clave){
 
 	printf("Se libero la clave: %s\n",clave);
 	log_info(logger,"Se liberó la clave: %s", clave);
-	int buscarClave(t_PlanificadorCoordinador* aux){
-		return !strcmp(aux->clave, clave);
+	int buscarClave(char* aux){
+		return !strcmp(aux, clave);
 	}
 
 	list_remove_by_condition(ESI_clavesBloqueadas,(void*)buscarClave);

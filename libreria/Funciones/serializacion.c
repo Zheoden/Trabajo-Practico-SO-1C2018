@@ -48,9 +48,9 @@ bool EnviarHandshake(int socketFD, proceso quienEnvia) {
 	header.tamanioMensaje = 0;
 	header.quienEnvia = quienEnvia;
 	paquete->header = header;
-	return EnviarPaquete(socketFD, paquete);
-
+	bool resultado = EnviarPaquete(socketFD, paquete);
 	free(paquete);
+	return resultado;
 }
 
 int RecibirDatos(void* paquete, int socketFD, uint32_t cantARecibir) {
@@ -79,7 +79,9 @@ int RecibirPaqueteServidor(int socketFD, proceso quienRecibe, Paquete* paquete) 
 	int resul = RecibirDatos(&(paquete->header), socketFD, sizeof(Header));
 	if (resul > 0) { //si no hubo error
 		if (paquete->header.tipoMensaje == t_HANDSHAKE) { //vemos si es un t_HANDSHAKE
-			printf("Se establecio conexion con %s\n", getNombreDelProceso(paquete->header.quienEnvia));
+			char* nombre = getNombreDelProceso(paquete->header.quienEnvia);
+			printf("Se establecio conexion con %s\n",nombre );
+			free(nombre);
 			EnviarHandshake(socketFD, quienRecibe);
 		} else if (paquete->header.tamanioMensaje > 0){ //recibimos un payload y lo procesamos (por ej, puede mostrarlo)
 			paquete->mensaje = malloc(paquete->header.tamanioMensaje);

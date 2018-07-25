@@ -364,6 +364,7 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 			list_add(instancias, instancia);
 			log_info(logger,"Se agrego la Instancia: %s, a la lista de Instancias.", instancia->nombre);
 		}
+		free(nombreInstancia);
 	}
 	break;
 	case t_RESPUESTASET: {
@@ -410,11 +411,12 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 			int indexClave = list_get_index(instancia->claves,clave_a_borrar,(void*)buscador_de_claves);
 			printf("Se recibio una solicitud de borrar clave para la instancia %s\n",instancia->nombre);
 
-			list_remove(instancia->claves,indexClave);
+			free(list_remove(instancia->claves,indexClave));
 			list_replace(instancias, indexInstancia, instancia);
 		}else{
 			printf("La instancia no existe\n");
 		}
+		free(clave_a_borrar);
 	}
 	break;
 	case t_RESPUESTAMEMORIA: {
@@ -453,33 +455,32 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 	case t_SET: {
 		printf("Se recibio un SET de un ESI\n");
 		usleep(retardo * SEGUNDO);
-		t_ESICoordinador* nuevo = malloc(sizeof(t_ESICoordinador));
 
-		nuevo->clave = malloc(strlen(datos) + 1);
-		strcpy(nuevo->clave, datos);
+		char* clave = malloc(strlen(datos) + 1);
+		strcpy(clave, datos);
 
 
-		nuevo->valor = malloc(strlen(datos) + 1);
+		char* valor = malloc(strlen(datos) + 1);
 		datos += strlen(datos) + 1;
-		strcpy(nuevo->valor, datos);
+		strcpy(valor, datos);
 
 
-		int tam = strlen(nuevo->clave) + strlen(nuevo->valor) + 2;
+		int tam = strlen(clave) + strlen(valor) + 2;
 		void*sendInstancia = malloc(tam);
-		strcpy(sendInstancia, nuevo->clave);
-		sendInstancia += strlen(nuevo->clave) + 1;
-		strcpy(sendInstancia, nuevo->valor);
-		sendInstancia += strlen(nuevo->valor) + 1;
+		strcpy(sendInstancia, clave);
+		sendInstancia += strlen(clave) + 1;
+		strcpy(sendInstancia, valor);
+		sendInstancia += strlen(valor) + 1;
 		sendInstancia -= tam;
 
 
 
 		bool verificarExistenciaEnListaDeClaves(char*e) {
-			return !strcmp(e, nuevo->clave);
+			return !strcmp(e, clave);
 		}
 
-		int verificarClaveDeAUna(char *clave) {
-			return !strcmp(clave, nuevo->clave);
+		int verificarClaveDeAUna(char *otraClave) {
+			return !strcmp(otraClave, clave);
 		}
 		bool verificarClave(t_Instancia *e) {
 			return list_any_satisfy(e->claves,(void*)verificarClaveDeAUna);
@@ -488,54 +489,60 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			if (!list_any_satisfy(instancias, (void*) verificarClave)) {
 				//clave existe en el sistema, pero no esta en ninguna instancia, es clave nueva
 
-				int socketSiguiente = obtenerProximaInstancia(nuevo->clave);
+				int socketSiguiente = obtenerProximaInstancia(clave);
 				if (socketSiguiente != 0) {
 					EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
 				} else {
 					//error, no hay instancias conectadas al sistema
-				}
+				};
 				free(sendInstancia);
 
 			} else {
 				//clave existe en el sistema, y esta en alguna instancia, hay que buscar en que instancia y enviarlo.
-				int socketInstanciaConClave = buscarInstanciaPorClave(nuevo->clave);
+				int socketInstanciaConClave = buscarInstanciaPorClave(clave);
 				if (socketInstanciaConClave != 0) {
 					EnviarDatosTipo(socketInstanciaConClave, COORDINADOR, sendInstancia, tam, t_SET);
 				}
 			}
 		} else {
 			//clave no existe en el sistema
-			printf("Se intenta bloquear la clave %s pero no existe en el sistema.\n",nuevo->clave);
+			printf("Se intenta bloquear la clave %s pero no existe en el sistema.\n", clave);
 			EnviarDatosTipo(socket_planificador, COORDINADOR, NULL , 0, t_ABORTARESI);
 		}
-		log_info(loggerOperaciones,"El ESI: %d, recibió operación SET con CLAVE: %s y VALOR: %s", socket, nuevo->clave, nuevo->valor);
+		log_info(loggerOperaciones,"El ESI: %d, recibió operación SET con CLAVE: %s y VALOR: %s", socket, clave, valor);
 		pthread_mutex_lock(&t_set);
 		EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
+
+		free(clave);
+		free(valor);
+
+
 	}
 	break;
 	case t_GET: {
 		printf("Se recibio un GET de un ESI\n");
 		usleep(retardo * SEGUNDO);
 
-		t_ESICoordinador* nuevo = malloc(sizeof(t_ESICoordinador));
-		nuevo->clave = malloc(paquete.header.tamanioMensaje);
-		strcpy(nuevo->clave, (char*) paquete.mensaje);
+		char* clave = malloc(paquete.header.tamanioMensaje);
+		strcpy(clave, (char*) paquete.mensaje);
 
 		bool verificarExistenciaEnListaDeClaves(char*e) {
-			return !strcmp(e, nuevo->clave);
+			return !strcmp(e, clave);
 		}
 
 		if (!list_any_satisfy(todas_las_claves,(void*) verificarExistenciaEnListaDeClaves)) {
-			list_add(todas_las_claves, (char*) nuevo->clave);
+			list_add(todas_las_claves, (char*) clave);
 		}
 
 
-		int tamSend = strlen(nuevo->clave) + +1;
+		int tamSend = strlen(clave) + +1;
 		void* sendPlanificador = malloc(tamSend);
-		strcpy(sendPlanificador, nuevo->clave);
+		strcpy(sendPlanificador, clave);
 		EnviarDatosTipo(socket_planificador, COORDINADOR, sendPlanificador,tamSend, t_GET);
 		EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
-		log_info(loggerOperaciones,"El ESI: %d, recibió operación GET con CLAVE: %s", socket, nuevo->clave);
+		log_info(loggerOperaciones,"El ESI: %d, recibió operación GET con CLAVE: %s", socket, clave);
+
+		free(sendPlanificador);
 	}
 	break;
 	case t_STORE: {
@@ -562,6 +569,8 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 		}
 		log_info(loggerOperaciones,"El ESI: %d, recibió operación STORE con CLAVE: %s", socket, datos);
+
+		free(clave);
 	}
 	break;
 	}

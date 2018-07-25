@@ -68,16 +68,10 @@ typedef struct {
 //          Estructuras Utiles          //
 //////////////////////////////////////////
 
-
 typedef struct {
 	pthread_t hilo;
 	int socket;
 } t_hilo;
-
-
-typedef struct {
-	char* clave;
-}__attribute__((packed)) t_PlanificadorCoordinador;
 
 typedef struct {
 	int socket;
@@ -92,22 +86,12 @@ typedef struct {
 }__attribute__((packed)) t_ESIPlanificador;
 
 typedef struct {
-	char* clave;
-	char* valor;
-}__attribute__((packed)) t_ESICoordinador;
-
-typedef struct {
 	int socket;
 	char* nombre;
 	bool estado_de_conexion;
 	bool flagEL;
 	t_list* claves;
 }__attribute__((packed)) t_Instancia;
-
-typedef struct {
-	t_Instancia* dato;
-	int rango;
-}__attribute__((packed)) t_Instancia_con_rangos;
 
 typedef struct {
 	t_Instancia* dato;
