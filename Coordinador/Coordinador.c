@@ -198,6 +198,8 @@ int EL() {
 /* Para LSU */
 int LSU() {
 
+	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo LSU.");
+
 	int estaHabilitada(t_Instancia* elemento) {
 		return elemento->estado_de_conexion;
 	}
@@ -229,6 +231,9 @@ int LSU() {
 
 /* Para KE */
 int KE(){
+
+	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo KE.");
+
 	char letras[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
 	int instancias_manejadas = 0;
 	char* clave;
@@ -271,6 +276,9 @@ int KE(){
 
 /* Para Desconexiones */
 void sacar_instancia(int socket) {
+
+	log_info(logger,"Se sacó una instancia utilizando la función sacar_instancia.");
+
 	bool tiene_socket(t_Instancia *instancia) {
 		return instancia->socket == socket;
 	}
@@ -570,6 +578,7 @@ void coordinarPlanificador(int socket, Paquete paquete, void* datos){
 	switch (paquete.header.tipoMensaje) {
 	case t_HANDSHAKE: {
 		printf("Se recibio un Handshake de un Planificador\n");
+		log_info(logger,"Se recibió un handshake de un PLANIFICADOR.");
 		socket_planificador = socket;
 	}
 	break;
@@ -676,6 +685,9 @@ t_Instancia* buscarInstanciaPorSocket(int socket) {
 }
 
 void reiniciarInstanciaPorSocket(int socket){
+
+	log_info(logger,"Se reinició Instancia por medio del socket: %d", socket);
+
 	if (!strcmp(algoritmo_de_distribucion, "EL")) {
 		t_Instancia* aux = buscarInstanciaPorSocket(socket);
 		reiniciarEL(aux);

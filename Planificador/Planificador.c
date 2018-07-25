@@ -75,6 +75,9 @@ void sigchld_handler(int s){
  }
 
 void crearServidor() {
+
+	log_info(logger,"Se creó server en el Planificador.");
+
 	int sockfd,socket_esi; // Escuchar sobre sock_fd, nuevas conexiones sobre new_fd
 	struct sockaddr_in my_addr;    // información sobre mi dirección
 	struct sockaddr_in their_addr; // información sobre la dirección del cliente
@@ -260,6 +263,9 @@ void crearCliente() {
 }
 
 void planificar() {
+
+	log_info(logger,"Se procede a realizar la planificación.");
+
 	while(1){
 		while (planificacion_activa) {
 			if( !list_is_empty(ESI_listos) || !list_is_empty(ESI_ejecucion) ){
@@ -283,6 +289,9 @@ void planificar() {
 
 /* Algoritmos de planificación */
 void aplicarFIFO(){
+
+	log_info(logger,"Se aplicó algoritmo de planificación FIFO.");
+
 	if (list_is_empty(ESI_ejecucion) && (!list_is_empty(ESI_listos)) ) {
 		t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_remove(ESI_listos, 0);
 		list_add(ESI_ejecucion, esiAEjecutar);
@@ -290,6 +299,9 @@ void aplicarFIFO(){
 }
 
 void aplicarSJFConDesalojo(){
+
+	log_info(logger,"Se aplicó algoritmo de planificación SJF con desalojo.");
+
 	if (!list_is_empty(ESI_ejecucion)) {
 		t_ESIPlanificador* esiEnEjecucion = list_remove(ESI_ejecucion, 0);
 		list_add(ESI_listos, esiEnEjecucion);
@@ -298,6 +310,9 @@ void aplicarSJFConDesalojo(){
 }
 
 void aplicarSJF() {
+
+	log_info(logger,"Se aplicó algoritmo de planificación SJF sin desalojo.");
+
 	if (!list_is_empty(ESI_listos)) {
 		t_list* aux = list_map(ESI_listos, (void*) CalcularEstimacion);
 		list_sort(aux, (void*) ComparadorDeRafagas);
@@ -316,6 +331,9 @@ void aplicarSJF() {
 }
 
 void aplicarHRRN(){
+
+	log_info(logger,"Se aplicó algoritmo de planificación HRRN.");
+
 	if (!list_is_empty(ESI_listos)) {
 		t_list* aux = list_map(ESI_listos, (void*) CalcularResponseRatio);
 		list_sort(aux, (void*) ComparadorResponseRatio);
@@ -359,6 +377,9 @@ bool ComparadorResponseRatio(t_ESIPlanificador* unESI, t_ESIPlanificador* otroES
 /* Ejecución de ESI */
 void ejecutarEsi() {
 	if(!list_is_empty(ESI_ejecucion)){
+
+		log_info(logger,"Se procede a la ejecución del ESI: %s", ESI_ejecucion);
+
 		t_ESIPlanificador* esiAEjecutar = (t_ESIPlanificador*) list_get(ESI_ejecucion, 0);
 		esiAEjecutar->tiempo_espera = 0;
 		esiAEjecutar->rafagas_ejecutadas++;
@@ -387,6 +408,9 @@ void ejecutarEsi() {
 
 /*Funcion de Prueba*/
 t_ESIPlanificador* inicializarESI(char* ID,int socket){
+
+	log_info(logger,"Se inicializó el ESI.");
+
 	t_ESIPlanificador*aux = malloc(sizeof(t_ESIPlanificador)+25);
 	aux->ID = malloc(4);
 	strcpy(aux->ID, ID);
@@ -453,6 +477,7 @@ char* incrementarID(char *ID){
 void liberarClave(char* clave){
 
 	printf("Se libero la clave: %s\n",clave);
+	log_info(logger,"Se liberó la clave: %s", clave);
 	int buscarClave(t_PlanificadorCoordinador* aux){
 		return !strcmp(aux->clave, clave);
 	}
