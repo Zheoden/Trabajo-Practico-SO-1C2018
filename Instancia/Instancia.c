@@ -414,6 +414,33 @@ void algoritmoCircular(t_AlmacenamientoEntradaAdministrativa* aux) {
 	}
 }
 
+void algoritmoBSU(t_AlmacenamientoEntradaAdministrativa* aux) {
+
+	int i=0;
+	int max = -1;
+	t_AlmacenamientoEntradaAdministrativa* candidato = NULL;
+	candidato->tamanio=-1;
+	for (i=0; i < cantidad_de_entradas; i++) {
+		t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)esAtomico(i);
+		if(actual != NULL){
+			if(candidato->tamanio < actual->tamanio){
+				candidato = actual;
+			}
+
+		}
+		else{
+			free(actual);
+		}
+	}
+
+	if(candidato->tamanio != -1){
+
+		liberarMemoria(candidato);
+
+	}
+
+}
+
 
 t_AlmacenamientoEntradaAdministrativa* esAtomico(int index){
 
