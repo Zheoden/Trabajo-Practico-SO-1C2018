@@ -187,10 +187,9 @@ int EL() {
 		}
 	}
 
-	list_find(instancias, (void*) proximo);
-	aux = list_get(instancias, i);
+	aux =  list_find(instancias, (void*) proximo);
 	aux->flagEL = true;
-	list_replace(instancias, i, aux);
+	list_replace(instancias, list_get_index(instancias,aux,comparador_de_socket), aux);
 	log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
 	return aux->socket;
 }
@@ -269,6 +268,9 @@ int KE(char* clave){
 	return 0;
 }
 
+bool comparador_de_socket(t_Instancia* unaInstancia, t_Instancia* otraInstancia) {
+	return unaInstancia->socket == otraInstancia->socket;
+}
 /* Para Desconexiones */
 void sacar_instancia(int socket) {
 
@@ -276,10 +278,6 @@ void sacar_instancia(int socket) {
 
 	bool tiene_socket(t_Instancia *instancia) {
 		return instancia->socket == socket;
-	}
-
-	bool comparador_de_socket(t_Instancia* unaInstancia, t_Instancia* otraInstancia) {
-		return unaInstancia->socket == otraInstancia->socket;
 	}
 
 	t_Instancia* instancia = list_find(instancias, (void*) tiene_socket);
