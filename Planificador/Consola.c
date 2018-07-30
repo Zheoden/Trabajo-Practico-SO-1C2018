@@ -12,7 +12,7 @@ void consola(){
     if(!strncmp(linea, "pausar", 6)) {
 
     	if(planificacion_activa){
-    		printf("Pausar\n");
+    		printf("Se pauso la planificacion\n");
     		pausarOContinuar();
     		log_info(logger,"//Hay que ejecutar pausar() o continuar()");
     	}
@@ -20,7 +20,7 @@ void consola(){
     }else	if(!strncmp(linea, "continuar", 9) ) {
 
     	if(!planificacion_activa){
-    		printf("continuar\n");
+    		printf("Se continuo con la planificacion\n");
     		pausarOContinuar();
     		log_info(logger,"//Hay que ejecutar pausar() o continuar()");
     	}

@@ -25,7 +25,7 @@ endif
 all: Planificador
 
 dependents:
-	-cd /home/utnso/Proyectos/tp-2018-1c-PC-citos/libreria/Debug && $(MAKE) all
+	-cd /home/utnso/Proyectos/tp-2018-1c-PC-citos/libreria/Debug && $(MAKE) clean all
 
 # Tool invocations
 Planificador: $(OBJS) $(USER_OBJS) /home/utnso/Proyectos/tp-2018-1c-PC-citos/libreria/Debug/liblibreria.so

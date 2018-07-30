@@ -464,7 +464,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		datos += strlen(datos) + 1;
 		strcpy(valor, datos);
 
-
+/*
 		int tam = strlen(clave) + strlen(valor) + 2;
 		void*sendInstancia = malloc(tam);
 		strcpy(sendInstancia, clave);
@@ -472,7 +472,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		strcpy(sendInstancia, valor);
 		sendInstancia += strlen(valor) + 1;
 		sendInstancia -= tam;
-
+*/
 		bool verificarExistenciaEnListaDeClaves(char*e) {
 			return !strcmp(e, clave);
 		}
@@ -490,18 +490,18 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 				//clave existe en el sistema, pero no esta en ninguna instancia, es clave nueva
 				int socketSiguiente = obtenerProximaInstancia(clave);
 				if (socketSiguiente != 0) {
-					EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
+					EnviarDatosTipo(socketSiguiente, COORDINADOR, datos, strlen(datos)+2, t_SET);
 				} else {
 					//error, no hay instancias conectadas al sistema
 					printf("No hay Instancias en el sistema. No se puede procesar el pedido.\n");
 				};
-				free(sendInstancia);
+//				free(datos);
 
 			} else {
 				//clave existe en el sistema, y esta en alguna instancia, hay que buscar en que instancia y enviarlo.
 				int socketInstanciaConClave = buscarInstanciaPorClave(clave);
 				if (socketInstanciaConClave != 0) {
-					EnviarDatosTipo(socketInstanciaConClave, COORDINADOR, sendInstancia, tam, t_SET);
+					EnviarDatosTipo(socketInstanciaConClave, COORDINADOR, datos, strlen(datos)+2, t_SET);
 				}
 			}
 		} else {
