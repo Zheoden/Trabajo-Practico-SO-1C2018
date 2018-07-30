@@ -149,8 +149,17 @@ int obtenerProximaInstancia(char* clave){
 /* Para EL */
 int EL() {
 	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo Circular.");
-	if (list_size(instancias) == 0){
+
+	int estaHabilitada(t_Instancia* elemento) {
+		return elemento->estado_de_conexion;
+	}
+
+	t_list* instancias_habilitadas = list_filter (instancias, (void*) estaHabilitada);
+
+	if(list_is_empty(instancias_habilitadas)){
 		return 0;
+	}else{
+		list_destroy_and_destroy_elements(instancias_habilitadas,free);
 	}
 	t_Instancia* aux;
 
@@ -163,7 +172,7 @@ int EL() {
 		if(elemento->estado_de_conexion){
 			return elemento->flagEL;
 		}else{
-			return false;
+			return true;
 		}
 	}
 
