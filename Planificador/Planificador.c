@@ -19,6 +19,22 @@ void inicializar(){
 	ultimo_ID_Asignado = malloc(4);
 	strcpy(ultimo_ID_Asignado,"000");
 
+
+	//Cargo la claves bloqueadas de archi de conf
+	int i=0;
+	char* valorActual = malloc(100);
+	while(valorActual != NULL) {
+		if(claves_bloqueadas[i] != NULL){
+			strcpy(valorActual,claves_bloqueadas[i]);
+			list_add(ESI_clavesBloqueadas,claves_bloqueadas[i]);
+			i++;
+		}else{
+			valorActual=NULL;
+		}
+	}
+	free(valorActual);
+
+
 	log_info(logger,"Se inicio inicializaron las variables correctamente.");
 }
 

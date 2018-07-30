@@ -101,7 +101,7 @@ void manejarEntradas() {
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
 			char* valor = malloc(strlen(datos) + 1);
-			datos += strlen(datos) + 1;
+			datos += strlen(datos) +1;
  			strcpy(valor, datos);
 
 			cargarDatos(clave,valor);
@@ -215,8 +215,8 @@ void cargarDatos(char* unaClave, char* unValor) {
 	t_AlmacenamientoEntradaAdministrativa* nueva = malloc(sizeof(t_AlmacenamientoEntradaAdministrativa));
 	nueva->clave = malloc(strlen(clave) + 1);
 	strcpy(nueva->clave, clave);
-	nueva->entradasOcupadas = ceilDivision(strlen(valor)+1);
-	nueva->tamanio = strlen(valor)+1;
+	nueva->entradasOcupadas = ceilDivision(strlen(valor) + 1);
+	nueva->tamanio = strlen(valor) + 1;
 
 	//Funcion Auxiliar
 	bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
@@ -232,11 +232,12 @@ void cargarDatos(char* unaClave, char* unValor) {
 
 	if(nueva->index == -1){
 		verificarEspacio(nueva);
+		nueva->index = getFirstIndex(nueva->entradasOcupadas);
 	}
 
 	//Agrego la clave con su valor
 	list_add(entradas_administrativas, nueva);
-	log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
+//	log_info(logger,"Se agrego la nueva entrada en la lista de Entradas Administrativas.");
 	int i;
 	char *valueAux = malloc(strlen(valor) + 1);
 	strcpy(valueAux, valor);
@@ -248,6 +249,12 @@ void cargarDatos(char* unaClave, char* unValor) {
 		strncpy(tabla_entradas[i], valueAux, tamanio_entrada);
 		valueAux += tamanio_entrada;
 	}
+	int aux = strlen(valor)/tamanio_entrada;
+	if(aux != 0){
+		valueAux -= (aux*tamanio_entrada);
+	}
+
+
 	free(clave);
 	free(valor);
 	free(valueAux);

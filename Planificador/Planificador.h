@@ -32,7 +32,7 @@ int coordinador_puerto;
 
 
 char* algoritmo_planificacion;
-char* claves_bloqueadas;
+char** claves_bloqueadas;
 int estimacion_inicial;
 int alfa_planificacion;
 char* ultimo_ID_Asignado;
