@@ -95,7 +95,6 @@ void manejarEntradas() {
 		}
 		break;
 		case t_SET: {
-			printf("Se recibio un SET del Coordinador, se va a pasar a procesar.\n");
 			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
 
 			char*clave = malloc(strlen(datos) + 1);
@@ -443,6 +442,7 @@ void LRU(int entradas_a_liberar) {
 			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*) list_get(entradas_administrativas, i);
 			if (actual->entradasOcupadas == 1) {
 				EnviarDatosTipo(socket_coordinador, INSTANCIA, actual->clave,strlen(actual->clave) + 1, t_CLAVEBORRADA);
+				printf("Se Reemplazo la Clave: %s.\n",actual->clave);
 				liberarMemoria(actual);
 				break;
 			}
@@ -453,10 +453,11 @@ void LRU(int entradas_a_liberar) {
 void CIRC(int entradas_a_liberar) {
 	int i,j;
 	for (j = 0; j < entradas_a_liberar; j++) {
-		for (i = 0; i < cantidad_de_entradas; i++) {
+		for (i = 0; i < cantidad_de_entradas; i++){
 			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)esAtomico(i);
 			if(actual != NULL){
 				EnviarDatosTipo(socket_coordinador, INSTANCIA, actual->clave,strlen(actual->clave) + 1, t_CLAVEBORRADA);
+				printf("Se Reemplazo la Clave: %s.\n",actual->clave);
 				liberarMemoria(actual);
 				break;
 			}else{
@@ -481,6 +482,7 @@ void BSU(int entradas_a_liberar) {
 		}
 		if(candidato->tamanio != -1){
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, candidato->clave,strlen(candidato->clave) + 1, t_CLAVEBORRADA);
+			printf("Se Reemplazo la Clave: %s.\n",candidato->clave);
 			liberarMemoria(candidato);
 		}
 	}
