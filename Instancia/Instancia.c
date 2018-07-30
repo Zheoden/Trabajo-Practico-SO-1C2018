@@ -300,10 +300,10 @@ int getFirstIndex (int entradasValue){
 }
 
 void inicializarTabla(){
-	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+1);
+	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+cantidad_de_entradas);
 	int i;
 	for (i = 0; i < cantidad_de_entradas; i++) {
-		tabla_entradas[i] = malloc(tamanio_entrada);
+		tabla_entradas[i] = malloc(tamanio_entrada +1);
 		strcpy(tabla_entradas[i], "null");
 	}
 }
