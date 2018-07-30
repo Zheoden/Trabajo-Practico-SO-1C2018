@@ -163,6 +163,9 @@ void desbloquear(char* clave){
 	bool comparadorClaves(t_ESIPlanificador* unESI){
 		return !strcmp(unESI->razon_bloqueo, clave);
 	}
+	bool comparadorClavesBloqueadas(char* unaClave){
+		return !strcmp(unaClave, clave);
+	}
 
 	t_ESIPlanificador* aux = (t_ESIPlanificador*) list_remove_by_condition(ESI_bloqueados,(void*)comparadorClaves);
 	if(aux != NULL){//Encontramos el ESI en ejecucion, lo modifico y lo paso a bloqueados
@@ -173,7 +176,7 @@ void desbloquear(char* clave){
 	}else{ // No existe el esi en listos ni en ejecucion. notifico al usuario
 		printf("No se Encontro ningun ESI bloqueado por esa clave, por favor intente con otro.\n");
 	}
-
+	list_remove_by_condition(ESI_clavesBloqueadas,(void*)comparadorClavesBloqueadas);
 }
 
 void listar(char* recurso){
