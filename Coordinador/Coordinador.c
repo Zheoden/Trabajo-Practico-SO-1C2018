@@ -493,6 +493,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 					EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
 				} else {
 					//error, no hay instancias conectadas al sistema
+					prinft("No hay Instancias en el sistema. No se puede procesar el pedido.\n");
 				};
 				free(sendInstancia);
 
