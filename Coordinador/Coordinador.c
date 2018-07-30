@@ -386,18 +386,14 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 		char*clave = malloc(strlen(datos) + 1);
 		strcpy(clave, datos);
 
-		printf("LLEGUE\n");
 
 		t_Instancia* aux = ((t_Instancia*) list_find(instancias,(void*) tiene_socket));
 		list_add(aux->claves, clave);
 
-		printf("LLEGUE\n");
 		log_info(logger,"Se le agrego a la Instancia: %s, la clave %s.", aux->nombre, clave);
 		EnviarDatosTipo(socket_planificador, COORDINADOR, NULL,0, t_SET);
 
-		printf("LLEGUE\n");
 		pthread_mutex_unlock(&t_set);
-		printf("LLEGUE\n");
 	}
 	break;
 	case t_RESPUESTASTORE: {
@@ -515,7 +511,6 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 					//error, no hay instancias conectadas al sistema
 					printf("No hay Instancias en el sistema. No se puede procesar el pedido.\n");
 				};
-				printf("LLEGUE\n");
 //				free(datos);
 
 			} else {
