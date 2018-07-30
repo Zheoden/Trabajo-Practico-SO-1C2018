@@ -35,7 +35,17 @@ void atenderCoordinador(){
 	pthread_detach(unHilo);
 }
 
+
 /* Conexión con el Coordinador */
+void crearCliente() {
+	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
+	printf("Me conecté al Coordinador\n");
+	EnviarHandshake(socket_coordinador,INSTANCIA);
+	log_info(logger,"Se envio un Handshake al Coordiandor");
+	manejarEntradas();
+}
+
+
 void manejarEntradas() {
 
 	Paquete paquete;
