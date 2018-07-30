@@ -529,5 +529,6 @@ void abortarEsi(t_ESIPlanificador* esiAAbortar){
 	}
 
 	list_add(ESI_finalizados, esiAAbortar);
+	printf("Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
 	log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
 }
