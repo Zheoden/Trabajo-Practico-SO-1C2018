@@ -486,17 +486,13 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 
 
 		if (list_any_satisfy(todas_las_claves,(void*) verificarExistenciaEnListaDeClaves)) {
-			printf("ENTRE EN EL IF QUE TENGO QUE ENTRAR\n");
 			if (!list_any_satisfy(instancias, (void*) verificarClave)) {
 				//clave existe en el sistema, pero no esta en ninguna instancia, es clave nueva
-				printf("ENTRE EN EL IF QUE TENGO QUE ENTRAR\n");
 				int socketSiguiente = obtenerProximaInstancia(clave);
-				printf("EJECUTE BIEN LA FUNCION DE PROXIMA INSTANCIA\n");
 				if (socketSiguiente != 0) {
 					EnviarDatosTipo(socketSiguiente, COORDINADOR, sendInstancia, tam, t_SET);
 				} else {
 					//error, no hay instancias conectadas al sistema
-					printf("ENTRE MAL EN EL IF\n");
 				};
 				free(sendInstancia);
 
