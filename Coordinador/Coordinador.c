@@ -189,7 +189,8 @@ int EL() {
 
 	aux =  list_find(instancias, (void*) proximo);
 	aux->flagEL = true;
-	list_replace(instancias, list_get_index(instancias,aux,comparador_de_socket), aux);
+	int auxInt = list_get_index(instancias,aux,(void*)comparador_de_socket);
+	list_replace(instancias, auxInt, aux);
 	log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
 	return aux->socket;
 }
