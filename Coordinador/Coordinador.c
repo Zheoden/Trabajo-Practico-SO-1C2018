@@ -481,6 +481,9 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		datos += strlen(datos) + 1;
 		strcpy(valor, datos);
 
+		printf("%s\n",clave);
+		printf("%s\n",valor);
+
 /*
 		int tam = strlen(clave) + strlen(valor) + 2;
 		void*sendInstancia = malloc(tam);
