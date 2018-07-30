@@ -238,6 +238,10 @@ void cargarDatos(char* unaClave, char* unValor) {
 	if(nueva->index == -1){
 		verificarEspacio(nueva);
 		nueva->index = getFirstIndex(nueva->entradasOcupadas);
+		if(nueva->index == -1){
+			printf("La Clave %, no se puede almacenar debido a falta de memoria. Se va a Ignorar Este Valor\n",nueva->clave);
+			return;
+		}
 	}
 
 	//Agrego la clave con su valor
