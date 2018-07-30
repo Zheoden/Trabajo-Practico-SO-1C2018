@@ -258,7 +258,16 @@ int KE(char* clave){
 			t_Instancia* actual = list_get(instancias,i);
 
 			if(aux == index_instancia){
-				return actual->socket;
+				if(actual->estado_de_conexion){
+					return actual->socket;
+				}else{ //el index de la instancia no esta habilitada
+					for (int j = 0; j < list_size(instancias); ++j) {
+						t_Instancia* instancia_aux = list_get(instancias,j);
+						if(instancia_aux->estado_de_conexion){
+							return instancia_aux->socket;
+						}
+					}
+				}
 			}
 
 			if(actual->estado_de_conexion){
