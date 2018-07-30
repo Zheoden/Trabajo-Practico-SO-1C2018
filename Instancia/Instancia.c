@@ -261,12 +261,14 @@ void cargarDatos(char* unaClave, char* unValor) {
 	int aux = strlen(valor)/tamanio_entrada;
 	if(aux != 0){
 		valueAux -= (aux*tamanio_entrada);
+	}else{
+		free(valueAux);
 	}
 
 
 	free(clave);
 	free(valor);
-	free(valueAux);
+
 }
 
 //funcion para probar el dump
