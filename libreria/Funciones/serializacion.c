@@ -79,9 +79,6 @@ int RecibirPaqueteServidor(int socketFD, proceso quienRecibe, Paquete* paquete) 
 	int resul = RecibirDatos(&(paquete->header), socketFD, sizeof(Header));
 	if (resul > 0) { //si no hubo error
 		if (paquete->header.tipoMensaje == t_HANDSHAKE) { //vemos si es un t_HANDSHAKE
-			char* nombre = getNombreDelProceso(paquete->header.quienEnvia);
-			printf("Se establecio conexion con %s\n",nombre );
-			free(nombre);
 			EnviarHandshake(socketFD, quienRecibe);
 		} else if (paquete->header.tamanioMensaje > 0){ //recibimos un payload y lo procesamos (por ej, puede mostrarlo)
 			paquete->mensaje = malloc(paquete->header.tamanioMensaje);
@@ -99,31 +96,4 @@ int RecibirPaqueteCliente(int socketFD, proceso quienEnvia, Paquete* paquete) {
 		resul = RecibirDatos(paquete->mensaje, socketFD, paquete->header.tamanioMensaje);
 	}
 	return resul;
-}
-
-char* getNombreDelProceso(proceso proceso){
-	char* aux;
-	switch (proceso) {
-		case ESI:
-			aux=malloc(strlen("ESI"));
-			strcpy(aux, "ESI");
-			break;
-		case COORDINADOR:
-			aux=malloc(strlen("COORDINADOR"));
-			strcpy(aux, "COORDINADOR");
-			break;
-		case PLANIFICADOR:
-			aux=malloc(strlen("PLANIFICADOR"));
-			strcpy(aux, "PLANIFICADOR");
-			break;
-		case INSTANCIA:
-			aux=malloc(strlen("INSTANCIA"));
-			strcpy(aux, "INSTANCIA");
-			break;
-		default:
-			aux=malloc(strlen("ERROR"));
-			strcpy(aux, "ERROR");
-			break;
-	}
-	return aux;
 }
