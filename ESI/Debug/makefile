@@ -25,7 +25,7 @@ endif
 all: ESI
 
 dependents:
-	-cd /home/utnso/Proyectos/tp-2018-1c-PC-citos/libreria/Debug && $(MAKE) clean all
+	-cd /home/utnso/Proyectos/tp-2018-1c-PC-citos/libreria/Debug && $(MAKE) all
 
 # Tool invocations
 ESI: $(OBJS) $(USER_OBJS) /home/utnso/Proyectos/tp-2018-1c-PC-citos/libreria/Debug/liblibreria.so

@@ -297,6 +297,7 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 	log_info(logger,"Llego un mensaje de una Instancia");
 	switch (paquete.header.tipoMensaje) {
 	case t_HANDSHAKE: {
+		printf("Se recibio un Handshake de una Instancia\n");
 		log_info(logger,"Se recibio un Handshake de una Instancia");
 		//Evaluar si es mejor que mande directamente el nombre en el handshake o no
 		EnviarDatosTipo(socket, COORDINADOR, (void*)NULL, 0, t_SOLICITUDNOMBRE);
