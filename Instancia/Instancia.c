@@ -360,13 +360,10 @@ void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar){
 		int indexClave = list_get_index(entradas_administrativas,clave_a_liberar,(void*)comparadorDeClaves);
 		list_remove(entradas_administrativas,indexClave);
 		int j;
-		printf("Se elimino el valor: ");
 		for (j = clave_a_liberar->index ; j < ( clave_a_liberar->index + clave_a_liberar->entradasOcupadas); j++){
-			printf("%s",tabla_entradas[j]);
 			strcpy(tabla_entradas[j],"null");
 		}
 	}
-	printf(".\n");
 	free(clave_a_liberar);
 }
 
