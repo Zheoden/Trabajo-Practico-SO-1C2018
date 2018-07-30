@@ -36,14 +36,6 @@ void atenderCoordinador(){
 }
 
 /* Conexión con el Coordinador */
-void crearCliente() {
-	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
-	printf("Me conecté al Coordinador\n");
-	EnviarHandshake(socket_coordinador,INSTANCIA);
-	log_info(logger,"Se envio un Handshake al Coordiandor");
-	manejarEntradas();
-}
-
 void manejarEntradas() {
 
 	Paquete paquete;
@@ -202,6 +194,10 @@ void dump(){
 }
 
 //funciones para probar el dump
+bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada){
+	return !strcmp(unaEntrada->clave, otraEntrada->clave);
+}
+
 void cargarDatos(char* unaClave, char* unValor) {
 
 	//Guardo los valores que recibo por parametro en variables locales
@@ -257,10 +253,6 @@ void cargarDatos(char* unaClave, char* unValor) {
 	free(clave);
 	free(valor);
 	free(valueAux);
-}
-
-bool comparadorDeClaves(t_AlmacenamientoEntradaAdministrativa* unaEntrada, t_AlmacenamientoEntradaAdministrativa* otraEntrada){
-	return !strcmp(unaEntrada->clave, otraEntrada->clave);
 }
 
 //funcion para probar el dump
@@ -358,10 +350,13 @@ void liberarMemoria(t_AlmacenamientoEntradaAdministrativa* clave_a_liberar){
 		int indexClave = list_get_index(entradas_administrativas,clave_a_liberar,(void*)comparadorDeClaves);
 		list_remove(entradas_administrativas,indexClave);
 		int j;
+		printf("Se elimino el valor: ");
 		for (j = clave_a_liberar->index ; j < ( clave_a_liberar->index + clave_a_liberar->entradasOcupadas); j++){
+			printf("%s",tabla_entradas[j]);
 			strcpy(tabla_entradas[j],"null");
 		}
 	}
+	printf(".\n");
 	free(clave_a_liberar);
 }
 
