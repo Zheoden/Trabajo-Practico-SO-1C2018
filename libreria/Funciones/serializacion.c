@@ -3,7 +3,7 @@
 
 bool EnviarPaquete(int socketCliente, Paquete* paquete) {
 	int cantAEnviar = sizeof(Header) + paquete->header.tamanioMensaje;
-	void* datos = malloc(cantAEnviar);
+	void* datos = malloc(cantAEnviar)+1;
 	memcpy(datos, &(paquete->header), sizeof(Header));
 	if (paquete->header.tamanioMensaje > 0){ //No sea t_HANDSHAKE
 		memcpy(datos + sizeof(Header), (paquete->mensaje), paquete->header.tamanioMensaje);
