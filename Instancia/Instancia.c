@@ -73,10 +73,11 @@ void manejarEntradas() {
 			log_info(logger,"Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
 
  			printf("Se recibio un STORE del Coordinador, se va a pasar a procesar.\n");
-			int aux = strlen(paquete.mensaje) + 1;
+			int aux = strlen(datos) + 1;
 			char*clave = malloc(aux);
-			strcpy(clave, paquete.mensaje);
+			memcpy(clave, datos ,aux);
 
+			printf("\nDEL STORE ME LLEGO UN: %s\n",clave);
 
 			//Funcion Auxiliar
 			bool buscarClave(t_AlmacenamientoEntradaAdministrativa* unaEntrada){
@@ -99,9 +100,12 @@ void manejarEntradas() {
 
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
-			char* valor = malloc(strlen(datos) + 1);
 			datos += strlen(datos) +1;
+			char* valor = malloc(strlen(datos) + 1);
  			strcpy(valor, datos);
+
+ 			printf("\nDEL SET ME LLEGO LA CLAVE: %s\n",clave);
+ 			printf("\nDEL SET ME LLEGO EL VALOR: %s\n",valor);
 
 			cargarDatos(clave,valor);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASET);
@@ -261,10 +265,10 @@ void cargarDatos(char* unaClave, char* unValor) {
 		free(valueAux);
 	}
 
-
 	free(clave);
 	free(valor);
 
+	imprimirTabla();
 }
 
 //funcion para probar el dump
@@ -308,24 +312,25 @@ void imprimirTabla(){
 	int i,j;
 	for (i = 0; i < list_size(entradas_administrativas); i++) {
 		t_AlmacenamientoEntradaAdministrativa* nueva = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas,i);
-		printf("Clave: %s\n",nueva->clave);
-		printf("Entradas Que Ocupa: %d\n",nueva->entradasOcupadas);
-		printf("Index: %d\n",nueva->index);
-		printf("Tamanio: %d\n",nueva->tamanio);
+//		printf("Clave: %s\n",nueva->clave);
+//		printf("Entradas Que Ocupa: %d\n",nueva->entradasOcupadas);
+//		printf("Index: %d\n",nueva->index);
+//		printf("Tamanio: %d\n",nueva->tamanio);
 
 		char* valor=malloc(nueva->tamanio);
 		int tamanioPegado=0;
 
 		for (j = nueva->index; j < (nueva->index + nueva->entradasOcupadas);j++) {
 			if((nueva->index + nueva->entradasOcupadas) -1 == j){
-				strcpy(valor+tamanioPegado, tabla_entradas[j]);
+				memcpy(valor+tamanioPegado, tabla_entradas[j],strlen(tabla_entradas[j]));
 			}else{
-				strcpy(valor+tamanioPegado, tabla_entradas[j]);
+				memcpy(valor+tamanioPegado, tabla_entradas[j],tamanio_entrada);
 				tamanioPegado+=tamanio_entrada;
 			}
 		}
-		printf("Valor: %s\n",valor);
-		printf("%s\n","------------------");
+//		printf("Valor: %s\n",valor);
+		log_info(logger,"Valor: %s, Entradas Que Ocupa: %d.",valor,nueva->entradasOcupadas);
+//		printf("%s\n","------------------");
 		free(valor);
 	}
 }
@@ -467,6 +472,7 @@ void CIRC(int entradas_a_liberar) {
 				EnviarDatosTipo(socket_coordinador, INSTANCIA, actual->clave,strlen(actual->clave) + 1, t_CLAVEBORRADA);
 				printf("Se Reemplazo la Clave: %s.\n",actual->clave);
 				liberarMemoria(actual);
+				imprimirTabla();
 				break;
 			}else{
 				free(actual);

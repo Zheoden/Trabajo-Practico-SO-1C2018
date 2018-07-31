@@ -126,15 +126,7 @@ void parsear(char* line) {
 			datos = malloc(tamanio);
 			strcpy(datos, parsed.argumentos.SET.clave);
 			strcpy(datos +(strlen(parsed.argumentos.SET.clave) + 1), parsed.argumentos.SET.valor);
-			if(parsed.argumentos.SET.clave == NULL || parsed.argumentos.SET.valor == NULL){
-				printf("ESTO ANDA MUY MUY MAL\n");
-			}
-
-			printf("%s\n",parsed.argumentos.SET.clave);
-			printf("%s\n",parsed.argumentos.SET.valor);
 			EnviarDatosTipo(socket_coordinador, ESI, datos, tamanio, t_SET);
-
-			printf("%s\n",(char*)datos);
 			log_info(logger, "Para el script: %s se ejecuto el comando SET, para la clave %s y el valor %s",
 					filename, parsed.argumentos.SET.clave,parsed.argumentos.SET.valor);
 			break;

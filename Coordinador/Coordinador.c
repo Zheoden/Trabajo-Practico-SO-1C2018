@@ -73,7 +73,7 @@ void setearValores(t_config * archivoConfig) {
 	cantidad_entradas = config_get_int_value(archivoConfig, "CANTIDAD_DE_ENTRADAS");
 	tamanio_entradas = config_get_int_value(archivoConfig, "TAMAÑO_DE_ENTRADAS");
 	retardo_real = config_get_int_value(archivoConfig, "RETARDO");
-	retardo = retardo_real / 1000; // Para pasar de mili segundos a segundos
+	retardo = retardo_real / (float) 1000; // Para pasar de mili segundos a segundos
 
 	log_info(logger,"Se inicio cargo correctamente el archivo de configuración.");
 	log_info(logger,"Se inicio la Instancia con el siguiente Algoritmo de Distribución: %s",algoritmo_de_distribucion);
@@ -476,18 +476,8 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 		char* valor = malloc(strlen(datos) + 1);
 		strcpy(valor, datos);
 
-		printf("%s\n",clave);
-		printf("%s\n",valor);
-
-/*
 		int tam = strlen(clave) + strlen(valor) + 2;
-		void*sendInstancia = malloc(tam);
-		strcpy(sendInstancia, clave);
-		sendInstancia += strlen(clave) + 1;
-		strcpy(sendInstancia, valor);
-		sendInstancia += strlen(valor) + 1;
-		sendInstancia -= tam;
-*/
+
 		bool verificarExistenciaEnListaDeClaves(char*e) {
 			return !strcmp(e, clave);
 		}
@@ -505,18 +495,17 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 				//clave existe en el sistema, pero no esta en ninguna instancia, es clave nueva
 				int socketSiguiente = obtenerProximaInstancia(clave);
 				if (socketSiguiente != 0) {
-					EnviarDatosTipo(socketSiguiente, COORDINADOR, datos, strlen(datos)+2, t_SET);
+					EnviarDatosTipo(socketSiguiente, COORDINADOR, paquete.mensaje, tam, t_SET);
 				} else {
 					//error, no hay instancias conectadas al sistema
 					printf("No hay Instancias en el sistema. No se puede procesar el pedido.\n");
 				};
-//				free(datos);
 
 			} else {
 				//clave existe en el sistema, y esta en alguna instancia, hay que buscar en que instancia y enviarlo.
 				int socketInstanciaConClave = buscarInstanciaPorClave(clave);
 				if (socketInstanciaConClave != 0) {
-					EnviarDatosTipo(socketInstanciaConClave, COORDINADOR, datos, strlen(datos)+2, t_SET);
+					EnviarDatosTipo(socketInstanciaConClave, COORDINADOR, paquete.mensaje, tam, t_SET);
 				}
 			}
 		} else {
@@ -580,7 +569,7 @@ void coordinarESI(int socket, Paquete paquete, void* datos){
 			EnviarDatosTipo(socket_planificador, COORDINADOR, NULL ,0, t_ABORTARESI);
 			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEAINCORRECTA);
 		} else {
-			EnviarDatosTipo(aux->socket, COORDINADOR, datos, strlen(datos) + 1, t_STORE);
+			EnviarDatosTipo(aux->socket, COORDINADOR, clave, strlen(clave) + 1, t_STORE);
 			EnviarDatosTipo(socket, COORDINADOR, NULL, 0, t_RESPUESTALINEACORRECTA);
 		}
 		log_info(loggerOperaciones,"El ESI: %d, recibió operación STORE con CLAVE: %s", socket, datos);

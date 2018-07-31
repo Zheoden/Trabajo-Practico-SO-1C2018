@@ -16,12 +16,6 @@
 
 #define SEGUNDO 1000000 //El valor de un segundo para la funcion usleep
 
-
-#define try bool __HadError=false;
-#define catch(x) ExitJmp:if(__HadError);
-#define throw(x) __HadError=true;goto ExitJmp;
-
-
 /* Variables globales */
 
 char* coordinador_ip;
@@ -35,6 +29,7 @@ char* nombre_de_la_instancia;
 int intervalo_de_dump;
 int tamanio_entrada;
 int cantidad_de_entradas;
+int puntero;
 
 char** tabla_entradas;
 t_list* entradas_administrativas;
