@@ -4,6 +4,7 @@
 void inicializar(){
 	entradas_administrativas = list_create();
 	envio_compactacion = false;
+	puntero = 0;
 }
 
 /* Se setean los valores en el archivo de configuración */
@@ -20,7 +21,6 @@ void setearValores(t_config * archivoConfig) {
  }
 
 /* Creación de hilos */
-
 void iniciarDump(){
 	pthread_t hilo;
 	log_info(logger,"Se inicio un hilo para el manejo de Entradas.");
@@ -35,7 +35,6 @@ void atenderCoordinador(){
 	pthread_detach(unHilo);
 }
 
-
 /* Conexión con el Coordinador */
 void crearCliente() {
 	socket_coordinador = ConectarAServidor(coordinador_puerto,coordinador_ip);
@@ -44,7 +43,6 @@ void crearCliente() {
 	log_info(logger,"Se envio un Handshake al Coordiandor");
 	manejarEntradas();
 }
-
 
 void manejarEntradas() {
 
@@ -187,8 +185,6 @@ void verificarPuntoMontaje(){
 	}
 }
 
-
-
 //no se hace en coordinador, ya que es propio de la instancia, y no depende del coordinador. es un metodo de backup.
 void dump(){
 	while(1){
@@ -300,10 +296,10 @@ int getFirstIndex (int entradasValue){
 }
 
 void inicializarTabla(){
-	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada)+cantidad_de_entradas);
+	tabla_entradas = malloc((cantidad_de_entradas * tamanio_entrada));
 	int i;
 	for (i = 0; i < cantidad_de_entradas; i++) {
-		tabla_entradas[i] = malloc(tamanio_entrada +1);
+		tabla_entradas[i] = malloc(tamanio_entrada);
 		strcpy(tabla_entradas[i], "null");
 	}
 }
@@ -430,11 +426,12 @@ bool verificarEspacio(t_AlmacenamientoEntradaAdministrativa* entrada_a_almacenar
 
 		cantidad_de_entradas_disponibles = cantidad_de_entradas_libres();
 
-		if(cantidad_de_entradas_disponibles == entrada_a_almacenar->entradasOcupadas){
-			EnviarDatosTipo(socket_coordinador, INSTANCIA, NULL , 0, t_COMPACTACIONINSTANCIA);
-			compactacion();
-			envio_compactacion = true;
-
+		if(cantidad_de_entradas_disponibles >= entrada_a_almacenar->entradasOcupadas){
+			if(getFirstIndex(entrada_a_almacenar->entradasOcupadas) == -1){
+				EnviarDatosTipo(socket_coordinador, INSTANCIA, NULL , 0, t_COMPACTACIONINSTANCIA);
+				compactacion();
+				envio_compactacion = true;
+			}
 			return true;
 		}
 	}
@@ -461,7 +458,10 @@ void LRU(int entradas_a_liberar) {
 void CIRC(int entradas_a_liberar) {
 	int i,j;
 	for (j = 0; j < entradas_a_liberar; j++) {
-		for (i = 0; i < cantidad_de_entradas; i++){
+		for (i = puntero; i < cantidad_de_entradas; i++,puntero++){
+			if(puntero == cantidad_de_entradas){
+				puntero = 0;
+			}
 			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)esAtomico(i);
 			if(actual != NULL){
 				EnviarDatosTipo(socket_coordinador, INSTANCIA, actual->clave,strlen(actual->clave) + 1, t_CLAVEBORRADA);
