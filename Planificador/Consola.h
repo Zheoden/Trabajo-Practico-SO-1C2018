@@ -7,7 +7,7 @@
 #include <Funciones/lista.h>
 #include <Funciones/serializacion.h>
 #include <pthread.h>
-
+#include "Planificador.h"
 
 bool planificacion_activa;
 int socket_coordinador;
@@ -41,5 +41,9 @@ void verificar_si_alguien_tiene_el_recurso(char* clave);
 bool verificar_si_hay_circulo();
 bool tiene_clave_tomada(t_ESIPlanificador* esi, char* clave );
 bool comparador_de_esis(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
+void abortarEsi(t_ESIPlanificador* esiAAbortar);
+void liberarClave(char* clave);
+void imprimir(t_list* self);
+
 
 #endif /* CONSOLA_H_ */

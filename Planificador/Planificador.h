@@ -34,7 +34,7 @@ int coordinador_puerto;
 char* algoritmo_planificacion;
 char** claves_bloqueadas;
 int estimacion_inicial;
-int alfa_planificacion;
+double alfa_planificacion;
 char* ultimo_ID_Asignado;
 
 /* Semaforos */
@@ -62,10 +62,7 @@ t_ESIPlanificador* CalcularResponseRatio(t_ESIPlanificador* unEsi);
 bool ComparadorResponseRatio(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI);
 t_ESIPlanificador* inicializarESI(char* ID,int socket);
 void ejecutarEsi();
-void imprimir(t_list* self);
 char* incrementarID(char *ID);
-void liberarClave(char* clave);
-void abortarEsi(t_ESIPlanificador* esiAAbortar);
 void accion(void* socket);
 
 #endif /* PLANIFICADOR_H_ */

@@ -68,5 +68,6 @@ void BSU(int entradas_a_liberar);
 void compactacion();
 int cantidad_de_entradas_libres();
 bool verificarEspacio(t_AlmacenamientoEntradaAdministrativa* entrada_a_almacenar);
+void imprimirLogAlmacenamiento();
 
 #endif /* INSTANCIA_H_ */

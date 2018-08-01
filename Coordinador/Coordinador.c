@@ -162,6 +162,7 @@ int EL() {
 	}
 	bool verificarVacio(t_Instancia * elemento) {
 		if(elemento->estado_de_conexion){
+			printf("Instancia: %s, FlagEL: %d\n",elemento->nombre,elemento->flagEL);
 			return elemento->flagEL;
 		}else{
 			return true;
@@ -174,14 +175,13 @@ int EL() {
 		aux->flagEL = true;
 		list_replace(instancias, 0, aux);
 		log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
+		printf("Se encontro que la instancia %s, es la proxima disponible.\n",aux->nombre);
 		return aux->socket;
 	}
 
-	int i = -1;
-
 	bool proximo(t_Instancia *elemento) {
 		if(elemento->estado_de_conexion){
-			i++;
+			printf("Instancia: %s, FlagEL: %d\n",elemento->nombre,elemento->flagEL);
 			return !elemento->flagEL;
 		}else{
 			return false;
@@ -189,11 +189,16 @@ int EL() {
 	}
 
 	aux =  list_find(instancias, (void*) proximo);
-	aux->flagEL = true;
-	int auxInt = list_get_index(instancias,aux,(void*)comparador_de_socket);
-	list_replace(instancias, auxInt, aux);
-	log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
-	return aux->socket;
+	if(aux != NULL){
+		aux->flagEL = true;
+		int auxInt = list_get_index(instancias,aux,(void*)comparador_de_socket);
+		list_replace(instancias, auxInt, aux);
+		log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
+		printf("Se encontro que la instancia %s, es la proxima disponible.\n",aux->nombre);
+		return aux->socket;
+	}else{
+		printf("No se encontraron instancias dentro del sistema.\n");
+	}
 }
 
 /* Para LSU */
@@ -296,7 +301,7 @@ void sacar_instancia(int socket) {
 		int indexInstancia = list_get_index(instancias,instancia,(void*)comparador_de_socket);
 		instancia->estado_de_conexion = false;
 		list_replace(instancias, indexInstancia, instancia);
-		printf("Se Desconecto la Instancia %s.\n",instancia->nombre);
+		printf("Se Desconecto la Instancia %s, con el index %d.\n",instancia->nombre,indexInstancia);
 	}
 
 }

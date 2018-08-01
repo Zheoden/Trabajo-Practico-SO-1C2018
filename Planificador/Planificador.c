@@ -44,8 +44,8 @@ void setearValores(t_config * archivoConfig) {
  	server_ip = strdup(config_get_string_value(archivoConfig, "SERVER_IP"));
  	coordinador_puerto = config_get_int_value(archivoConfig, "COORDINADOR_PUERTO");
  	coordinador_ip = strdup(config_get_string_value(archivoConfig, "COORDINADOR_IP"));
- 	alfa_planificacion = config_get_int_value(archivoConfig, "ALFA_PLANIFICACION");
- 	alfa_planificacion = alfa_planificacion/100;
+ 	alfa_planificacion = config_get_double_value(archivoConfig, "ALFA_PLANIFICACION");
+ 	alfa_planificacion = alfa_planificacion/(double)100;
  	algoritmo_planificacion = strdup(config_get_string_value(archivoConfig, "ALGORITMO_DE_PLANIFICACION"));
  	estimacion_inicial = config_get_int_value(archivoConfig, "ESTIMACION_INICIAL");
  	claves_bloqueadas = config_get_array_value(archivoConfig, "CLAVES_BLOQUEADAS");
@@ -329,7 +329,7 @@ void aplicarSJF() {
 
 	log_info(logger,"Se aplicó algoritmo de planificación SJF sin desalojo.");
 
-	if (!list_is_empty(ESI_listos)) {
+	if (!list_is_empty(ESI_listos) && list_is_empty(ESI_ejecucion)) {
 		t_list* aux = list_map(ESI_listos, (void*) CalcularEstimacion);
 		list_sort(aux, (void*) ComparadorDeRafagas);
 
@@ -350,7 +350,7 @@ void aplicarHRRN(){
 
 	log_info(logger,"Se aplicó algoritmo de planificación HRRN.");
 
-	if (!list_is_empty(ESI_listos)) {
+	if (!list_is_empty(ESI_listos) && list_is_empty(ESI_ejecucion)) {
 		t_list* aux = list_map(ESI_listos, (void*) CalcularResponseRatio);
 		list_sort(aux, (void*) ComparadorResponseRatio);
 
@@ -372,7 +372,7 @@ void AumentarTiempoEspera(t_ESIPlanificador* unEsi){
 
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
 	unEsi->rafagas_estimadas = (alfa_planificacion * estimacion_inicial)
-			+ ((1 - alfa_planificacion) * (unEsi->rafagas_ejecutadas));
+			+ ((1 - alfa_planificacion) * (unEsi->rafagas_estimadas));
 	return unEsi;
 }
 
@@ -381,7 +381,7 @@ bool ComparadorDeRafagas(t_ESIPlanificador* unESI, t_ESIPlanificador* otroESI) {
 }
 
 t_ESIPlanificador* CalcularResponseRatio(t_ESIPlanificador* unEsi) {
-	t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi);
+	unEsi = (t_ESIPlanificador*) CalcularEstimacion(unEsi);
 	unEsi->response_ratio = 1 + (unEsi->tiempo_espera / unEsi->rafagas_estimadas);
 	return unEsi;
 }
@@ -440,19 +440,6 @@ t_ESIPlanificador* inicializarESI(char* ID,int socket){
 	return aux;
 }
 
-/* Impresión de los ESIS ejecutadas */
-void imprimir(t_list* self){
-	int longitud_de_lista = list_size(self);
-	int i;
-	for(i = 0; i < longitud_de_lista; i++ ){
-		t_ESIPlanificador* aux = (t_ESIPlanificador*) list_get(self,i);
-		printf("ID: %s\n", aux->ID);
-		printf("rafagas_ejecutadas: %d\n", aux->rafagas_ejecutadas);
-		printf("rafagas_estimadas: %f\n", aux->rafagas_estimadas);
-		printf("response_ratio: %d\n", aux->response_ratio);
-	}
-}
-
 /*Funcion que genera los IDs*/
 char* incrementarID(char *ID){
 	int i, begin, tail, len;
@@ -490,45 +477,3 @@ char* incrementarID(char *ID){
 	return ID;
 }
 
-void liberarClave(char* clave){
-
-	printf("Se libero la clave: %s\n",clave);
-	log_info(logger,"Se liberó la clave: %s", clave);
-	int buscarClave(char* aux){
-		return !strcmp(aux, clave);
-	}
-
-	list_remove_by_condition(ESI_clavesBloqueadas,(void*)buscarClave);
-
-	void compararClave(t_ESIPlanificador* aux){
-		if(aux->bloqueado && (!strcmp(aux->razon_bloqueo, clave))){
-			aux->bloqueado=false;
-			strcpy(aux->razon_bloqueo,"");
-		}
-	}
-
-	list_iterate(ESI_bloqueados,(void*)compararClave);
-	int tamanioInicial = list_size(ESI_bloqueados);
-	int i;
-	for(i = 0 ; i < tamanioInicial ; i++){
-		t_ESIPlanificador* elemento = (t_ESIPlanificador*) list_remove(ESI_bloqueados,i);
-		if( !elemento->bloqueado ){
-			list_add(ESI_listos,elemento);
-		}else{
-			list_add(ESI_bloqueados,elemento);
-		}
-
-	}
-}
-
-void abortarEsi(t_ESIPlanificador* esiAAbortar){
-
-	int i=0;
-	for (i = 0; i < list_size(esiAAbortar->clave); i++) {
-		liberarClave(list_get(esiAAbortar->clave,i));
-	}
-
-	list_add(ESI_finalizados, esiAAbortar);
-	printf("Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
-	log_info(logger,"Se aborto correctamente el ESI %s, y se agrego a la lista de Terminados.",esiAAbortar->ID);
-}

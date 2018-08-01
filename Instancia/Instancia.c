@@ -268,7 +268,7 @@ void cargarDatos(char* unaClave, char* unValor) {
 	free(clave);
 	free(valor);
 
-	imprimirTabla();
+	imprimirLogAlmacenamiento();
 }
 
 //funcion para probar el dump
@@ -281,12 +281,15 @@ int ceilDivision(int lengthValue) {
 int getFirstIndex (int entradasValue){
 	int i;
 	for (i=0;  i< cantidad_de_entradas; i++) {
-		if(!strcmp(tabla_entradas[i],"null") &&  tabla_entradas[entradasValue-1]){
+		if(!strcmp(tabla_entradas[i],"null")){
 			int aux;
 			bool cumple=true;
 			//evaluo valores intermedios entre el inicio y el supuesto final (entradasValue-1)
-			for(aux=i+1; aux< entradasValue; aux++){
-				if(strcmp(tabla_entradas[aux],"null")){
+			for(aux = i + 1; aux < entradasValue + i; aux++){
+				if(aux >= cantidad_de_entradas){
+					return -1;
+				}
+				if(strcmp(tabla_entradas[aux],"null") != 0){
 					cumple=false;
 					break;
 				}
@@ -312,10 +315,10 @@ void imprimirTabla(){
 	int i,j;
 	for (i = 0; i < list_size(entradas_administrativas); i++) {
 		t_AlmacenamientoEntradaAdministrativa* nueva = (t_AlmacenamientoEntradaAdministrativa*)list_get(entradas_administrativas,i);
-//		printf("Clave: %s\n",nueva->clave);
-//		printf("Entradas Que Ocupa: %d\n",nueva->entradasOcupadas);
-//		printf("Index: %d\n",nueva->index);
-//		printf("Tamanio: %d\n",nueva->tamanio);
+		printf("Clave: %s\n",nueva->clave);
+		printf("Entradas Que Ocupa: %d\n",nueva->entradasOcupadas);
+		printf("Index: %d\n",nueva->index);
+		printf("Tamanio: %d\n",nueva->tamanio);
 
 		char* valor=malloc(nueva->tamanio);
 		int tamanioPegado=0;
@@ -328,11 +331,28 @@ void imprimirTabla(){
 				tamanioPegado+=tamanio_entrada;
 			}
 		}
-//		printf("Valor: %s\n",valor);
-		log_info(logger,"Valor: %s, Entradas Que Ocupa: %d.",valor,nueva->entradasOcupadas);
-//		printf("%s\n","------------------");
+		printf("Valor: %s\n",valor);
+		printf("%s\n","------------------");
 		free(valor);
 	}
+}
+
+void imprimirLogAlmacenamiento(){
+	log_info(logger,"--------------------------------------------------------------------");
+//	printf("-----------------------------------\n");
+	int i;
+
+	for (i = 0; i < cantidad_de_entradas;i++) {
+		char * aux = malloc(tamanio_entrada);
+		strncpy(aux,tabla_entradas[i],tamanio_entrada);
+		log_info(logger,"La entrada: %d, tiene el valor: %s",i,aux);
+//		printf("La entrada: %d, tiene el valor: %s\n",i,aux);
+		free(aux);
+	}
+
+	log_info(logger,"--------------------------------------------------------------------");
+//	printf("-----------------------------------\n");
+
 }
 
 void guardarAArchivo(t_AlmacenamientoEntradaAdministrativa* clave_a_store){
@@ -463,7 +483,8 @@ void LRU(int entradas_a_liberar) {
 void CIRC(int entradas_a_liberar) {
 	int i,j;
 	for (j = 0; j < entradas_a_liberar; j++) {
-		for (i = puntero; i < cantidad_de_entradas; i++,puntero++){
+		for (i = puntero; i < cantidad_de_entradas; i++){
+			puntero++;
 			if(puntero == cantidad_de_entradas){
 				puntero = 0;
 			}
@@ -472,7 +493,6 @@ void CIRC(int entradas_a_liberar) {
 				EnviarDatosTipo(socket_coordinador, INSTANCIA, actual->clave,strlen(actual->clave) + 1, t_CLAVEBORRADA);
 				printf("Se Reemplazo la Clave: %s.\n",actual->clave);
 				liberarMemoria(actual);
-				imprimirTabla();
 				break;
 			}else{
 				free(actual);
@@ -484,7 +504,7 @@ void CIRC(int entradas_a_liberar) {
 void BSU(int entradas_a_liberar) {
 	int i,j;
 	for (j = 0; j < entradas_a_liberar; j++) {
-		t_AlmacenamientoEntradaAdministrativa* candidato = NULL;
+		t_AlmacenamientoEntradaAdministrativa* candidato = malloc(sizeof(t_AlmacenamientoEntradaAdministrativa));
 		candidato->tamanio=-1;
 		for (i=0; i < cantidad_de_entradas; i++) {
 			t_AlmacenamientoEntradaAdministrativa* actual = (t_AlmacenamientoEntradaAdministrativa*)esAtomico(i);
@@ -492,6 +512,8 @@ void BSU(int entradas_a_liberar) {
 				if(candidato->tamanio < actual->tamanio){
 					candidato = actual;
 				}
+			}else{
+				free(actual);
 			}
 		}
 		if(candidato->tamanio != -1){
