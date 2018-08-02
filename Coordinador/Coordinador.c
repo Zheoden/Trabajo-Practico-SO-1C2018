@@ -148,7 +148,7 @@ int obtenerProximaInstancia(char* clave){
 
 /* Para EL */
 int EL() {
-	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo Circular.");
+	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo EL.");
 
 	if(list_is_empty(instancias)){
 		return 0;

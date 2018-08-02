@@ -60,7 +60,6 @@ int LSU();
 int KE(char* clave);
 bool comparador_de_socket(t_Instancia* unaInstancia, t_Instancia* otraInstancia);
 void sacar_instancia(int socket);
-int proximaInstancia();
 int buscarInstanciaPorClave(char* clave);
 int buscarInstanciaQueTendriaClave(char* clave);
 void reiniciarInstanciaPorSocket(int socket);
