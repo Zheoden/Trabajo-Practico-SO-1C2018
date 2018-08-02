@@ -35,19 +35,11 @@ char** tabla_entradas;
 t_list* entradas_administrativas;
 bool envio_compactacion;
 
-void iniciarDump();
-void imprimirTabla();
-void dump();
-void cargarDatos(char* unaClave, char* unValor);
-void inicializarTabla();
-void verificarPuntoMontaje();
-void atenderCoordinador();
-
 /* Funciones */
+void atenderCoordinador();
 void inicializar();
 void crearCliente();
 void setearValores(t_config * archivoConfig);
-bool handshakeInstanciaCoordinador();
 void manejarEntradas();
 void verificarPuntoMontaje();
 void iniciarDump();
