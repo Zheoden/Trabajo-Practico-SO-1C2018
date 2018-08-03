@@ -372,7 +372,7 @@ void AumentarTiempoEspera(t_ESIPlanificador* unEsi){
 
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
 	unEsi->rafagas_estimadas = (alfa_planificacion * estimacion_inicial)
-			+ ((1 - alfa_planificacion) * (unEsi->rafagas_estimadas));
+			+ ((1 - alfa_planificacion) * (unEsi->rafagas_ejecutadas));
 	return unEsi;
 }
 
@@ -427,16 +427,16 @@ t_ESIPlanificador* inicializarESI(char* ID,int socket){
 
 	log_info(logger,"Se inicializó el ESI.");
 
-	t_ESIPlanificador*aux = malloc(sizeof(t_ESIPlanificador)+25);
+	t_ESIPlanificador* aux = malloc(sizeof(t_ESIPlanificador));
 	aux->ID = malloc(4);
 	strcpy(aux->ID, ID);
 	aux->clave = list_create();
-	aux->bloqueado=false;
+	aux->bloqueado = false;
 	aux->socket = socket;
 	aux->rafagas_ejecutadas = 0;
 	aux->rafagas_estimadas = 0;
-	aux->response_ratio=0;
-	aux->tiempo_espera=0;
+	aux->response_ratio = 0;
+	aux->tiempo_espera = 0;
 	return aux;
 }
 
