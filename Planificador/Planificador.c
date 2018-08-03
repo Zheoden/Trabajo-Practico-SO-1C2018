@@ -372,7 +372,7 @@ void AumentarTiempoEspera(t_ESIPlanificador* unEsi){
 
 t_ESIPlanificador* CalcularEstimacion(t_ESIPlanificador* unEsi) {
 	unEsi->rafagas_estimadas = (alfa_planificacion * estimacion_inicial)
-			+ ((1 - alfa_planificacion) * (unEsi->rafagas_estimadas));
+			+ ((1 - alfa_planificacion) * (unEsi->rafagas_ejecutadas));
 	return unEsi;
 }
 
