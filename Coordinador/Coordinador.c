@@ -156,13 +156,12 @@ int EL() {
 	t_Instancia* aux;
 
 	void inicializar(t_Instancia * elemento) {
-		if(elemento->estado_de_conexion){
+		if(elemento->estado_de_conexion || elemento->socket){
 			elemento->flagEL = false;
 		}
 	}
 	bool verificarVacio(t_Instancia * elemento) {
-		if(elemento->estado_de_conexion){
-			printf("Instancia: %s, FlagEL: %d\n",elemento->nombre,elemento->flagEL);
+		if(elemento->estado_de_conexion || elemento->socket){
 			return elemento->flagEL;
 		}else{
 			return true;
@@ -170,18 +169,21 @@ int EL() {
 	}
 
 	if (list_all_satisfy(instancias,(void*)verificarVacio)){
-		list_iterate(instancias, (void*)inicializar );
-		aux = list_get(instancias, 0);
-		aux->flagEL = true;
-		list_replace(instancias, 0, aux);
-		log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
-		printf("Se encontro que la instancia %s, es la proxima disponible.\n",aux->nombre);
-		return aux->socket;
+		list_iterate(instancias, (void*)inicializar);
+		for(int i = 0; i < list_size(instancias); i++){
+			aux = list_get(instancias, i);
+			if(aux->estado_de_conexion){
+				aux->flagEL = true;
+				list_replace(instancias, 0, aux);
+				log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
+				printf("Se encontro que la instancia %s, es la proxima disponible.\n",aux->nombre);
+				return aux->socket;
+			}
+		}
 	}
 
 	bool proximo(t_Instancia *elemento) {
-		if(elemento->estado_de_conexion){
-			printf("Instancia: %s, FlagEL: %d\n",elemento->nombre,elemento->flagEL);
+		if(elemento->estado_de_conexion || elemento->socket){
 			return !elemento->flagEL;
 		}else{
 			return false;
@@ -199,6 +201,7 @@ int EL() {
 	}else{
 		printf("No se encontraron instancias dentro del sistema.\n");
 	}
+	return 0;
 }
 
 /* Para LSU */
@@ -239,9 +242,7 @@ int LSU() {
 int KE(char* clave){
 
 	log_info(logger,"Se va a prodecer de buscar la proxima Instancia disponible para el Algoritmo KE.");
-
 	int cantidad_de_instancias_activas = 0;
-
 	if(!list_is_empty(instancias)){
 		//calculo la cantidad de instancias habilitadas en el sistema
 		for (int i = 0; i < list_size(instancias); ++i) {
@@ -254,14 +255,8 @@ int KE(char* clave){
 		int index_clave = getIndexLetra(clave[0]);
 		int index_instancia = (index_clave/rango);
 		int aux = 0;
-
-		printf("rango: %d.\n",rango);
-		printf("index clave: %d.\n",index_clave);
-		printf("index instancia: %d.\n",index_instancia);
-
 		for (int i = 0; i < list_size(instancias); ++i) {
 			t_Instancia* actual = list_get(instancias,i);
-
 			if(aux == index_instancia){
 				if(actual->estado_de_conexion){
 					return actual->socket;
@@ -274,12 +269,10 @@ int KE(char* clave){
 					}
 				}
 			}
-
 			if(actual->estado_de_conexion){
 				aux++;
 			}
 		}
-
 	}
 	return 0;
 }
@@ -300,15 +293,14 @@ void sacar_instancia(int socket) {
 	if( instancia != NULL ){
 		int indexInstancia = list_get_index(instancias,instancia,(void*)comparador_de_socket);
 		instancia->estado_de_conexion = false;
+		instancia->socket = 0;
 		list_replace(instancias, indexInstancia, instancia);
 		printf("Se Desconecto la Instancia %s, con el index %d.\n",instancia->nombre,indexInstancia);
 	}
-
 }
 
 /* Para Coordinar los distintos procesos, los hago polimorficos (revisar si vale la pena) */
 void coordinarInstancia(int socket, Paquete paquete, void* datos){
-
 	log_info(logger,"Llego un mensaje de una Instancia");
 	switch (paquete.header.tipoMensaje) {
 	case t_HANDSHAKE: {
@@ -357,17 +349,12 @@ void coordinarInstancia(int socket, Paquete paquete, void* datos){
 			int cantidad_de_claves = list_size(aux->claves);
 			int i;
 			for (i = 0; i < cantidad_de_claves; i++) {
-
 				int tamanio = strlen(list_get(aux->claves,i))+1;
 				char* clave = malloc(tamanio);
 				strcpy(clave,list_get(aux->claves,i));
-
 				EnviarDatosTipo(socket, COORDINADOR, clave, tamanio, t_LEERCLAVE);
-
 				free(clave);
 			}
-
-
 		}else{
 			t_Instancia* instancia = malloc(sizeof(t_Instancia));
 			instancia->socket = socket;

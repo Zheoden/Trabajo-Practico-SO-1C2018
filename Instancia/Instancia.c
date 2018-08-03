@@ -96,17 +96,17 @@ void manejarEntradas() {
 		}
 		break;
 		case t_SET: {
-			log_info(logger,"Se recibio un SET del Coordinador, se va a pasar a procesar.");
-
 			char*clave = malloc(strlen(datos) + 1);
 			strcpy(clave, datos);
 			datos += strlen(datos) +1;
 			char* valor = malloc(strlen(datos) + 1);
  			strcpy(valor, datos);
 
+ 			log_info(logger,"Se recibio un SET del Coordinador para la clave: %s con el valor: %s, se va a pasar a procesar.",clave,valor);
+
 			cargarDatos(clave,valor);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASET);
-			log_info(logger,"Se proceso correctamente el SET del valor : %s y se envio al Coordinador la respuesta del SET.",valor);
+			log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
 			printf("Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.\n");
 			free(clave);
 			free(valor);
