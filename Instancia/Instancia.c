@@ -104,12 +104,9 @@ void manejarEntradas() {
 			char* valor = malloc(strlen(datos) + 1);
  			strcpy(valor, datos);
 
- 			printf("\nDEL SET ME LLEGO LA CLAVE: %s\n",clave);
- 			printf("\nDEL SET ME LLEGO EL VALOR: %s\n",valor);
-
 			cargarDatos(clave,valor);
 			EnviarDatosTipo(socket_coordinador, INSTANCIA, clave, strlen(clave) + 1, t_RESPUESTASET);
-			log_info(logger,"Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.");
+			log_info(logger,"Se proceso correctamente el SET del valor : %s y se envio al Coordinador la respuesta del SET.",valor);
 			printf("Se proceso correctamente el SET y se envio al Coordinador la respuesta del SET.\n");
 			free(clave);
 			free(valor);
