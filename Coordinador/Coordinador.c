@@ -174,7 +174,8 @@ int EL() {
 			aux = list_get(instancias, i);
 			if(aux->estado_de_conexion){
 				aux->flagEL = true;
-				list_replace(instancias, 0, aux);
+				int auxInt = list_get_index(instancias,aux,(void*)comparador_de_socket);
+				list_replace(instancias, auxInt, aux);
 				log_info(logger,"Se encontro que la instancia %s, es la proxima disponible.",aux->nombre);
 				printf("Se encontro que la instancia %s, es la proxima disponible.\n",aux->nombre);
 				return aux->socket;
